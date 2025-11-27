@@ -39,3 +39,8 @@
 - [x] Replace fonts with modern, futuristic style
 - [x] Update CSS with new font families
 - [x] Test typography across all pages
+
+## Icon Update
+- [x] Replace sparkles icon with crystal ball in header
+- [x] Update pricing section icons to crystal ball
+- [x] Update all page headers to use crystal ball

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Sparkles, Loader2, ArrowLeft, Calendar } from "lucide-react";
+import { Circle, Loader2, ArrowLeft, Calendar } from "lucide-react";
 import { useEffect } from "react";
 import { Streamdown } from "streamdown";
 
@@ -52,7 +52,12 @@ export default function History() {
               </Button>
             </Link>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-primary" />
+              <div className="relative w-6 h-6">
+                <Circle className="w-6 h-6 text-primary fill-primary/20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                </div>
+              </div>
               <h1 className="text-xl font-bold">Prediction History</h1>
             </div>
           </div>
@@ -107,14 +112,19 @@ export default function History() {
         ) : (
           <Card className="text-center py-12">
             <CardContent>
-              <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <div className="relative w-12 h-12 mx-auto mb-4">
+                <Circle className="w-12 h-12 text-muted-foreground fill-muted/20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-3 h-3 rounded-full bg-muted-foreground/50" />
+                </div>
+              </div>
               <CardTitle className="mb-2">No predictions yet</CardTitle>
               <CardDescription className="mb-6">
                 Start generating predictions to see your history here
               </CardDescription>
               <Button asChild>
                 <Link href="/dashboard">
-                  <Sparkles className="w-4 h-4 mr-2" />
+                  <Circle className="w-4 h-4 mr-2 fill-primary/20" />
                   Generate Your First Prediction
                 </Link>
               </Button>

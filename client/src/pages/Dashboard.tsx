@@ -8,13 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Sparkles, Loader2, Home, History, Zap, Crown, ArrowLeft } from "lucide-react";
+import { Circle, Loader2, Home, History, Zap, Crown, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 
 const TIER_ICONS = {
-  free: Sparkles,
+  free: Circle,
   pro: Zap,
   premium: Crown,
 };
@@ -76,7 +76,7 @@ export default function Dashboard() {
   };
 
   const usagePercent = subscription ? (subscription.usedToday / subscription.dailyLimit) * 100 : 0;
-  const TierIcon = subscription ? TIER_ICONS[subscription.tier] : Sparkles;
+  const TierIcon = subscription ? TIER_ICONS[subscription.tier] : Circle;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -91,7 +91,12 @@ export default function Dashboard() {
               </Button>
             </Link>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-primary" />
+              <div className="relative w-6 h-6">
+                <Circle className="w-6 h-6 text-primary fill-primary/20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                </div>
+              </div>
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -246,7 +251,7 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Circle className="w-4 h-4 mr-2 fill-primary/20" />
                       Generate Prediction
                     </>
                   )}
@@ -255,7 +260,7 @@ export default function Dashboard() {
                 {prediction && (
                   <div className="mt-6 p-6 bg-card border border-primary/20 rounded-lg shadow-lg shadow-primary/10">
                     <div className="flex items-center gap-2 mb-4">
-                      <Sparkles className="w-5 h-5 text-primary" />
+                      <Circle className="w-5 h-5 text-primary fill-primary/20" />
                       <h3 className="font-semibold text-lg">Your Prediction</h3>
                     </div>
                     <div className="prose prose-invert max-w-none">
