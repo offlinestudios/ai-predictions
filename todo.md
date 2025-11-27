@@ -8,3 +8,9 @@
 ## Revert Globe Logo
 - [x] Restore previous globe logo version that worked better with background
 - [x] Keep orbiting particles removed for cleaner animation
+
+## Replace Loading Animation with Hourglass
+- [x] Design hourglass with cosmic purple sand animation
+- [x] Implement flowing sand particles effect
+- [x] Add glowing purple effects and sparkles
+- [x] Test animation appearance
