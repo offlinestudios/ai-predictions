@@ -20,3 +20,6 @@
 - [x] Add glowing purple effects and sparkles
 - [x] Implement mystical floating animation
 - [x] Test animation appearance
+
+## Remove Generate Prediction Button Animation
+- [x] Remove spinning animation from Generate Prediction button when loading
