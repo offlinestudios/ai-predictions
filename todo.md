@@ -73,3 +73,8 @@
 - [x] Copy globe trophy image to public folder
 - [x] Replace CrystalBall component with img element in headers
 - [x] Ensure proper sizing and styling
+
+## Purple Globe Logo Design
+- [x] Generate glowing globe with purple color palette
+- [x] Replace current globe trophy logo with purple globe
+- [x] Update all logo references across the site
