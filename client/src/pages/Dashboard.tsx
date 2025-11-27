@@ -399,6 +399,7 @@ export default function Dashboard() {
                 >
                   {generateMutation.isPending ? (
                     <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Generating...
                     </>
                   ) : (
@@ -409,12 +410,7 @@ export default function Dashboard() {
                   )}
                 </Button>
 
-                {/* Loading Animation */}
-                {generateMutation.isPending && (
-                  <div className="mt-6">
-                    <PredictionLoadingAnimation />
-                  </div>
-                )}
+
 
                 {/* Prediction Result */}
                 {prediction && !generateMutation.isPending && (

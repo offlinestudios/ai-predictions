@@ -23,3 +23,8 @@
 
 ## Remove Generate Prediction Button Animation
 - [x] Remove spinning animation from Generate Prediction button when loading
+
+## Restore Button Animation and Remove Crystal Ball
+- [x] Restore spinning Loader2 icon on Generate Prediction button
+- [x] Remove crystal ball loading animation component
+- [x] Revert to basic loading state
