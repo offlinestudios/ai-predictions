@@ -1,4 +1,5 @@
-import { ENV } from "./env";
+import OpenAI from "openai";
+import type { ChatCompletionMessageParam, ChatCompletionTool, ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -19,7 +20,7 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4" ;
+    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4";
   };
 };
 
@@ -110,13 +111,26 @@ export type ResponseFormat =
   | { type: "json_object" }
   | { type: "json_schema"; json_schema: JsonSchema };
 
+// Initialize OpenAI client
+function getOpenAIClient(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY environment variable is not set");
+  }
+
+  return new OpenAI({
+    apiKey,
+  });
+}
+
 const ensureArray = (
   value: MessageContent | MessageContent[]
 ): MessageContent[] => (Array.isArray(value) ? value : [value]);
 
 const normalizeContentPart = (
   part: MessageContent
-): TextContent | ImageContent | FileContent => {
+): TextContent | ImageContent => {
   if (typeof part === "string") {
     return { type: "text", text: part };
   }
@@ -129,74 +143,54 @@ const normalizeContentPart = (
     return part;
   }
 
+  // OpenAI doesn't support file_url directly, convert to text
   if (part.type === "file_url") {
-    return part;
+    return {
+      type: "text",
+      text: `[File: ${part.file_url.url}]`,
+    };
   }
 
   throw new Error("Unsupported message content part");
 };
 
-const normalizeMessage = (message: Message) => {
-  const { role, name, tool_call_id } = message;
+const normalizeMessage = (message: Message): ChatCompletionMessageParam => {
+  const { role, name, tool_call_id, content } = message;
 
-  if (role === "tool" || role === "function") {
-    const content = ensureArray(message.content)
-      .map(part => (typeof part === "string" ? part : JSON.stringify(part)))
-      .join("\n");
-
+  if (role === "tool") {
     return {
-      role,
-      name,
-      tool_call_id,
-      content,
+      role: "tool",
+      tool_call_id: tool_call_id!,
+      content: typeof content === "string" ? content : JSON.stringify(content),
     };
   }
 
-  const contentParts = ensureArray(message.content).map(normalizeContentPart);
+  const contentParts = ensureArray(content).map(normalizeContentPart);
 
-  // If there's only text content, collapse to a single string for compatibility
+  // If there's only text content, collapse to a single string
   if (contentParts.length === 1 && contentParts[0].type === "text") {
     return {
-      role,
-      name,
+      role: role as "system" | "user" | "assistant",
       content: contentParts[0].text,
-    };
+      ...(name && { name }),
+    } as ChatCompletionMessageParam;
   }
 
   return {
-    role,
-    name,
-    content: contentParts,
-  };
+    role: role as "system" | "user" | "assistant",
+    content: contentParts as any,
+    ...(name && { name }),
+  } as ChatCompletionMessageParam;
 };
 
 const normalizeToolChoice = (
   toolChoice: ToolChoice | undefined,
   tools: Tool[] | undefined
-): "none" | "auto" | ToolChoiceExplicit | undefined => {
+): ChatCompletionCreateParamsNonStreaming["tool_choice"] => {
   if (!toolChoice) return undefined;
 
-  if (toolChoice === "none" || toolChoice === "auto") {
+  if (toolChoice === "none" || toolChoice === "auto" || toolChoice === "required") {
     return toolChoice;
-  }
-
-  if (toolChoice === "required") {
-    if (!tools || tools.length === 0) {
-      throw new Error(
-        "tool_choice 'required' was provided but no tools were configured"
-      );
-    }
-
-    if (tools.length > 1) {
-      throw new Error(
-        "tool_choice 'required' needs a single tool or specify the tool name explicitly"
-      );
-    }
-
-    return {
-      type: "function",
-      function: { name: tools[0].function.name },
-    };
   }
 
   if ("name" in toolChoice) {
@@ -206,18 +200,7 @@ const normalizeToolChoice = (
     };
   }
 
-  return toolChoice;
-};
-
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
-
-const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
-  }
+  return toolChoice as any;
 };
 
 const normalizeResponseFormat = ({
@@ -230,22 +213,10 @@ const normalizeResponseFormat = ({
   response_format?: ResponseFormat;
   outputSchema?: OutputSchema;
   output_schema?: OutputSchema;
-}):
-  | { type: "json_schema"; json_schema: JsonSchema }
-  | { type: "text" }
-  | { type: "json_object" }
-  | undefined => {
+}): ChatCompletionCreateParamsNonStreaming["response_format"] => {
   const explicitFormat = responseFormat || response_format;
   if (explicitFormat) {
-    if (
-      explicitFormat.type === "json_schema" &&
-      !explicitFormat.json_schema?.schema
-    ) {
-      throw new Error(
-        "responseFormat json_schema requires a defined schema object"
-      );
-    }
-    return explicitFormat;
+    return explicitFormat as any;
   }
 
   const schema = outputSchema || output_schema;
@@ -262,30 +233,33 @@ const normalizeResponseFormat = ({
       schema: schema.schema,
       ...(typeof schema.strict === "boolean" ? { strict: schema.strict } : {}),
     },
-  };
+  } as any;
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  assertApiKey();
+  const client = getOpenAIClient();
 
   const {
     messages,
     tools,
     toolChoice,
     tool_choice,
+    maxTokens,
+    max_tokens,
     outputSchema,
     output_schema,
     responseFormat,
     response_format,
   } = params;
 
-  const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+  const requestParams: ChatCompletionCreateParamsNonStreaming = {
+    model: "gpt-4o", // Use GPT-4 with vision support
     messages: messages.map(normalizeMessage),
+    max_tokens: maxTokens || max_tokens || 4096,
   };
 
   if (tools && tools.length > 0) {
-    payload.tools = tools;
+    requestParams.tools = tools as ChatCompletionTool[];
   }
 
   const normalizedToolChoice = normalizeToolChoice(
@@ -293,12 +267,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     tools
   );
   if (normalizedToolChoice) {
-    payload.tool_choice = normalizedToolChoice;
-  }
-
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
+    requestParams.tool_choice = normalizedToolChoice;
   }
 
   const normalizedResponseFormat = normalizeResponseFormat({
@@ -309,24 +278,50 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   });
 
   if (normalizedResponseFormat) {
-    payload.response_format = normalizedResponseFormat;
+    requestParams.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await client.chat.completions.create(requestParams);
 
-  if (!response.ok) {
-    const errorText = await response.text();
+    // Convert OpenAI response to our InvokeResult format
+    return {
+      id: response.id,
+      created: response.created,
+      model: response.model,
+      choices: response.choices.map((choice) => ({
+        index: choice.index,
+        message: {
+          role: choice.message.role as Role,
+          content: choice.message.content || "",
+          tool_calls: choice.message.tool_calls?.map((tc) => {
+            if (tc.type === 'function') {
+              return {
+                id: tc.id,
+                type: "function" as const,
+                function: {
+                  name: tc.function.name,
+                  arguments: tc.function.arguments,
+                },
+              };
+            }
+            return undefined;
+          }).filter((tc): tc is ToolCall => tc !== undefined),
+        },
+        finish_reason: choice.finish_reason,
+      })),
+      usage: response.usage
+        ? {
+            prompt_tokens: response.usage.prompt_tokens,
+            completion_tokens: response.usage.completion_tokens,
+            total_tokens: response.usage.total_tokens,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    console.error("[OpenAI] LLM invoke failed:", error);
     throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      `OpenAI API call failed: ${error instanceof Error ? error.message : String(error)}`
     );
   }
-
-  return (await response.json()) as InvokeResult;
 }
