@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 
 import { useState, useEffect } from "react";
@@ -404,7 +404,7 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <img src="/button-globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
+                      <Sparkles className="w-4 h-4 mr-2" />
                       Generate Prediction
                     </>
                   )}
