@@ -121,3 +121,9 @@
 - [x] Improve spacing and layout of thumbnail grid
 - [x] Add better visual styling (borders, shadows, hover effects)
 - [x] Ensure thumbnails are properly sized and cropped
+
+## Update Loading Animation with Globe Logo
+- [x] Replace current loading animation with actual purple globe logo
+- [x] Add rotation animation to globe
+- [x] Add pulsating/breathing effect
+- [x] Ensure smooth, continuous animation loop
