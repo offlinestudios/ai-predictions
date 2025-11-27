@@ -21,7 +21,22 @@ export default function PredictionLoadingAnimation() {
             }}
           />
         </div>
-
+        
+        {/* Orbiting Particles */}
+        <div className="absolute inset-0 animate-spin" style={{ animationDuration: '6s' }}>
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-primary rounded-full"
+              style={{
+                left: `${50 + 45 * Math.cos((i * Math.PI * 2) / 6)}%`,
+                top: `${50 + 45 * Math.sin((i * Math.PI * 2) / 6)}%`,
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.6 + (i * 0.1),
+              }}
+            />
+          ))}
+        </div>
       </div>
       
       {/* Loading Text */}
