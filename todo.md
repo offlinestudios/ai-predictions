@@ -83,3 +83,8 @@
 - [x] Add CSS drop-shadow/filter to make logo glow
 - [x] Apply glow effect to all logo instances
 - [x] Test glow visibility on dark background
+
+## Replace Glow with Pulse Animation
+- [x] Remove logo-glow class from all logo instances
+- [x] Create pulse animation keyframes
+- [x] Apply pulse animation only to header logo icons

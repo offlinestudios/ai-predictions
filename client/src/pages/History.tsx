@@ -53,7 +53,7 @@ export default function History() {
               </Button>
             </Link>
             <div className="flex items-center gap-2">
-              <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-6 h-6 object-contain logo-glow" />
+              <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-6 h-6 object-contain logo-pulse" />
               <h1 className="text-xl font-bold">Prediction History</h1>
             </div>
           </div>
@@ -108,14 +108,14 @@ export default function History() {
         ) : (
           <Card className="text-center py-12">
             <CardContent>
-              <img src="/globe-logo.png" alt="" className="w-16 h-16 mx-auto mb-4 object-contain logo-glow" />
+              <img src="/globe-logo.png" alt="" className="w-16 h-16 mx-auto mb-4 object-contain" />
               <CardTitle className="mb-2">No predictions yet</CardTitle>
               <CardDescription className="mb-6">
                 Start generating predictions to see your history here
               </CardDescription>
               <Button asChild>
                 <Link href="/dashboard">
-                  <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain logo-glow" />
+                  <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
                   Generate Your First Prediction
                 </Link>
               </Button>
