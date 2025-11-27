@@ -115,3 +115,9 @@
 - [x] Remove showDropZone state and overlay
 - [x] Restore simple file attachment button
 - [x] Keep file preview thumbnails
+
+## Enhance File Preview Thumbnails
+- [x] Increase thumbnail size for better visibility
+- [x] Improve spacing and layout of thumbnail grid
+- [x] Add better visual styling (borders, shadows, hover effects)
+- [x] Ensure thumbnails are properly sized and cropped

@@ -335,49 +335,58 @@ export default function Dashboard() {
                   
                   {/* Attached Files List with Thumbnails */}
                   {attachedFiles.length > 0 && (
-                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {attachedFiles.map((file) => (
-                        <div key={file.url} className="relative group rounded-lg border border-border overflow-hidden bg-muted/30">
-                          {/* Thumbnail or Icon */}
-                          <div className="aspect-square flex items-center justify-center bg-muted/50">
-                            {file.preview ? (
-                              <img 
-                                src={file.preview} 
-                                alt={file.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="text-center p-4">
-                                {file.type.includes('pdf') ? (
-                                  <svg className="w-12 h-12 mx-auto text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"/>
-                                  </svg>
-                                ) : (
-                                  <svg className="w-12 h-12 mx-auto text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M4 2h8l4 4v12H4V2zm1 1v14h10V7h-3V3H5z"/>
-                                  </svg>
-                                )}
-                              </div>
-                            )}
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs text-muted-foreground">Attached files ({attachedFiles.length})</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {attachedFiles.map((file) => (
+                          <div key={file.url} className="relative group rounded-xl border-2 border-border/50 overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 hover:border-primary/50 transition-all duration-200 hover:shadow-lg hover:shadow-primary/10">
+                            {/* Thumbnail or Icon */}
+                            <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-background/50 to-muted/30 p-1">
+                              {file.preview ? (
+                                <img 
+                                  src={file.preview} 
+                                  alt={file.name}
+                                  className="w-full h-full object-cover rounded-lg"
+                                />
+                              ) : (
+                                <div className="text-center p-6">
+                                  {file.type.includes('pdf') ? (
+                                    <div className="flex flex-col items-center gap-2">
+                                      <svg className="w-16 h-16 text-red-500/80" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 18v-1h8v1H8zm0-4v-1h8v1H8zm0-4v-1h5v1H8z"/>
+                                      </svg>
+                                      <span className="text-[10px] font-medium text-red-500/80">PDF</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex flex-col items-center gap-2">
+                                      <svg className="w-16 h-16 text-blue-500/80" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-2 10v-2h2v2h-2zm0 2v2h2v-2h-2z"/>
+                                      </svg>
+                                      <span className="text-[10px] font-medium text-blue-500/80">DOC</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* File Name */}
+                            <div className="p-2 bg-background/90 backdrop-blur-sm border-t border-border/30">
+                              <p className="text-[11px] truncate font-medium text-foreground/80">{file.name}</p>
+                            </div>
+                            
+                            {/* Remove Button */}
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRemoveFile(file.url)}
+                              className="absolute top-2 right-2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg rounded-full"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
                           </div>
-                          
-                          {/* File Name */}
-                          <div className="p-2 bg-background/80 backdrop-blur-sm">
-                            <p className="text-xs truncate">{file.name}</p>
-                          </div>
-                          
-                          {/* Remove Button */}
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleRemoveFile(file.url)}
-                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
