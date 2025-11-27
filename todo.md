@@ -102,3 +102,10 @@
 - [x] Implement file preview thumbnails for images
 - [x] Add file type icons for non-image files
 - [x] Style drag-over state with visual feedback
+
+## Prediction Generation Animation & UX
+- [x] Create mystical loading animation (spinning globe with particles/energy)
+- [x] Replace generic loading spinner with custom animation
+- [x] Make drag-and-drop zone subtle (only show when dragging)
+- [x] Add compact file attachment button by default
+- [x] Show full drop zone overlay only during active drag

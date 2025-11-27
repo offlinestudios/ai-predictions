@@ -9,6 +9,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
 import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X } from "lucide-react";
+import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -29,6 +30,50 @@ export default function Dashboard() {
   const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [showDropZone, setShowDropZone] = useState(false);
+
+  // Global drag detection
+  useEffect(() => {
+    let dragCounter = 0;
+
+    const handleWindowDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounter++;
+      if (e.dataTransfer?.types.includes('Files')) {
+        setShowDropZone(true);
+      }
+    };
+
+    const handleWindowDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter === 0) {
+        setShowDropZone(false);
+      }
+    };
+
+    const handleWindowDrop = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounter = 0;
+      setShowDropZone(false);
+    };
+
+    const handleWindowDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener('dragenter', handleWindowDragEnter);
+    window.addEventListener('dragleave', handleWindowDragLeave);
+    window.addEventListener('drop', handleWindowDrop);
+    window.addEventListener('dragover', handleWindowDragOver);
+
+    return () => {
+      window.removeEventListener('dragenter', handleWindowDragEnter);
+      window.removeEventListener('dragleave', handleWindowDragLeave);
+      window.removeEventListener('drop', handleWindowDrop);
+      window.removeEventListener('dragover', handleWindowDragOver);
+    };
+  }, []);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -327,46 +372,67 @@ export default function Dashboard() {
                 </div>
 
                 {/* File Upload Section */}
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Attachments (Optional)</label>
-                  
-                  {/* Drag and Drop Zone */}
-                  <div
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                      isDragging 
-                        ? 'border-primary bg-primary/10' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <input
-                      type="file"
-                      id="file-upload"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                      multiple
-                      accept="image/*,.pdf,.doc,.docx,.txt"
-                      disabled={uploading}
-                    />
-                    <Paperclip className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {isDragging ? 'Drop files here' : 'Drag and drop files here, or click to browse'}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                      disabled={uploading}
+                <div className="relative">
+                  {/* Compact Attach Button (Default) */}
+                  {!showDropZone && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        id="file-upload"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx,.txt"
+                        disabled={uploading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                        disabled={uploading}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Paperclip className="w-4 h-4 mr-2" />
+                        {uploading ? "Uploading..." : "Attach files"}
+                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        or drag and drop
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Full Drop Zone Overlay (Only when dragging) */}
+                  {showDropZone && (
+                    <div
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
                     >
-                      {uploading ? "Uploading..." : "Browse Files"}
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Images, PDFs, documents (max 10MB each)
-                    </p>
-                  </div>
+                      <div className={`border-4 border-dashed rounded-2xl p-12 text-center transition-all max-w-2xl mx-auto ${
+                        isDragging 
+                          ? 'border-primary bg-primary/20 scale-105' 
+                          : 'border-primary/50 bg-primary/10'
+                      }`}>
+                        <Paperclip className="w-16 h-16 mx-auto mb-4 text-primary" />
+                        <h3 className="text-2xl font-semibold mb-2">Drop your files here</h3>
+                        <p className="text-muted-foreground">
+                          Images, PDFs, documents (max 10MB each)
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <input
+                    type="file"
+                    id="file-upload-hidden"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    multiple
+                    accept="image/*,.pdf,.doc,.docx,.txt"
+                    disabled={uploading}
+                  />
                   
                   {/* Attached Files List with Thumbnails */}
                   {attachedFiles.length > 0 && (
@@ -436,8 +502,16 @@ export default function Dashboard() {
                   )}
                 </Button>
 
-                {prediction && (
-                  <div className="mt-6 p-6 bg-card border border-primary/20 rounded-lg shadow-lg shadow-primary/10">
+                {/* Loading Animation */}
+                {generateMutation.isPending && (
+                  <div className="mt-6">
+                    <PredictionLoadingAnimation />
+                  </div>
+                )}
+
+                {/* Prediction Result */}
+                {prediction && !generateMutation.isPending && (
+                  <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
                     <div className="flex items-center gap-2 mb-4">
                       <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
                       <h3 className="font-semibold text-lg">Your Prediction</h3>
