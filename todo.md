@@ -50,3 +50,9 @@
 - [x] Add 3D gradient effect to crystal ball
 - [x] Add shadow/glow to create depth
 - [x] Update all crystal ball instances with new 3D design
+
+## Globe Icon Redesign
+- [x] Replace crystal ball with globe/world design
+- [x] Add continent outlines (World Cup trophy style)
+- [x] Maintain 3D sphere appearance with proper shading
+- [x] Update CrystalBall component with new globe design
