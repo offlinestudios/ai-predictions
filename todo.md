@@ -109,3 +109,9 @@
 - [x] Make drag-and-drop zone subtle (only show when dragging)
 - [x] Add compact file attachment button by default
 - [x] Show full drop zone overlay only during active drag
+
+## Remove Drag-and-Drop Feature
+- [x] Remove global drag detection event listeners
+- [x] Remove showDropZone state and overlay
+- [x] Restore simple file attachment button
+- [x] Keep file preview thumbnails

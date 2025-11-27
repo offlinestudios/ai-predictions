@@ -29,51 +29,6 @@ export default function Dashboard() {
   const [prediction, setPrediction] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [showDropZone, setShowDropZone] = useState(false);
-
-  // Global drag detection
-  useEffect(() => {
-    let dragCounter = 0;
-
-    const handleWindowDragEnter = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounter++;
-      if (e.dataTransfer?.types.includes('Files')) {
-        setShowDropZone(true);
-      }
-    };
-
-    const handleWindowDragLeave = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounter--;
-      if (dragCounter === 0) {
-        setShowDropZone(false);
-      }
-    };
-
-    const handleWindowDrop = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounter = 0;
-      setShowDropZone(false);
-    };
-
-    const handleWindowDragOver = (e: DragEvent) => {
-      e.preventDefault();
-    };
-
-    window.addEventListener('dragenter', handleWindowDragEnter);
-    window.addEventListener('dragleave', handleWindowDragLeave);
-    window.addEventListener('drop', handleWindowDrop);
-    window.addEventListener('dragover', handleWindowDragOver);
-
-    return () => {
-      window.removeEventListener('dragenter', handleWindowDragEnter);
-      window.removeEventListener('dragleave', handleWindowDragLeave);
-      window.removeEventListener('drop', handleWindowDrop);
-      window.removeEventListener('dragover', handleWindowDragOver);
-    };
-  }, []);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -173,27 +128,6 @@ export default function Dashboard() {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     await processFiles(event.target.files);
     event.target.value = ''; // Reset input
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    const files = e.dataTransfer.files;
-    await processFiles(files);
   };
 
   const handleRemoveFile = (url: string) => {
@@ -372,67 +306,32 @@ export default function Dashboard() {
                 </div>
 
                 {/* File Upload Section */}
-                <div className="relative">
-                  {/* Compact Attach Button (Default) */}
-                  {!showDropZone && (
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="file"
-                        id="file-upload"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                        multiple
-                        accept="image/*,.pdf,.doc,.docx,.txt"
-                        disabled={uploading}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => document.getElementById('file-upload')?.click()}
-                        disabled={uploading}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        <Paperclip className="w-4 h-4 mr-2" />
-                        {uploading ? "Uploading..." : "Attach files"}
-                      </Button>
-                      <span className="text-xs text-muted-foreground">
-                        or drag and drop
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Full Drop Zone Overlay (Only when dragging) */}
-                  {showDropZone && (
-                    <div
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+                <div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      id="file-upload"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.txt"
+                      disabled={uploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                      disabled={uploading}
+                      className="text-muted-foreground hover:text-foreground"
                     >
-                      <div className={`border-4 border-dashed rounded-2xl p-12 text-center transition-all max-w-2xl mx-auto ${
-                        isDragging 
-                          ? 'border-primary bg-primary/20 scale-105' 
-                          : 'border-primary/50 bg-primary/10'
-                      }`}>
-                        <Paperclip className="w-16 h-16 mx-auto mb-4 text-primary" />
-                        <h3 className="text-2xl font-semibold mb-2">Drop your files here</h3>
-                        <p className="text-muted-foreground">
-                          Images, PDFs, documents (max 10MB each)
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <input
-                    type="file"
-                    id="file-upload-hidden"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    multiple
-                    accept="image/*,.pdf,.doc,.docx,.txt"
-                    disabled={uploading}
-                  />
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      {uploading ? "Uploading..." : "Attach files"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      Images, PDFs, documents (max 10MB each)
+                    </span>
+                  </div>
                   
                   {/* Attached Files List with Thumbnails */}
                   {attachedFiles.length > 0 && (
