@@ -14,3 +14,9 @@
 - [x] Implement flowing sand particles effect
 - [x] Add glowing purple effects and sparkles
 - [x] Test animation appearance
+
+## Create Crystal Ball Animation
+- [x] Design crystal ball with swirling mist/energy inside
+- [x] Add glowing purple effects and sparkles
+- [x] Implement mystical floating animation
+- [x] Test animation appearance

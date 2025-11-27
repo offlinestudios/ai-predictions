@@ -1,120 +1,156 @@
 export default function PredictionLoadingAnimation() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      {/* Animated Hourglass Container */}
-      <div className="relative w-40 h-40 mb-6">
-        {/* Outer Glow Rings */}
+      {/* Animated Crystal Ball Container */}
+      <div className="relative w-48 h-48 mb-6">
+        {/* Outer Mystical Glow Rings */}
         <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping" 
-             style={{ animationDuration: '2s' }} />
-        <div className="absolute inset-2 rounded-full bg-primary/15 animate-ping" 
-             style={{ animationDuration: '2.5s', animationDelay: '0.3s' }} />
+             style={{ animationDuration: '3s' }} />
+        <div className="absolute inset-4 rounded-full bg-primary/15 animate-ping" 
+             style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
         
-        {/* Hourglass SVG */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <svg
-            width="120"
-            height="120"
-            viewBox="0 0 120 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="drop-shadow-[0_0_20px_rgba(168,85,247,0.6)]"
-          >
-            {/* Hourglass Frame - Top */}
-            <path
-              d="M 30 15 L 90 15 L 85 25 L 60 50 L 35 25 Z"
-              fill="url(#glassGradient)"
-              stroke="url(#frameGradient)"
-              strokeWidth="2"
-            />
+        {/* Crystal Ball Base/Stand */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-24 h-12">
+          <svg width="96" height="48" viewBox="0 0 96 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Ornate Base */}
+            <ellipse cx="48" cy="40" rx="40" ry="8" fill="url(#baseGradient)" opacity="0.8" />
+            <path d="M 20 40 L 30 20 L 66 20 L 76 40 Z" fill="url(#standGradient)" stroke="url(#frameGradient)" strokeWidth="1.5" />
             
-            {/* Hourglass Frame - Bottom */}
-            <path
-              d="M 30 105 L 90 105 L 85 95 L 60 70 L 35 95 Z"
-              fill="url(#glassGradient)"
-              stroke="url(#frameGradient)"
-              strokeWidth="2"
-            />
-            
-            {/* Hourglass Frame - Middle Connection */}
-            <line x1="60" y1="50" x2="60" y2="70" stroke="url(#frameGradient)" strokeWidth="2" />
-            
-            {/* Top Sand (depleting) */}
-            <path
-              d="M 38 25 L 82 25 L 75 35 L 60 45 L 45 35 Z"
-              fill="url(#sandGradient)"
-              opacity="0.8"
-              className="animate-pulse"
-              style={{ animationDuration: '1.5s' }}
-            />
-            
-            {/* Bottom Sand (filling) */}
-            <path
-              d="M 38 95 L 82 95 L 82 100 L 38 100 Z"
-              fill="url(#sandGradient)"
-              className="animate-pulse"
-              style={{ animationDuration: '1.5s', animationDelay: '0.3s' }}
-            />
-            
-            {/* Falling Sand Stream */}
-            <rect
-              x="58"
-              y="50"
-              width="4"
-              height="20"
-              fill="url(#sandStreamGradient)"
-              className="animate-pulse"
-              style={{ animationDuration: '0.8s' }}
-            />
-            
-            {/* Cosmic Sparkles */}
-            <circle cx="45" cy="30" r="2" fill="#a855f7" className="animate-ping" style={{ animationDuration: '1.5s' }} />
-            <circle cx="75" cy="35" r="1.5" fill="#c084fc" className="animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
-            <circle cx="50" cy="85" r="2" fill="#a855f7" className="animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.5s' }} />
-            <circle cx="70" cy="90" r="1.5" fill="#c084fc" className="animate-ping" style={{ animationDuration: '2.2s', animationDelay: '0.7s' }} />
-            
-            {/* Gradients */}
             <defs>
-              <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(139, 92, 246, 0.1)" />
-                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.05)" />
+              <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#581c87" />
+                <stop offset="100%" stopColor="#3b0764" />
               </linearGradient>
-              
+              <linearGradient id="standGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#7c3aed" />
+                <stop offset="50%" stopColor="#6d28d9" />
+                <stop offset="100%" stopColor="#5b21b6" />
+              </linearGradient>
               <linearGradient id="frameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="50%" stopColor="#c084fc" />
-                <stop offset="100%" stopColor="#a855f7" />
-              </linearGradient>
-              
-              <linearGradient id="sandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#e879f9" />
-                <stop offset="50%" stopColor="#c084fc" />
-                <stop offset="100%" stopColor="#a855f7" />
-              </linearGradient>
-              
-              <linearGradient id="sandStreamGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(232, 121, 249, 0.8)" />
-                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.4)" />
+                <stop offset="100%" stopColor="#c084fc" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         
-        {/* Floating Cosmic Particles */}
-        <div className="absolute inset-0">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-primary rounded-full animate-ping"
-              style={{
-                left: `${20 + Math.random() * 60}%`,
-                top: `${20 + Math.random() * 60}%`,
-                animationDuration: `${1.5 + Math.random() * 1}s`,
-                animationDelay: `${Math.random() * 1}s`,
-                opacity: 0.4 + Math.random() * 0.4,
-              }}
+        {/* Main Crystal Ball */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-32">
+          <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Ball Shadow/Base */}
+            <ellipse cx="64" cy="110" rx="50" ry="10" fill="rgba(88, 28, 135, 0.3)" className="blur-sm" />
+            
+            {/* Crystal Ball Sphere - Outer Glass */}
+            <circle 
+              cx="64" 
+              cy="64" 
+              r="58" 
+              fill="url(#ballGradient)" 
+              stroke="url(#glowGradient)" 
+              strokeWidth="2"
+              className="drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]"
             />
-          ))}
+            
+            {/* Inner Swirling Mist - Multiple Layers */}
+            <g className="animate-spin" style={{ transformOrigin: '64px 64px', animationDuration: '8s' }}>
+              <ellipse cx="64" cy="64" rx="40" ry="30" fill="url(#mistGradient1)" opacity="0.6" />
+              <ellipse cx="64" cy="64" rx="35" ry="40" fill="url(#mistGradient2)" opacity="0.5" />
+            </g>
+            
+            <g className="animate-spin" style={{ transformOrigin: '64px 64px', animationDuration: '6s', animationDirection: 'reverse' }}>
+              <ellipse cx="64" cy="64" rx="30" ry="35" fill="url(#mistGradient3)" opacity="0.4" />
+            </g>
+            
+            {/* Mystical Energy Core */}
+            <circle 
+              cx="64" 
+              cy="64" 
+              r="15" 
+              fill="url(#coreGradient)" 
+              className="animate-pulse"
+              style={{ animationDuration: '2s' }}
+            />
+            
+            {/* Glass Highlights */}
+            <ellipse cx="50" cy="45" rx="20" ry="15" fill="rgba(255, 255, 255, 0.3)" className="blur-sm" />
+            <ellipse cx="75" cy="50" rx="10" ry="8" fill="rgba(255, 255, 255, 0.2)" className="blur-sm" />
+            
+            {/* Sparkles Inside Ball */}
+            <circle cx="45" cy="60" r="2" fill="#e879f9" className="animate-ping" style={{ animationDuration: '1.5s' }} />
+            <circle cx="80" cy="65" r="1.5" fill="#c084fc" className="animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
+            <circle cx="60" cy="75" r="2" fill="#a855f7" className="animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.6s' }} />
+            <circle cx="70" cy="55" r="1.5" fill="#e879f9" className="animate-ping" style={{ animationDuration: '2.2s', animationDelay: '0.9s' }} />
+            
+            <defs>
+              <radialGradient id="ballGradient">
+                <stop offset="0%" stopColor="rgba(139, 92, 246, 0.2)" />
+                <stop offset="50%" stopColor="rgba(124, 58, 237, 0.3)" />
+                <stop offset="100%" stopColor="rgba(91, 33, 182, 0.5)" />
+              </radialGradient>
+              
+              <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#a855f7" />
+                <stop offset="50%" stopColor="#c084fc" />
+                <stop offset="100%" stopColor="#e879f9" />
+              </linearGradient>
+              
+              <radialGradient id="mistGradient1">
+                <stop offset="0%" stopColor="rgba(232, 121, 249, 0.6)" />
+                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.1)" />
+              </radialGradient>
+              
+              <radialGradient id="mistGradient2">
+                <stop offset="0%" stopColor="rgba(192, 132, 252, 0.5)" />
+                <stop offset="100%" stopColor="rgba(124, 58, 237, 0.1)" />
+              </radialGradient>
+              
+              <radialGradient id="mistGradient3">
+                <stop offset="0%" stopColor="rgba(168, 85, 247, 0.4)" />
+                <stop offset="100%" stopColor="rgba(91, 33, 182, 0.1)" />
+              </radialGradient>
+              
+              <radialGradient id="coreGradient">
+                <stop offset="0%" stopColor="#e879f9" />
+                <stop offset="50%" stopColor="#c084fc" />
+                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.5)" />
+              </radialGradient>
+            </defs>
+          </svg>
         </div>
+        
+        {/* Floating Magical Particles Around Ball */}
+        <div className="absolute inset-0">
+          {[...Array(12)].map((_, i) => {
+            const angle = (i * 360) / 12;
+            const radius = 70;
+            const x = 50 + radius * Math.cos((angle * Math.PI) / 180);
+            const y = 50 + radius * Math.sin((angle * Math.PI) / 180);
+            
+            return (
+              <div
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full animate-ping"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  background: i % 3 === 0 ? '#e879f9' : i % 3 === 1 ? '#c084fc' : '#a855f7',
+                  animationDuration: `${1.5 + (i % 3) * 0.3}s`,
+                  animationDelay: `${i * 0.15}s`,
+                  opacity: 0.6,
+                }}
+              />
+            );
+          })}
+        </div>
+        
+        {/* Floating Animation for Entire Ball */}
+        <div 
+          className="absolute inset-0 animate-bounce"
+          style={{ 
+            animationDuration: '3s',
+            animationTimingFunction: 'ease-in-out'
+          }}
+        />
       </div>
       
       {/* Loading Text */}
