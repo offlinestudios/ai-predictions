@@ -78,3 +78,8 @@
 - [x] Generate glowing globe with purple color palette
 - [x] Replace current globe trophy logo with purple globe
 - [x] Update all logo references across the site
+
+## Add Glow Effect to Logo
+- [x] Add CSS drop-shadow/filter to make logo glow
+- [x] Apply glow effect to all logo instances
+- [x] Test glow visibility on dark background

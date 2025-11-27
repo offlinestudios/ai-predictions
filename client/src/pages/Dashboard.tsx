@@ -92,7 +92,7 @@ export default function Dashboard() {
               </Button>
             </Link>
              <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain" />
+            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain logo-glow" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
+                      <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain logo-glow" />
                       Generate Prediction
                     </>
                   )}
@@ -256,7 +256,7 @@ export default function Dashboard() {
                 {prediction && (
                   <div className="mt-6 p-6 bg-card border border-primary/20 rounded-lg shadow-lg shadow-primary/10">
                     <div className="flex items-center gap-2 mb-4">
-                      <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
+                      <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain logo-glow" />
                       <h3 className="font-semibold text-lg">Your Prediction</h3>
                     </div>
                     <div className="prose prose-invert max-w-none">
