@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Zap, Crown, History, ArrowRight } from "lucide-react";
+import { Zap, Crown, History, ArrowRight, Star } from "lucide-react";
 import { CrystalBall } from "@/components/CrystalBall";
 
 const SUBSCRIPTION_TIERS = [
@@ -14,7 +14,7 @@ const SUBSCRIPTION_TIERS = [
     price: "$0",
     period: "forever",
     predictions: 3,
-    icon: CrystalBall,
+    icon: Star,
     features: [
       "3 predictions per day",
       "General predictions",

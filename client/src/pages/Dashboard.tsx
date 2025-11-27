@@ -8,14 +8,14 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star } from "lucide-react";
 import { CrystalBall } from "@/components/CrystalBall";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 
 const TIER_ICONS = {
-  free: CrystalBall,
+  free: Star,
   pro: Zap,
   premium: Crown,
 };
@@ -77,7 +77,7 @@ export default function Dashboard() {
   };
 
   const usagePercent = subscription ? (subscription.usedToday / subscription.dailyLimit) * 100 : 0;
-  const TierIcon = subscription ? TIER_ICONS[subscription.tier] : CrystalBall;
+  const TierIcon = subscription ? TIER_ICONS[subscription.tier] : Star;
 
   return (
     <div className="min-h-screen bg-background text-foreground">

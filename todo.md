@@ -56,3 +56,9 @@
 - [x] Add continent outlines (World Cup trophy style)
 - [x] Maintain 3D sphere appearance with proper shading
 - [x] Update CrystalBall component with new globe design
+
+## Globe Icon Refinement & Pricing Icons
+- [x] Update globe with bold, realistic continent shapes (Americas, Africa, Europe)
+- [x] Add trophy/pedestal base to globe design
+- [x] Use different icons for pricing tiers (not globe)
+- [x] Keep existing Zap (Pro) and Crown (Premium) icons

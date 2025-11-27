@@ -17,67 +17,94 @@ export function CrystalBall({ size = "md", className = "" }: CrystalBallProps) {
       <div className="absolute inset-0 rounded-full bg-primary/20 blur-sm" />
       
       {/* Main globe sphere with gradient */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 via-primary/50 to-primary/70 border border-primary/40 shadow-lg shadow-primary/20" />
+      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 via-primary/40 to-primary/60 border-2 border-primary/50 shadow-lg shadow-primary/20" />
       
       {/* Highlight (top-left shine) */}
-      <div className="absolute top-[15%] left-[20%] w-[35%] h-[35%] rounded-full bg-gradient-to-br from-white/30 to-transparent blur-[2px]" />
+      <div className="absolute top-[12%] left-[18%] w-[30%] h-[30%] rounded-full bg-gradient-to-br from-white/25 to-transparent blur-[2px]" />
       
-      {/* Continent outlines - simplified stylized continents */}
+      {/* Bold continent outlines - Americas and Africa/Europe view */}
       <svg 
         viewBox="0 0 100 100" 
         className="absolute inset-0 w-full h-full"
-        style={{ filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.3))' }}
+        style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
       >
-        {/* Latitude/longitude grid lines */}
-        <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.15" className="text-secondary" />
-        <ellipse cx="50" cy="50" rx="48" ry="24" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.15" className="text-secondary" />
-        <ellipse cx="50" cy="50" rx="48" ry="12" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.1" className="text-secondary" />
-        <line x1="50" y1="2" x2="50" y2="98" stroke="currentColor" strokeWidth="0.5" opacity="0.1" className="text-secondary" />
-        
-        {/* Stylized continents - abstract shapes */}
-        {/* North America */}
+        {/* North America - bold, recognizable shape */}
         <path 
-          d="M 20 25 Q 18 28 20 32 L 25 35 Q 28 33 30 30 L 32 25 Q 30 22 25 23 Z" 
+          d="M 15 20 Q 12 18 10 22 L 8 28 Q 10 32 12 35 L 18 38 Q 22 40 26 38 L 30 35 Q 32 32 33 28 L 35 24 Q 34 20 30 18 L 25 17 Q 20 18 15 20 Z
+             M 28 30 Q 26 32 24 30 Q 26 28 28 30 Z" 
           fill="currentColor" 
-          opacity="0.4"
+          opacity="0.75"
           className="text-secondary"
         />
         
-        {/* South America */}
+        {/* Central America */}
         <path 
-          d="M 28 40 Q 26 45 28 52 Q 30 55 32 52 L 33 45 Q 32 42 30 41 Z" 
+          d="M 26 42 L 28 45 Q 29 47 27 48 L 25 47 Q 24 45 26 42 Z" 
           fill="currentColor" 
-          opacity="0.4"
+          opacity="0.75"
           className="text-secondary"
         />
         
-        {/* Europe/Africa */}
+        {/* South America - distinctive shape */}
         <path 
-          d="M 45 20 Q 48 22 52 20 L 55 25 Q 56 30 54 35 L 52 42 Q 50 48 48 52 Q 46 55 44 52 L 42 45 Q 43 38 45 35 L 46 28 Q 45 24 45 20 Z" 
+          d="M 25 50 Q 23 52 24 56 L 26 62 Q 28 68 30 72 Q 32 75 34 73 L 36 68 Q 37 62 36 56 L 35 52 Q 33 48 30 48 Q 27 48 25 50 Z" 
           fill="currentColor" 
-          opacity="0.4"
+          opacity="0.75"
           className="text-secondary"
         />
         
-        {/* Asia */}
+        {/* Africa - bold recognizable shape */}
         <path 
-          d="M 58 18 Q 62 20 68 22 L 72 28 Q 74 35 72 40 L 68 45 Q 65 42 62 40 L 60 35 Q 58 30 58 25 Z" 
+          d="M 48 28 Q 46 30 46 34 L 47 40 Q 48 46 50 52 L 52 58 Q 54 64 56 68 Q 58 72 60 70 L 62 65 Q 63 60 62 54 L 60 46 Q 58 38 56 32 L 54 28 Q 52 26 50 26 Q 48 26 48 28 Z" 
           fill="currentColor" 
-          opacity="0.4"
+          opacity="0.75"
           className="text-secondary"
         />
         
-        {/* Australia */}
+        {/* Europe - upper right */}
         <path 
-          d="M 70 55 Q 72 58 75 58 Q 78 56 78 53 Q 76 50 72 52 Z" 
+          d="M 52 18 Q 50 20 52 22 L 56 24 Q 60 25 64 24 L 68 22 Q 70 20 68 18 L 64 17 Q 58 16 52 18 Z" 
           fill="currentColor" 
-          opacity="0.4"
+          opacity="0.75"
           className="text-secondary"
+        />
+        
+        {/* Greenland/Iceland */}
+        <path 
+          d="M 38 12 Q 36 14 38 16 L 42 17 Q 44 16 44 14 Q 42 12 38 12 Z" 
+          fill="currentColor" 
+          opacity="0.7"
+          className="text-secondary"
+        />
+        
+        {/* Latitude lines for depth */}
+        <ellipse cx="50" cy="50" rx="47" ry="20" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.12" className="text-secondary" />
+        <ellipse cx="50" cy="50" rx="47" ry="35" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.12" className="text-secondary" />
+      </svg>
+      
+      {/* Trophy/pedestal base */}
+      <svg 
+        viewBox="0 0 100 100" 
+        className="absolute inset-0 w-full h-full"
+      >
+        {/* Base stand */}
+        <path 
+          d="M 35 85 L 38 92 L 62 92 L 65 85 Z" 
+          fill="currentColor" 
+          opacity="0.6"
+          className="text-primary"
+        />
+        {/* Stem */}
+        <path 
+          d="M 45 75 L 42 85 L 58 85 L 55 75 Z" 
+          fill="currentColor" 
+          opacity="0.5"
+          className="text-primary"
         />
       </svg>
       
       {/* Bottom shadow (gives sphere depth) */}
-      <div className="absolute bottom-0 left-[15%] right-[15%] h-[20%] bg-gradient-to-t from-black/20 to-transparent rounded-full blur-sm" />
+      <div className="absolute bottom-[8%] left-[20%] right-[20%] h-[15%] bg-gradient-to-t from-black/30 to-transparent rounded-full blur-sm" />
     </div>
   );
 }
