@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, subscriptions, predictions, InsertSubscription, InsertPrediction } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,107 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Subscription helpers
+export async function getOrCreateSubscription(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
+  
+  if (existing.length > 0) {
+    return existing[0];
+  }
+
+  // Create free tier subscription for new users
+  const newSub: InsertSubscription = {
+    userId,
+    tier: "free",
+    dailyLimit: 3,
+    usedToday: 0,
+    isActive: true,
+  };
+
+  await db.insert(subscriptions).values(newSub);
+  const created = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
+  return created[0]!;
+}
+
+export async function updateSubscriptionTier(userId: number, tier: "free" | "pro" | "premium") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const dailyLimits = {
+    free: 3,
+    pro: 20,
+    premium: 100,
+  };
+
+  await db.update(subscriptions)
+    .set({ 
+      tier, 
+      dailyLimit: dailyLimits[tier],
+      updatedAt: new Date(),
+    })
+    .where(eq(subscriptions.userId, userId));
+
+  return getOrCreateSubscription(userId);
+}
+
+export async function checkAndResetDailyLimit(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const sub = await getOrCreateSubscription(userId);
+  const now = new Date();
+  const lastReset = new Date(sub.lastResetDate);
+  
+  // Check if we need to reset (different day)
+  const needsReset = now.getDate() !== lastReset.getDate() || 
+                     now.getMonth() !== lastReset.getMonth() || 
+                     now.getFullYear() !== lastReset.getFullYear();
+
+  if (needsReset) {
+    await db.update(subscriptions)
+      .set({ 
+        usedToday: 0, 
+        lastResetDate: now,
+        updatedAt: now,
+      })
+      .where(eq(subscriptions.userId, userId));
+    
+    return { ...sub, usedToday: 0, lastResetDate: now };
+  }
+
+  return sub;
+}
+
+export async function incrementPredictionUsage(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(subscriptions)
+    .set({ 
+      usedToday: sql`${subscriptions.usedToday} + 1`,
+      updatedAt: new Date(),
+    })
+    .where(eq(subscriptions.userId, userId));
+}
+
+// Prediction helpers
+export async function createPrediction(data: InsertPrediction) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(predictions).values(data);
+}
+
+export async function getUserPredictions(userId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.select()
+    .from(predictions)
+    .where(eq(predictions.userId, userId))
+    .orderBy(desc(predictions.createdAt))
+    .limit(limit);
+}
