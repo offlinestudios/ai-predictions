@@ -62,3 +62,9 @@
 - [x] Add trophy/pedestal base to globe design
 - [x] Use different icons for pricing tiers (not globe)
 - [x] Keep existing Zap (Pro) and Crown (Premium) icons
+
+## Globe Logo Update to Match Reference
+- [x] Redesign globe with exact continent shapes from reference
+- [x] Add prominent trophy/hands base (full silhouette)
+- [x] Ensure high contrast bold design
+- [x] Match World Cup trophy aesthetic exactly
