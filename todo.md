@@ -1,6 +1,6 @@
 # AI Predictions Platform - TODO
 
-## Replace Generate Prediction Button Logo
-- [x] Copy new bright purple background globe to public folder as separate file
-- [x] Update Generate Prediction button to use new logo
-- [x] Keep original logo for header and loading animation
+## Generate Transparent Background Logo
+- [x] Generate new purple globe logo with fully transparent background (PNG alpha)
+- [x] Replace button-globe-logo.png with transparent version
+- [x] Test button appearance with transparent logo
