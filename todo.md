@@ -96,3 +96,9 @@
 - [x] Update prediction generation to include file context
 - [x] Add file preview/display in prediction form
 - [x] Test file upload with images, PDFs, and documents
+
+## File Upload Enhancements
+- [x] Add drag-and-drop upload zone
+- [x] Implement file preview thumbnails for images
+- [x] Add file type icons for non-image files
+- [x] Style drag-over state with visual feedback

@@ -26,8 +26,9 @@ export default function Dashboard() {
   const [userInput, setUserInput] = useState("");
   const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
   const [prediction, setPrediction] = useState<string | null>(null);
-  const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string }>>([]);
+  const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -72,8 +73,7 @@ export default function Dashboard() {
     );
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+  const processFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
@@ -97,6 +97,12 @@ export default function Dashboard() {
           reader.readAsDataURL(file);
         });
 
+        // Create preview for images
+        let preview: string | undefined;
+        if (file.type.startsWith('image/')) {
+          preview = URL.createObjectURL(file);
+        }
+
         // Upload to server
         const result = await uploadFileMutation.mutateAsync({
           fileName: file.name,
@@ -104,16 +110,45 @@ export default function Dashboard() {
           mimeType: file.type,
         });
 
-        setAttachedFiles(prev => [...prev, { name: result.fileName, url: result.url }]);
+        setAttachedFiles(prev => [...prev, { 
+          name: result.fileName, 
+          url: result.url,
+          preview,
+          type: file.type,
+        }]);
         toast.success(`${file.name} uploaded successfully`);
       }
     } catch (error) {
       toast.error("Failed to upload file");
     } finally {
       setUploading(false);
-      // Reset input
-      event.target.value = '';
     }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    await processFiles(event.target.files);
+    event.target.value = ''; // Reset input
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    await processFiles(files);
   };
 
   const handleRemoveFile = (url: string) => {
@@ -294,7 +329,18 @@ export default function Dashboard() {
                 {/* File Upload Section */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Attachments (Optional)</label>
-                  <div className="flex items-center gap-2">
+                  
+                  {/* Drag and Drop Zone */}
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                      isDragging 
+                        ? 'border-primary bg-primary/10' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
                     <input
                       type="file"
                       id="file-upload"
@@ -304,6 +350,10 @@ export default function Dashboard() {
                       accept="image/*,.pdf,.doc,.docx,.txt"
                       disabled={uploading}
                     />
+                    <Paperclip className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {isDragging ? 'Drop files here' : 'Drag and drop files here, or click to browse'}
+                    </p>
                     <Button
                       type="button"
                       variant="outline"
@@ -311,26 +361,53 @@ export default function Dashboard() {
                       onClick={() => document.getElementById('file-upload')?.click()}
                       disabled={uploading}
                     >
-                      <Paperclip className="w-4 h-4 mr-2" />
-                      {uploading ? "Uploading..." : "Attach Files"}
+                      {uploading ? "Uploading..." : "Browse Files"}
                     </Button>
-                    <span className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Images, PDFs, documents (max 10MB each)
-                    </span>
+                    </p>
                   </div>
                   
-                  {/* Attached Files List */}
+                  {/* Attached Files List with Thumbnails */}
                   {attachedFiles.length > 0 && (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {attachedFiles.map((file) => (
-                        <div key={file.url} className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
-                          <span className="text-sm truncate flex-1">{file.name}</span>
+                        <div key={file.url} className="relative group rounded-lg border border-border overflow-hidden bg-muted/30">
+                          {/* Thumbnail or Icon */}
+                          <div className="aspect-square flex items-center justify-center bg-muted/50">
+                            {file.preview ? (
+                              <img 
+                                src={file.preview} 
+                                alt={file.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-center p-4">
+                                {file.type.includes('pdf') ? (
+                                  <svg className="w-12 h-12 mx-auto text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"/>
+                                  </svg>
+                                ) : (
+                                  <svg className="w-12 h-12 mx-auto text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 2h8l4 4v12H4V2zm1 1v14h10V7h-3V3H5z"/>
+                                  </svg>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* File Name */}
+                          <div className="p-2 bg-background/80 backdrop-blur-sm">
+                            <p className="text-xs truncate">{file.name}</p>
+                          </div>
+                          
+                          {/* Remove Button */}
                           <Button
                             type="button"
-                            variant="ghost"
+                            variant="destructive"
                             size="sm"
                             onClick={() => handleRemoveFile(file.url)}
-                            className="h-6 w-6 p-0"
+                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <X className="w-4 h-4" />
                           </Button>
