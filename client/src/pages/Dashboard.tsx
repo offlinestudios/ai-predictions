@@ -404,7 +404,7 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
+                      <img src="/button-globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
                       Generate Prediction
                     </>
                   )}
