@@ -58,6 +58,8 @@ export const predictions = mysqlTable("predictions", {
   predictionResult: text("predictionResult").notNull(),
   /** Category of prediction (career, love, finance, health, general) */
   category: varchar("category", { length: 50 }),
+  /** JSON array of uploaded file URLs for context */
+  attachmentUrls: text("attachmentUrls"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

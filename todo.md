@@ -88,3 +88,11 @@
 - [x] Remove logo-glow class from all logo instances
 - [x] Create pulse animation keyframes
 - [x] Apply pulse animation only to header logo icons
+
+## File Upload for Predictions
+- [x] Update predictions table schema to store file URLs
+- [x] Add file upload endpoint with S3 storage
+- [x] Create file upload UI component with attachment button
+- [x] Update prediction generation to include file context
+- [x] Add file preview/display in prediction form
+- [x] Test file upload with images, PDFs, and documents

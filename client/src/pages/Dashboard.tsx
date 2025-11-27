@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X } from "lucide-react";
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -26,17 +26,22 @@ export default function Dashboard() {
   const [userInput, setUserInput] = useState("");
   const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
   const [prediction, setPrediction] = useState<string | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string }>>([]);
+  const [uploading, setUploading] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
 
+  const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
+
   const generateMutation = trpc.prediction.generate.useMutation({
     onSuccess: (data) => {
       setPrediction(data.prediction);
       toast.success(`Prediction generated! ${data.remainingToday} predictions remaining today.`);
       refetchSub();
+      setAttachedFiles([]); // Clear attachments after generation
     },
     onError: (error) => {
       toast.error(error.message);
@@ -67,13 +72,65 @@ export default function Dashboard() {
     );
   }
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`File ${file.name} is too large (max 10MB)`);
+          continue;
+        }
+
+        // Read file as base64
+        const reader = new FileReader();
+        const fileData = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const base64 = reader.result as string;
+            const base64Data = base64.split(',')[1]; // Remove data:image/png;base64, prefix
+            resolve(base64Data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        // Upload to server
+        const result = await uploadFileMutation.mutateAsync({
+          fileName: file.name,
+          fileData,
+          mimeType: file.type,
+        });
+
+        setAttachedFiles(prev => [...prev, { name: result.fileName, url: result.url }]);
+        toast.success(`${file.name} uploaded successfully`);
+      }
+    } catch (error) {
+      toast.error("Failed to upload file");
+    } finally {
+      setUploading(false);
+      // Reset input
+      event.target.value = '';
+    }
+  };
+
+  const handleRemoveFile = (url: string) => {
+    setAttachedFiles(prev => prev.filter(f => f.url !== url));
+  };
+
   const handleGenerate = () => {
     if (!userInput.trim()) {
       toast.error("Please enter your question or topic");
       return;
     }
     setPrediction(null);
-    generateMutation.mutate({ userInput, category });
+    generateMutation.mutate({ 
+      userInput, 
+      category,
+      attachmentUrls: attachedFiles.length > 0 ? attachedFiles.map(f => f.url) : undefined,
+    });
   };
 
   const usagePercent = subscription ? (subscription.usedToday / subscription.dailyLimit) * 100 : 0;
@@ -232,6 +289,55 @@ export default function Dashboard() {
                   <div className="text-xs text-muted-foreground mt-1 text-right">
                     {userInput.length} / 1000
                   </div>
+                </div>
+
+                {/* File Upload Section */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Attachments (Optional)</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      id="file-upload"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.txt"
+                      disabled={uploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                      disabled={uploading}
+                    >
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      {uploading ? "Uploading..." : "Attach Files"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      Images, PDFs, documents (max 10MB each)
+                    </span>
+                  </div>
+                  
+                  {/* Attached Files List */}
+                  {attachedFiles.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {attachedFiles.map((file) => (
+                        <div key={file.url} className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                          <span className="text-sm truncate flex-1">{file.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveFile(file.url)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <Button
