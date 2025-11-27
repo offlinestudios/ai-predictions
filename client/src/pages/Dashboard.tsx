@@ -9,7 +9,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
 import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star } from "lucide-react";
-import { CrystalBall } from "@/components/CrystalBall";
+
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
@@ -91,8 +91,8 @@ export default function Dashboard() {
                 Home
               </Button>
             </Link>
-            <div className="flex items-center gap-2">
-              <CrystalBall size="md" />
+             <div className="flex items-center gap-2">
+            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                     </>
                   ) : (
                     <>
-                      <CrystalBall size="sm" className="mr-2" />
+                      <img src="/globe-logo.png" alt="" className="w-4 h-4 mr-2 object-contain" />
                       Generate Prediction
                     </>
                   )}
@@ -256,7 +256,7 @@ export default function Dashboard() {
                 {prediction && (
                   <div className="mt-6 p-6 bg-card border border-primary/20 rounded-lg shadow-lg shadow-primary/10">
                     <div className="flex items-center gap-2 mb-4">
-                      <CrystalBall size="md" />
+                      <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
                       <h3 className="font-semibold text-lg">Your Prediction</h3>
                     </div>
                     <div className="prose prose-invert max-w-none">

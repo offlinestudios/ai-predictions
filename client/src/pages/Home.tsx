@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { Zap, Crown, History, ArrowRight, Star } from "lucide-react";
-import { CrystalBall } from "@/components/CrystalBall";
+
 
 const SUBSCRIPTION_TIERS = [
   {
@@ -62,7 +62,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CrystalBall size="lg" />
+            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               AI Predictions
             </h1>
@@ -166,7 +166,7 @@ export default function Home() {
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-primary font-semibold">
-                        <CrystalBall size="sm" />
+                        <tier.icon className="w-4 h-4" />
                         {tier.predictions} predictions/day
                       </div>
                       {tier.features.map((feature, idx) => (

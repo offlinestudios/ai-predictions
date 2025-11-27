@@ -68,3 +68,8 @@
 - [x] Add prominent trophy/hands base (full silhouette)
 - [x] Ensure high contrast bold design
 - [x] Match World Cup trophy aesthetic exactly
+
+## Use Image File for Logo
+- [x] Copy globe trophy image to public folder
+- [x] Replace CrystalBall component with img element in headers
+- [x] Ensure proper sizing and styling
