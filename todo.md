@@ -4,3 +4,7 @@
 - [x] Remove globe logo from Generate Prediction button
 - [x] Add Lucide icon (Sparkles for AI prediction)
 - [x] Test button appearance with new icon
+
+## Revert Globe Logo
+- [x] Restore previous globe logo version that worked better with background
+- [x] Keep orbiting particles removed for cleaner animation
