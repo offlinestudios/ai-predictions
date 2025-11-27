@@ -44,3 +44,9 @@
 - [x] Replace sparkles icon with crystal ball in header
 - [x] Update pricing section icons to crystal ball
 - [x] Update all page headers to use crystal ball
+
+## Crystal Ball Icon Fixes
+- [x] Remove duplicate circle icon in pricing card "Most Popular" badge
+- [x] Add 3D gradient effect to crystal ball
+- [x] Add shadow/glow to create depth
+- [x] Update all crystal ball instances with new 3D design

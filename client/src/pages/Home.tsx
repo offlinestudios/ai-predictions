@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Circle, Zap, Crown, History, ArrowRight } from "lucide-react";
+import { Zap, Crown, History, ArrowRight } from "lucide-react";
+import { CrystalBall } from "@/components/CrystalBall";
 
 const SUBSCRIPTION_TIERS = [
   {
@@ -13,7 +14,7 @@ const SUBSCRIPTION_TIERS = [
     price: "$0",
     period: "forever",
     predictions: 3,
-    icon: Circle,
+    icon: CrystalBall,
     features: [
       "3 predictions per day",
       "General predictions",
@@ -61,12 +62,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="relative w-8 h-8">
-              <Circle className="w-8 h-8 text-primary fill-primary/20" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-secondary" />
-              </div>
-            </div>
+            <CrystalBall size="lg" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               AI Predictions
             </h1>
@@ -160,7 +156,6 @@ export default function Home() {
                   <CardHeader>
                     <div className="flex items-center justify-between mb-2">
                       <Icon className="w-8 h-8 text-primary" />
-                      {tier.popular && <Circle className="w-5 h-5 text-secondary fill-secondary/20" />}
                     </div>
                     <CardTitle className="text-2xl">{tier.name}</CardTitle>
                     <CardDescription>
@@ -171,7 +166,7 @@ export default function Home() {
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-primary font-semibold">
-                        <Circle className="w-4 h-4 fill-primary/20" />
+                        <CrystalBall size="sm" />
                         {tier.predictions} predictions/day
                       </div>
                       {tier.features.map((feature, idx) => (
