@@ -63,5 +63,5 @@
 - [x] Check Clerk configuration for sign-up redirects
 - [x] Remove old OAuth routes that conflict with Clerk
 - [x] Fix routing or button configuration
-- [ ] Push fix to GitHub
+- [x] Push fix to GitHub
 - [ ] Test sign-up flow
