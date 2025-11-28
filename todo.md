@@ -55,5 +55,5 @@
 - [x] Update SignIn page to use Clerk SignIn component with routing
 - [x] Update SignUp page to use Clerk SignUp component with routing
 - [x] Verify App.tsx routes handle Clerk callbacks
-- [ ] Push fixes to GitHub
+- [x] Push fixes to GitHub
 - [ ] Test Google OAuth login
