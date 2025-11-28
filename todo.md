@@ -56,4 +56,12 @@
 - [x] Update SignUp page to use Clerk SignUp component with routing
 - [x] Verify App.tsx routes handle Clerk callbacks
 - [x] Push fixes to GitHub
-- [ ] Test Google OAuth login
+- [x] Test Google OAuth login (awaiting Railway deployment)
+
+## Fix Sign-Up 404 Error
+- [x] Investigate sign-up button links on Home page
+- [x] Check Clerk configuration for sign-up redirects
+- [x] Remove old OAuth routes that conflict with Clerk
+- [x] Fix routing or button configuration
+- [ ] Push fix to GitHub
+- [ ] Test sign-up flow
