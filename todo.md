@@ -89,5 +89,5 @@
 
 ## Fix Sign-Up Route Typo
 - [x] Remove space from " /sign-up" route in App.tsx
-- [ ] Deploy fix to Railway
-- [ ] Test sign-up page loads
+- [x] Deploy fix to Railway
+- [ ] Test sign-up page loads (awaiting Railway deployment)
