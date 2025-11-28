@@ -84,5 +84,5 @@
 - [x] Change Clerk components to use hash-based routing
 - [x] Update SignIn and SignUp pages with routing="hash"
 - [ ] Test Google OAuth locally
-- [ ] Deploy to Railway
+- [x] Deploy to Railway
 - [ ] Verify production OAuth works
