@@ -1,9 +1,10 @@
 import { trpc } from "@/lib/trpc";
 import { UNAUTHED_ERR_MSG } from '@shared/const';
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
+import { useState, useEffect } from "react";
 import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
@@ -13,7 +14,8 @@ import "./index.css";
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!CLERK_PUBLISHABLE_KEY) {
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable");
+  console.error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable");
+  console.error("Please set this in your Railway environment variables");
 }
 
 const queryClient = new QueryClient();
@@ -45,36 +47,72 @@ queryClient.getMutationCache().subscribe(event => {
   }
 });
 
-const trpcClient = trpc.createClient({
-  links: [
-    httpBatchLink({
-      url: "/api/trpc",
-      transformer: superjson,
-      async fetch(input, init) {
-        // Get Clerk session token and add to requests
-        const clerk = (window as any).__clerk_session_token;
-        const headers = new Headers(init?.headers);
-        
-        if (clerk) {
-          headers.set("Authorization", `Bearer ${clerk}`);
-        }
+// Create a wrapper component that has access to Clerk's useAuth
+function TrpcProvider({ children }: { children: React.ReactNode }) {
+  const { getToken } = useAuth();
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: "/api/trpc",
+          transformer: superjson,
+          async fetch(input, init) {
+            // Get Clerk session token
+            const token = await getToken();
+            const headers = new Headers(init?.headers);
+            
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
 
-        return globalThis.fetch(input, {
-          ...(init ?? {}),
-          headers,
-          credentials: "include",
-        });
-      },
-    }),
-  ],
-});
+            return globalThis.fetch(input, {
+              ...(init ?? {}),
+              headers,
+              credentials: "include",
+            });
+          },
+        }),
+      ],
+    })
+  );
 
-createRoot(document.getElementById("root")!).render(
-  <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+  return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        {children}
       </QueryClientProvider>
     </trpc.Provider>
-  </ClerkProvider>
+  );
+}
+
+// Fallback UI when Clerk key is missing
+function MissingClerkKey() {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100vh',
+      flexDirection: 'column',
+      gap: '1rem',
+      padding: '2rem',
+      textAlign: 'center'
+    }}>
+      <h1>Configuration Error</h1>
+      <p>Missing VITE_CLERK_PUBLISHABLE_KEY environment variable.</p>
+      <p>Please add it to your Railway environment variables and redeploy.</p>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  CLERK_PUBLISHABLE_KEY ? (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <TrpcProvider>
+        <App />
+      </TrpcProvider>
+    </ClerkProvider>
+  ) : (
+    <MissingClerkKey />
+  )
 );

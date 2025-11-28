@@ -64,4 +64,18 @@
 - [x] Remove old OAuth routes that conflict with Clerk
 - [x] Fix routing or button configuration
 - [x] Push fix to GitHub
-- [ ] Test sign-up flow
+- [x] Test sign-up flow (awaiting Railway deployment)
+
+## Debug Railway 404 Error
+- [ ] Check if Railway deployment completed successfully
+- [ ] Verify build output and dist folder structure
+- [ ] Check server logs on Railway
+- [ ] Test if the issue is with React Router or Express server
+- [ ] Fix and redeploy
+
+## Fix Clerk Authentication Integration
+- [x] Review useAuth hook and fix Clerk integration
+- [x] Update server context to validate Clerk tokens
+- [x] Fix authentication flow in tRPC procedures
+- [x] Test sign-in page loads properly
+- [ ] Test complete auth flow
