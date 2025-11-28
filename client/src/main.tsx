@@ -49,32 +49,26 @@ queryClient.getMutationCache().subscribe(event => {
 
 // Create a wrapper component that has access to Clerk's useAuth
 function TrpcProvider({ children }: { children: React.ReactNode }) {
-  const { getToken } = useAuth();
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const { getToken, isSignedIn } = useAuth();
+  
+  // Create tRPC client that fetches token on each request
+  const [trpcClient] = useState(() => {
+    return trpc.createClient({
       links: [
         httpBatchLink({
           url: "/api/trpc",
           transformer: superjson,
-          async fetch(input, init) {
-            // Get Clerk session token
+          async headers() {
+            // Get fresh Clerk session token for each request
             const token = await getToken();
-            const headers = new Headers(init?.headers);
-            
-            if (token) {
-              headers.set("Authorization", `Bearer ${token}`);
-            }
-
-            return globalThis.fetch(input, {
-              ...(init ?? {}),
-              headers,
-              credentials: "include",
-            });
+            return {
+              authorization: token ? `Bearer ${token}` : undefined,
+            };
           },
         }),
       ],
-    })
-  );
+    });
+  });
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>

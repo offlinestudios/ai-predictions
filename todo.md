@@ -91,3 +91,9 @@
 - [x] Remove space from " /sign-up" route in App.tsx
 - [x] Deploy fix to Railway
 - [ ] Test sign-up page loads (awaiting Railway deployment)
+
+## Fix Dashboard Redirect Loop
+- [x] Investigate useAuth hook and dashboard authentication
+- [x] Check if tRPC auth.me query is failing
+- [x] Fix redirect loop logic (use headers function instead of custom fetch)
+- [ ] Test dashboard loads after login
