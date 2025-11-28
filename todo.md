@@ -86,3 +86,8 @@
 - [ ] Test Google OAuth locally
 - [x] Deploy to Railway
 - [ ] Verify production OAuth works
+
+## Fix Sign-Up Route Typo
+- [x] Remove space from " /sign-up" route in App.tsx
+- [ ] Deploy fix to Railway
+- [ ] Test sign-up page loads
