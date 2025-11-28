@@ -1,4 +1,5 @@
 import { createClerkClient } from "@clerk/backend";
+import { decodeJwt } from "jose";
 import type { Request } from "express";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
@@ -22,10 +23,19 @@ export async function authenticateRequest(req: Request): Promise<User | null> {
       return null;
     }
 
-    // Verify the session token with Clerk
-    const session = await clerk.sessions.verifySession(sessionToken, sessionToken);
+    // Decode the JWT to extract the session ID
+    const decoded = decodeJwt(sessionToken);
+    const sessionId = decoded.sid as string | undefined;
 
-    if (!session || !session.userId) {
+    if (!sessionId) {
+      console.error("[Clerk Auth] No session ID (sid) in token payload");
+      return null;
+    }
+
+    // Verify the session with correct parameters: sessionId + sessionToken
+    const session = await clerk.sessions.verifySession(sessionId, sessionToken);
+
+    if (!session || session.status !== "active" || !session.userId) {
       return null;
     }
 

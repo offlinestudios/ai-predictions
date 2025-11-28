@@ -97,3 +97,9 @@
 - [x] Check if tRPC auth.me query is failing
 - [x] Fix redirect loop logic (use headers function instead of custom fetch)
 - [ ] Test dashboard loads after login
+
+## Fix Clerk Session Verification (Root Cause)
+- [x] Fix clerkAuth.ts to decode JWT and extract sessionId
+- [x] Use verifySession(sessionId, sessionToken) correctly
+- [x] Add defensive redirect logic to prevent loops on auth pages
+- [ ] Test authentication end-to-end
