@@ -79,3 +79,10 @@
 - [x] Fix authentication flow in tRPC procedures
 - [x] Test sign-in page loads properly
 - [ ] Test complete auth flow
+
+## Fix Clerk OAuth Callback Routing
+- [x] Change Clerk components to use hash-based routing
+- [x] Update SignIn and SignUp pages with routing="hash"
+- [ ] Test Google OAuth locally
+- [ ] Deploy to Railway
+- [ ] Verify production OAuth works

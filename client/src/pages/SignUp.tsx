@@ -4,8 +4,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <ClerkSignUp 
-        routing="path" 
-        path="/sign-up"
+        routing="hash"
         signInUrl="/sign-in"
         afterSignUpUrl="/dashboard"
       />
