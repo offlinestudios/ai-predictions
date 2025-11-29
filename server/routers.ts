@@ -15,6 +15,8 @@ import { invokeLLM } from "./_core/llm";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
+import { stripe } from "./_core/stripe";
+import { STRIPE_PRODUCTS } from "./products";
 
 export const appRouter = router({
   system: systemRouter,
@@ -42,6 +44,52 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const updated = await updateSubscriptionTier(ctx.user.id, input.tier);
         return updated;
+      }),
+    
+    createCheckoutSession: protectedProcedure
+      .input(z.object({
+        tier: z.enum(["pro", "premium"]),
+        interval: z.enum(["month", "year"]).default("month"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const origin = ctx.req.headers.origin || "http://localhost:3000";
+        const product = STRIPE_PRODUCTS[input.tier];
+        
+        // Create Stripe checkout session
+        const session = await stripe.checkout.sessions.create({
+          mode: "subscription",
+          customer_email: ctx.user.email || undefined,
+          client_reference_id: ctx.user.id.toString(),
+          metadata: {
+            user_id: ctx.user.id.toString(),
+            customer_email: ctx.user.email || "",
+            customer_name: ctx.user.name || "",
+            tier: input.tier,
+          },
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: product.name,
+                  description: product.description,
+                },
+                unit_amount: input.interval === "month" ? product.priceMonthly : product.priceYearly,
+                recurring: {
+                  interval: input.interval,
+                },
+              },
+              quantity: 1,
+            },
+          ],
+          success_url: `${origin}/dashboard?payment=success`,
+          cancel_url: `${origin}/dashboard?payment=cancelled`,
+          allow_promotion_codes: true,
+        });
+        
+        return {
+          checkoutUrl: session.url,
+        };
       }),
   }),
 

@@ -51,21 +51,44 @@ export default function Dashboard() {
     },
   });
 
-  const upgradeMutation = trpc.subscription.upgrade.useMutation({
-    onSuccess: () => {
-      toast.success("Subscription upgraded successfully!");
-      refetchSub();
+  const checkoutMutation = trpc.subscription.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      if (data.checkoutUrl) {
+        toast.info("Redirecting to checkout...");
+        window.open(data.checkoutUrl, "_blank");
+      }
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
+  
+  const handleUpgrade = (tier: "pro" | "premium") => {
+    checkoutMutation.mutate({ tier, interval: "month" });
+  };
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       window.location.href = getLoginUrl();
     }
   }, [authLoading, isAuthenticated]);
+  
+  // Handle payment success/cancel from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+    
+    if (payment === "success") {
+      toast.success("Payment successful! Your subscription has been upgraded.");
+      refetchSub();
+      // Clean up URL
+      window.history.replaceState({}, "", "/dashboard");
+    } else if (payment === "cancelled") {
+      toast.info("Payment cancelled. You can upgrade anytime.");
+      // Clean up URL
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, [refetchSub]);
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -248,33 +271,33 @@ export default function Dashboard() {
                         : "Upgrade for unlimited predictions"}
                     </p>
                     <Button
-                      onClick={() => upgradeMutation.mutate({ tier: "pro" })}
-                      disabled={upgradeMutation.isPending}
+                      onClick={() => handleUpgrade("pro")}
+                      disabled={checkoutMutation.isPending}
                       className="w-full"
                       size="sm"
                     >
-                      {upgradeMutation.isPending ? (
+                      {checkoutMutation.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
                           <Zap className="w-4 h-4 mr-2" />
-                          Upgrade to Pro
+                          Upgrade to Pro - $9.99/mo
                         </>
                       )}
                     </Button>
                     <Button
-                      onClick={() => upgradeMutation.mutate({ tier: "premium" })}
-                      disabled={upgradeMutation.isPending}
+                      onClick={() => handleUpgrade("premium")}
+                      disabled={checkoutMutation.isPending}
                       variant="outline"
                       className="w-full"
                       size="sm"
                     >
-                      {upgradeMutation.isPending ? (
+                      {checkoutMutation.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
                           <Crown className="w-4 h-4 mr-2" />
-                          Upgrade to Premium
+                          Upgrade to Premium - $19.99/mo
                         </>
                       )}
                     </Button>
@@ -285,17 +308,17 @@ export default function Dashboard() {
                   <div className="space-y-2 pt-4 border-t border-border">
                     <p className="text-sm text-muted-foreground">Want more predictions?</p>
                     <Button
-                      onClick={() => upgradeMutation.mutate({ tier: "premium" })}
-                      disabled={upgradeMutation.isPending}
+                      onClick={() => handleUpgrade("premium")}
+                      disabled={checkoutMutation.isPending}
                       className="w-full"
                       size="sm"
                     >
-                      {upgradeMutation.isPending ? (
+                      {checkoutMutation.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
                           <Crown className="w-4 h-4 mr-2" />
-                          Upgrade to Premium
+                          Upgrade to Premium - $19.99/mo
                         </>
                       )}
                     </Button>

@@ -147,3 +147,11 @@
 - [ ] Analyze user engagement patterns (categories, frequency)
 - [ ] Adjust AI tone/style based on user preferences
 - [ ] Store user feedback/interaction data
+
+## Add Stripe Payment Integration
+- [x] Run webdev_add_feature to add Stripe
+- [x] Configure Stripe API keys
+- [x] Create Stripe products and prices for Pro and Premium
+- [x] Update upgrade buttons to use Stripe checkout
+- [x] Handle Stripe webhooks for subscription updates
+- [ ] Test payment flow end-to-end
