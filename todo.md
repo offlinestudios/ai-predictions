@@ -105,7 +105,7 @@
 - [ ] Test authentication end-to-end
 
 ## Replace Deprecated verifySession API
-- [ ] Update clerkAuth.ts to use verifyToken() instead of verifySession()
-- [ ] Remove JWT decoding logic (not needed with verifyToken)
+- [x] Update clerkAuth.ts to use verifyToken() instead of verifySession()
+- [x] Remove JWT decoding logic (not needed with verifyToken)
 - [ ] Test authentication locally
 - [ ] Deploy to Railway and verify
