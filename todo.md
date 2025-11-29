@@ -126,3 +126,10 @@
 - [x] Run migrations (will run on Railway deployment)
 - [ ] Test database connection
 - [x] Deploy to Railway (in progress)
+
+## Fix Authentication Bypass Issue
+- [ ] Check Dashboard authentication logic
+- [ ] Verify Clerk authentication is properly enforced
+- [ ] Check if useAuth hook is working correctly
+- [x] Add logout button to Dashboard
+- [ ] Test authentication flow with login/logout

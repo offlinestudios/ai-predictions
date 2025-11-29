@@ -8,10 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 
 import { useState, useEffect } from "react";
+import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 
@@ -23,6 +24,7 @@ const TIER_ICONS = {
 
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const { signOut } = useClerk();
   const [, navigate] = useLocation();
   const [userInput, setUserInput] = useState("");
   const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
@@ -177,6 +179,14 @@ export default function Dashboard() {
             <div className="text-sm text-muted-foreground">
               {user?.name || user?.email}
             </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => signOut(() => navigate("/"))}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>

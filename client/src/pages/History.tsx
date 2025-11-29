@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Loader2, ArrowLeft, Calendar } from "lucide-react";
+import { Loader2, ArrowLeft, Calendar, LogOut } from "lucide-react";
 
 import { useEffect } from "react";
+import { useClerk } from "@clerk/clerk-react";
+import { useLocation } from "wouter";
 import { Streamdown } from "streamdown";
 
 const CATEGORY_COLORS = {
@@ -20,6 +22,8 @@ const CATEGORY_COLORS = {
 
 export default function History() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const { signOut } = useClerk();
+  const [, navigate] = useLocation();
 
   const { data: predictions, isLoading } = trpc.prediction.getHistory.useQuery(
     { limit: 50 },
@@ -57,8 +61,18 @@ export default function History() {
               <h1 className="text-xl font-bold">Prediction History</h1>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {user?.name || user?.email}
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted-foreground">
+              {user?.name || user?.email}
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => signOut(() => navigate("/"))}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>
