@@ -108,14 +108,14 @@
 - [x] Update clerkAuth.ts to use verifyToken() instead of verifySession()
 - [x] Remove JWT decoding logic (not needed with verifyToken)
 - [ ] Test authentication locally
-- [ ] Deploy to Railway and verify
+- [x] Deploy to Railway (in progress) and verify
 
 ## Fix Database Upsert User Error
 - [x] Check users table schema in drizzle/schema.ts
 - [x] Check upsertUser function in server/db.ts
 - [x] Fix SQL query or schema mismatch (increased openId to 255 chars, fixed empty updateSet)
 - [ ] Test authentication flow locally
-- [ ] Deploy to Railway
+- [x] Deploy to Railway (in progress)
 
 ## Convert MySQL to PostgreSQL
 - [x] Update package.json dependencies (remove mysql2, add postgres)
@@ -125,4 +125,4 @@
 - [x] Update drizzle.config.ts for PostgreSQL
 - [x] Run migrations (will run on Railway deployment)
 - [ ] Test database connection
-- [ ] Deploy to Railway
+- [x] Deploy to Railway (in progress)
