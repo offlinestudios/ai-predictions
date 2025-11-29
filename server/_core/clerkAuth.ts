@@ -1,5 +1,4 @@
-import { createClerkClient } from "@clerk/backend";
-import { decodeJwt } from "jose";
+import { createClerkClient, verifyToken } from "@clerk/backend";
 import type { Request } from "express";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
@@ -23,24 +22,19 @@ export async function authenticateRequest(req: Request): Promise<User | null> {
       return null;
     }
 
-    // Decode the JWT to extract the session ID
-    const decoded = decodeJwt(sessionToken);
-    const sessionId = decoded.sid as string | undefined;
+    // Use modern verifyToken for networkless verification
+    const verifiedToken = await verifyToken(sessionToken, {
+      secretKey: process.env.CLERK_SECRET_KEY!,
+    });
 
-    if (!sessionId) {
-      console.error("[Clerk Auth] No session ID (sid) in token payload");
+    if (!verifiedToken || !verifiedToken.sub) {
       return null;
     }
 
-    // Verify the session with correct parameters: sessionId + sessionToken
-    const session = await clerk.sessions.verifySession(sessionId, sessionToken);
-
-    if (!session || session.status !== "active" || !session.userId) {
-      return null;
-    }
+    const userId = verifiedToken.sub;
 
     // Get Clerk user details
-    const clerkUser = await clerk.users.getUser(session.userId);
+    const clerkUser = await clerk.users.getUser(userId);
 
     if (!clerkUser) {
       return null;

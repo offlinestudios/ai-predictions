@@ -103,3 +103,9 @@
 - [x] Use verifySession(sessionId, sessionToken) correctly
 - [x] Add defensive redirect logic to prevent loops on auth pages
 - [ ] Test authentication end-to-end
+
+## Replace Deprecated verifySession API
+- [ ] Update clerkAuth.ts to use verifyToken() instead of verifySession()
+- [ ] Remove JWT decoding logic (not needed with verifyToken)
+- [ ] Test authentication locally
+- [ ] Deploy to Railway and verify
