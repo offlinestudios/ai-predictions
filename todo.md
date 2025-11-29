@@ -116,3 +116,13 @@
 - [x] Fix SQL query or schema mismatch (increased openId to 255 chars, fixed empty updateSet)
 - [ ] Test authentication flow locally
 - [ ] Deploy to Railway
+
+## Convert MySQL to PostgreSQL
+- [x] Update package.json dependencies (remove mysql2, add postgres)
+- [x] Convert schema from mysqlTable to pgTable
+- [x] Convert MySQL types to PostgreSQL types (mysqlEnum → pgEnum, etc.)
+- [x] Update server/db.ts to use postgres driver
+- [x] Update drizzle.config.ts for PostgreSQL
+- [x] Run migrations (will run on Railway deployment)
+- [ ] Test database connection
+- [ ] Deploy to Railway

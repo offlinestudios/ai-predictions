@@ -1,24 +1,28 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean } from "drizzle-orm/mysql-core";
+import { pgTable, serial, varchar, text, timestamp, boolean, pgEnum, integer } from "drizzle-orm/pg-core";
+
+// Define enums before using them in tables
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const tierEnum = pgEnum("tier", ["free", "pro", "premium"]);
 
 /**
  * Core user table backing auth flow.
  * Extend this file with additional tables as your product grows.
  * Columns use camelCase to match both database fields and generated types.
  */
-export const users = mysqlTable("users", {
+export const users = pgTable("users", {
   /**
    * Surrogate primary key. Auto-incremented numeric value managed by the database.
    * Use this for relations between tables.
    */
-  id: int("id").autoincrement().primaryKey(),
+  id: serial("id").primaryKey(),
   /** OAuth identifier (Clerk user ID or Manus openId). Unique per user. */
   openId: varchar("openId", { length: 255 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -28,19 +32,19 @@ export type InsertUser = typeof users.$inferInsert;
 /**
  * Subscription tiers and user subscription status
  */
-export const subscriptions = mysqlTable("subscriptions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  tier: mysqlEnum("tier", ["free", "pro", "premium"]).default("free").notNull(),
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  tier: tierEnum("tier").default("free").notNull(),
   /** Number of predictions allowed per day based on tier */
-  dailyLimit: int("dailyLimit").notNull().default(3),
+  dailyLimit: integer("dailyLimit").notNull().default(3),
   /** Number of predictions used today */
-  usedToday: int("usedToday").notNull().default(0),
+  usedToday: integer("usedToday").notNull().default(0),
   /** Last reset date for daily counter (stored as timestamp) */
   lastResetDate: timestamp("lastResetDate").defaultNow().notNull(),
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Subscription = typeof subscriptions.$inferSelect;
@@ -49,9 +53,9 @@ export type InsertSubscription = typeof subscriptions.$inferInsert;
 /**
  * User prediction history
  */
-export const predictions = mysqlTable("predictions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+export const predictions = pgTable("predictions", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
   /** User's input/question for the prediction */
   userInput: text("userInput").notNull(),
   /** AI-generated prediction result */
