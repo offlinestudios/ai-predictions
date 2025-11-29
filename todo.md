@@ -133,3 +133,17 @@
 - [ ] Check if useAuth hook is working correctly
 - [x] Add logout button to Dashboard
 - [ ] Test authentication flow with login/logout
+
+## Implement Free Tier Restrictions
+- [x] Add prediction count tracking to database queries
+- [x] Enforce 3-prediction limit for free tier users in backend
+- [x] Show upgrade prompt when free users reach limit
+- [x] Display remaining predictions count for free users
+- [x] Hide "View History" button for free tier users
+- [x] Add upgrade CTA in dashboard for free users
+
+## Optional: Enhance Prediction Personalization
+- [ ] Include past prediction history in AI context
+- [ ] Analyze user engagement patterns (categories, frequency)
+- [ ] Adjust AI tone/style based on user preferences
+- [ ] Store user feedback/interaction data

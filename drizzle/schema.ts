@@ -40,6 +40,8 @@ export const subscriptions = pgTable("subscriptions", {
   dailyLimit: integer("dailyLimit").notNull().default(3),
   /** Number of predictions used today */
   usedToday: integer("usedToday").notNull().default(0),
+  /** Total predictions used (lifetime) - used for free tier limit */
+  totalUsed: integer("totalUsed").notNull().default(0),
   /** Last reset date for daily counter (stored as timestamp) */
   lastResetDate: timestamp("lastResetDate").defaultNow().notNull(),
   isActive: boolean("isActive").default(true).notNull(),

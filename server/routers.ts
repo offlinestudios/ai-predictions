@@ -56,11 +56,22 @@ export const appRouter = router({
         // Check subscription limits
         const subscription = await checkAndResetDailyLimit(ctx.user.id);
         
-        if (subscription.usedToday >= subscription.dailyLimit) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: `Daily prediction limit reached (${subscription.dailyLimit}). Upgrade your subscription for more predictions.`,
-          });
+        // For free tier, check total lifetime limit
+        if (subscription.tier === "free") {
+          if (subscription.totalUsed >= 3) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: `You've reached your free tier limit of 3 predictions. Upgrade to Pro or Premium for unlimited predictions!`,
+            });
+          }
+        } else {
+          // For paid tiers, check daily limit
+          if (subscription.usedToday >= subscription.dailyLimit) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: `Daily prediction limit reached (${subscription.dailyLimit}). Try again tomorrow or upgrade for higher limits.`,
+            });
+          }
         }
 
         // Generate AI prediction

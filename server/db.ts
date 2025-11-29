@@ -146,7 +146,13 @@ export async function checkAndResetDailyLimit(userId: number) {
   const now = new Date();
   const lastReset = new Date(sub.lastResetDate);
   
-  // Check if we need to reset (different day)
+  // For free tier, use total limit instead of daily limit
+  if (sub.tier === "free") {
+    // Free tier has a lifetime limit of 3 predictions
+    return sub;
+  }
+  
+  // For paid tiers (pro, premium), reset daily
   const needsReset = now.getDate() !== lastReset.getDate() || 
                      now.getMonth() !== lastReset.getMonth() || 
                      now.getFullYear() !== lastReset.getFullYear();
@@ -173,6 +179,7 @@ export async function incrementPredictionUsage(userId: number) {
   await db.update(subscriptions)
     .set({ 
       usedToday: sql`${subscriptions.usedToday} + 1`,
+      totalUsed: sql`${subscriptions.totalUsed} + 1`,
       updatedAt: new Date(),
     })
     .where(eq(subscriptions.userId, userId));

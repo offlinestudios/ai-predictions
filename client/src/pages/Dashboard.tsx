@@ -141,6 +141,13 @@ export default function Dashboard() {
       toast.error("Please enter your question or topic");
       return;
     }
+    
+    // Check if free tier limit is reached
+    if (subscription?.tier === "free" && subscription.totalUsed >= 3) {
+      toast.error("You've reached your free tier limit. Please upgrade to continue.");
+      return;
+    }
+    
     setPrediction(null);
     generateMutation.mutate({ 
       userInput, 
@@ -148,8 +155,15 @@ export default function Dashboard() {
       attachmentUrls: attachedFiles.length > 0 ? attachedFiles.map(f => f.url) : undefined,
     });
   };
+  
+  const isGenerateDisabled = generateMutation.isPending || 
+    (subscription?.tier === "free" && subscription.totalUsed >= 3);
 
-  const usagePercent = subscription ? (subscription.usedToday / subscription.dailyLimit) * 100 : 0;
+  const usagePercent = subscription 
+    ? subscription.tier === "free" 
+      ? (subscription.totalUsed / 3) * 100 
+      : (subscription.usedToday / subscription.dailyLimit) * 100
+    : 0;
   const TierIcon = subscription ? TIER_ICONS[subscription.tier] : Star;
 
   return (
@@ -170,12 +184,14 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/history">
-              <Button variant="ghost" size="sm">
-                <History className="w-4 h-4 mr-2" />
-                History
-              </Button>
-            </Link>
+            {subscription?.tier !== "free" && (
+              <Link href="/history">
+                <Button variant="ghost" size="sm">
+                  <History className="w-4 h-4 mr-2" />
+                  History
+                </Button>
+              </Link>
+            )}
             <div className="text-sm text-muted-foreground">
               {user?.name || user?.email}
             </div>
@@ -206,17 +222,31 @@ export default function Dashboard() {
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Daily Usage</span>
+                    <span className="text-muted-foreground">
+                      {subscription?.tier === "free" ? "Total Predictions" : "Daily Usage"}
+                    </span>
                     <span className="font-medium">
-                      {subscription?.usedToday} / {subscription?.dailyLimit}
+                      {subscription?.tier === "free" 
+                        ? `${subscription?.totalUsed} / 3`
+                        : `${subscription?.usedToday} / ${subscription?.dailyLimit}`
+                      }
                     </span>
                   </div>
                   <Progress value={usagePercent} className="h-2" />
+                  {subscription?.tier === "free" && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {3 - (subscription?.totalUsed || 0)} predictions remaining
+                    </p>
+                  )}
                 </div>
                 
                 {subscription?.tier === "free" && (
                   <div className="space-y-2 pt-4 border-t border-border">
-                    <p className="text-sm text-muted-foreground">Upgrade for more predictions</p>
+                    <p className="text-sm text-muted-foreground">
+                      {subscription.totalUsed >= 3 
+                        ? "🔒 You've used all 3 free predictions. Upgrade to continue!" 
+                        : "Upgrade for unlimited predictions"}
+                    </p>
                     <Button
                       onClick={() => upgradeMutation.mutate({ tier: "pro" })}
                       disabled={upgradeMutation.isPending}
@@ -403,7 +433,7 @@ export default function Dashboard() {
 
                 <Button
                   onClick={handleGenerate}
-                  disabled={generateMutation.isPending || !userInput.trim()}
+                  disabled={isGenerateDisabled || !userInput.trim()}
                   className="w-full"
                   size="lg"
                 >
