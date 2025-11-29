@@ -64,9 +64,9 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.lastSignedIn = new Date();
     }
 
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
+    // Always update lastSignedIn and updatedAt on duplicate key
+    updateSet.lastSignedIn = values.lastSignedIn;
+    updateSet.updatedAt = new Date();
 
     await db.insert(users).values(values).onDuplicateKeyUpdate({
       set: updateSet,

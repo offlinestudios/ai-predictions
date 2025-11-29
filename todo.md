@@ -109,3 +109,10 @@
 - [x] Remove JWT decoding logic (not needed with verifyToken)
 - [ ] Test authentication locally
 - [ ] Deploy to Railway and verify
+
+## Fix Database Upsert User Error
+- [x] Check users table schema in drizzle/schema.ts
+- [x] Check upsertUser function in server/db.ts
+- [x] Fix SQL query or schema mismatch (increased openId to 255 chars, fixed empty updateSet)
+- [ ] Test authentication flow locally
+- [ ] Deploy to Railway
