@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
 import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
+import UpgradeModal from "@/components/UpgradeModal";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -33,6 +34,8 @@ export default function Dashboard() {
   const [userFeedback, setUserFeedback] = useState<"like" | "dislike" | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<"limit_reached" | "feature_locked" | "approaching_limit">("limit_reached");
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -58,6 +61,14 @@ export default function Dashboard() {
       toast.success(`Prediction generated! ${data.remainingToday} predictions remaining today.`);
       refetchSub();
       setAttachedFiles([]); // Clear attachments after generation
+      
+      // Show approaching limit modal for free users with 1 prediction left
+      if (subscription?.tier === "free" && data.remainingToday === 1) {
+        setTimeout(() => {
+          setUpgradeReason("approaching_limit");
+          setShowUpgradeModal(true);
+        }, 2000); // Show after 2 seconds
+      }
     },
     onError: (error) => {
       toast.error(error.message);
@@ -180,7 +191,8 @@ export default function Dashboard() {
     
     // Check if free tier limit is reached
     if (subscription?.tier === "free" && subscription.totalUsed >= 3) {
-      toast.error("You've reached your free tier limit. Please upgrade to continue.");
+      setUpgradeReason("limit_reached");
+      setShowUpgradeModal(true);
       return;
     }
     
@@ -543,6 +555,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal 
+        open={showUpgradeModal} 
+        onOpenChange={setShowUpgradeModal}
+        reason={upgradeReason}
+        remainingPredictions={subscription?.tier === "free" ? (3 - (subscription?.totalUsed || 0)) : 0}
+      />
     </div>
   );
 }

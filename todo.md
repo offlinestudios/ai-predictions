@@ -184,3 +184,12 @@
 - [x] Add pagination or infinite scroll
 - [x] Show empty state for users with no predictions
 - [ ] Test history page with various filters
+
+## Add Free User Conversion Modal
+- [x] Create UpgradeModal component with benefits comparison table
+- [x] Add urgency messaging and social proof
+- [x] Display modal when free users hit 3-prediction limit
+- [x] Show modal when free users try to access restricted features
+- [x] Add "X/3 predictions used" warning before hitting limit
+- [x] Include direct upgrade buttons to Pro and Premium
+- [ ] Test modal triggers and conversion flow
