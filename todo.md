@@ -155,3 +155,12 @@
 - [x] Update upgrade buttons to use Stripe checkout
 - [x] Handle Stripe webhooks for subscription updates
 - [ ] Test payment flow end-to-end
+
+## Implement Prediction Personalization
+- [x] Add feedback fields to predictions table (userFeedback, feedbackAt)
+- [x] Create tRPC procedure for submitting prediction feedback
+- [x] Add like/dislike buttons to prediction results UI
+- [x] Update AI prompt to include user's past predictions
+- [x] Analyze user preferences (favorite categories, feedback patterns)
+- [x] Adjust AI tone based on positive feedback patterns
+- [ ] Test personalization with multiple predictions

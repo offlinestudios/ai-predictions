@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 
 import { useState, useEffect } from "react";
@@ -29,6 +29,8 @@ export default function Dashboard() {
   const [userInput, setUserInput] = useState("");
   const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
   const [prediction, setPrediction] = useState<string | null>(null);
+  const [currentPredictionId, setCurrentPredictionId] = useState<number | null>(null);
+  const [userFeedback, setUserFeedback] = useState<"like" | "dislike" | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -39,9 +41,20 @@ export default function Dashboard() {
 
   const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
 
+  const feedbackMutation = trpc.prediction.submitFeedback.useMutation({
+    onSuccess: () => {
+      toast.success("Thank you for your feedback! This helps us personalize future predictions.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const generateMutation = trpc.prediction.generate.useMutation({
     onSuccess: (data) => {
       setPrediction(data.prediction);
+      setCurrentPredictionId(data.predictionId); // Store prediction ID for feedback
+      setUserFeedback(null); // Reset feedback for new prediction
       toast.success(`Prediction generated! ${data.remainingToday} predictions remaining today.`);
       refetchSub();
       setAttachedFiles([]); // Clear attachments after generation
@@ -476,18 +489,50 @@ export default function Dashboard() {
 
 
                 {/* Prediction Result */}
-                {prediction && !generateMutation.isPending && (
+                {prediction && (
                   <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
-                    <div className="flex items-center gap-2 mb-4">
-                      <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
-                      <h3 className="font-semibold text-lg">Your Prediction</h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
+                        <h3 className="font-semibold text-lg">Your Prediction</h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground mr-2">Was this helpful?</span>
+                        <Button
+                          variant={userFeedback === "like" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
+                            if (currentPredictionId) {
+                              setUserFeedback("like");
+                              feedbackMutation.mutate({ predictionId: currentPredictionId, feedback: "like" });
+                            }
+                          }}
+                          disabled={feedbackMutation.isPending || !currentPredictionId}
+                          className="h-8 w-8 p-0"
+                        >
+                          <ThumbsUp className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant={userFeedback === "dislike" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
+                            if (currentPredictionId) {
+                              setUserFeedback("dislike");
+                              feedbackMutation.mutate({ predictionId: currentPredictionId, feedback: "dislike" });
+                            }
+                          }}
+                          disabled={feedbackMutation.isPending || !currentPredictionId}
+                          className="h-8 w-8 p-0"
+                        >
+                          <ThumbsDown className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="prose prose-invert max-w-none">
                       <Streamdown>{prediction}</Streamdown>
                     </div>
                   </div>
-                )}
-              </CardContent>
+                )}             </CardContent>
             </Card>
           </div>
         </div>

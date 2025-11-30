@@ -8,6 +8,13 @@
       "when": 1764439275190,
       "tag": "0000_silly_stark_industries",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764535585165,
+      "tag": "0001_typical_silver_fox",
+      "breakpoints": true
     }
   ]
 }

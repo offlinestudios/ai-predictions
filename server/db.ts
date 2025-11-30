@@ -190,7 +190,8 @@ export async function createPrediction(data: InsertPrediction) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.insert(predictions).values(data);
+  const result = await db.insert(predictions).values(data).returning();
+  return result[0]!;
 }
 
 export async function getUserPredictions(userId: number, limit: number = 50) {
@@ -202,4 +203,49 @@ export async function getUserPredictions(userId: number, limit: number = 50) {
     .where(eq(predictions.userId, userId))
     .orderBy(desc(predictions.createdAt))
     .limit(limit);
+}
+
+export async function updatePredictionFeedback(predictionId: number, userId: number, feedback: "like" | "dislike") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(predictions)
+    .set({ 
+      userFeedback: feedback,
+      feedbackAt: new Date(),
+    })
+    .where(and(
+      eq(predictions.id, predictionId),
+      eq(predictions.userId, userId)
+    ));
+}
+
+export async function getUserPredictionHistory(userId: number, limit: number = 10) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.select()
+    .from(predictions)
+    .where(eq(predictions.userId, userId))
+    .orderBy(desc(predictions.createdAt))
+    .limit(limit);
+}
+
+export async function getUserFeedbackStats(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const allPredictions = await db.select()
+    .from(predictions)
+    .where(eq(predictions.userId, userId));
+
+  const liked = allPredictions.filter(p => p.userFeedback === "like");
+  const disliked = allPredictions.filter(p => p.userFeedback === "dislike");
+
+  return {
+    total: allPredictions.length,
+    liked: liked.length,
+    disliked: disliked.length,
+    likedCategories: liked.map(p => p.category).filter(Boolean),
+  };
 }

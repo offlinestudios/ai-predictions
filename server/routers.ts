@@ -10,6 +10,8 @@ import {
   incrementPredictionUsage,
   createPrediction,
   getUserPredictions,
+  getUserPredictionHistory,
+  getUserFeedbackStats,
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { TRPCError } from "@trpc/server";
@@ -122,8 +124,31 @@ export const appRouter = router({
           }
         }
 
-        // Generate AI prediction
-        const systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+        // Get user's prediction history and feedback stats for personalization
+        const userHistory = await getUserPredictionHistory(ctx.user.id, 5);
+        const feedbackStats = await getUserFeedbackStats(ctx.user.id);
+        
+        // Build personalized system prompt based on user preferences
+        let systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+        
+        // Add personalization based on user history
+        if (userHistory.length > 0) {
+          systemPrompt += `\n\n**Personalization Context:**\nThis user has received ${feedbackStats.total} predictions previously.`;
+          
+          if (feedbackStats.liked > 0) {
+            systemPrompt += ` They particularly enjoyed predictions about: ${feedbackStats.likedCategories.slice(0, 3).join(", ") || "various topics"}.`;
+            systemPrompt += ` Adjust your tone and style to match what resonated with them before - be more ${feedbackStats.liked > feedbackStats.disliked ? "optimistic and encouraging" : "balanced and realistic"}.`;
+          }
+          
+          // Include recent prediction context for continuity
+          const recentPredictions = userHistory.slice(0, 2).map(p => 
+            `- ${p.category}: "${p.userInput.substring(0, 100)}..." (${p.userFeedback ? `User ${p.userFeedback}d this` : "No feedback yet"})`
+          ).join("\n");
+          
+          if (recentPredictions) {
+            systemPrompt += `\n\n**Recent Predictions for Context:**\n${recentPredictions}\n\nBuild on these themes and show progression or new insights related to their journey.`;
+          }
+        }
         
         // Build user message with text and file attachments
         type MessageContent = 
@@ -170,8 +195,8 @@ export const appRouter = router({
           ? messageContent 
           : "Unable to generate prediction at this time.";
 
-        // Save prediction to database
-        await createPrediction({
+        // Save prediction to database and get the ID
+        const newPrediction = await createPrediction({
           userId: ctx.user.id,
           userInput: input.userInput,
           predictionResult,
@@ -184,6 +209,7 @@ export const appRouter = router({
 
         return {
           prediction: predictionResult,
+          predictionId: newPrediction.id,
           remainingToday: subscription.dailyLimit - subscription.usedToday - 1,
         };
       }),
@@ -215,6 +241,19 @@ export const appRouter = router({
         const { url } = await storagePut(fileKey, buffer, input.mimeType);
         
         return { url, fileName: input.fileName };
+      }),
+    
+    submitFeedback: protectedProcedure
+      .input(z.object({
+        predictionId: z.number(),
+        feedback: z.enum(["like", "dislike"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Update prediction with user feedback
+        const { updatePredictionFeedback } = await import("./db");
+        await updatePredictionFeedback(input.predictionId, ctx.user.id, input.feedback);
+        
+        return { success: true };
       }),
   }),
 });

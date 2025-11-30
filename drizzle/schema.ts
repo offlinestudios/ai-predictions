@@ -66,6 +66,10 @@ export const predictions = pgTable("predictions", {
   category: varchar("category", { length: 50 }),
   /** JSON array of uploaded file URLs for context */
   attachmentUrls: text("attachmentUrls"),
+  /** User feedback: 'like', 'dislike', or null */
+  userFeedback: varchar("userFeedback", { length: 10 }),
+  /** Timestamp when feedback was given */
+  feedbackAt: timestamp("feedbackAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
