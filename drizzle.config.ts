@@ -1,9 +1,8 @@
 import { defineConfig } from "drizzle-kit";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is required to run drizzle commands");
-}
+// During build, DATABASE_URL might not be available
+// Use a placeholder that will be replaced at runtime
+const connectionString = process.env.DATABASE_URL || "postgresql://placeholder";
 
 export default defineConfig({
   schema: "./drizzle/schema.ts",
