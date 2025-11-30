@@ -1,7 +1,8 @@
 # Project TODO
 
-## Fix Railway Deployment - Interactive Migration Prompt
-- [x] Identified issue: drizzle-kit push waits for interactive input on Railway
-- [x] Added --force flag to migration script to run non-interactively
-- [x] Push fix to GitHub
-- [x] Verify Railway deployment succeeds
+## Debug Railway Bad Gateway Despite Successful Build
+- [x] Check Deploy Logs for runtime errors
+- [x] Identified issue: --force flag not working, migration still prompts
+- [x] Changed migration strategy from 'push --force' to 'generate + migrate'
+- [ ] Push fix to GitHub
+- [ ] Verify deployment loads successfully

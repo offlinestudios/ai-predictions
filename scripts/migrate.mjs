@@ -22,9 +22,17 @@ try {
     process.exit(1);
   }
 
-  // Run drizzle-kit push with --force flag to avoid interactive prompts
-  // This is necessary for Railway deployment where stdin is not available
-  execSync('pnpm drizzle-kit push --force', {
+  // Generate migrations first, then apply them
+  // This avoids interactive prompts that hang Railway deployments
+  console.log('📝 Generating migrations...');
+  execSync('pnpm drizzle-kit generate', {
+    cwd: projectRoot,
+    stdio: 'inherit',
+    env: process.env
+  });
+  
+  console.log('🚀 Applying migrations...');
+  execSync('pnpm drizzle-kit migrate', {
     cwd: projectRoot,
     stdio: 'inherit',
     env: process.env
