@@ -22,8 +22,9 @@ try {
     process.exit(1);
   }
 
-  // Run drizzle-kit push to sync schema with database
-  execSync('pnpm drizzle-kit push', {
+  // Run drizzle-kit push with --force flag to avoid interactive prompts
+  // This is necessary for Railway deployment where stdin is not available
+  execSync('pnpm drizzle-kit push --force', {
     cwd: projectRoot,
     stdio: 'inherit',
     env: process.env
