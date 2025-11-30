@@ -1,8 +1,9 @@
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, sql, isNull, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { InsertUser, users, subscriptions, predictions, InsertSubscription, InsertPrediction } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { nanoid } from "nanoid";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -190,7 +191,10 @@ export async function createPrediction(data: InsertPrediction) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(predictions).values(data).returning();
+  // Generate unique share token
+  const shareToken = nanoid(16);
+  
+  const result = await db.insert(predictions).values({ ...data, shareToken }).returning();
   return result[0]!;
 }
 
@@ -248,4 +252,16 @@ export async function getUserFeedbackStats(userId: number) {
     disliked: disliked.length,
     likedCategories: liked.map(p => p.category).filter(Boolean),
   };
+}
+
+export async function getPredictionByShareToken(shareToken: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.select()
+    .from(predictions)
+    .where(eq(predictions.shareToken, shareToken))
+    .limit(1);
+  
+  return result[0] || null;
 }

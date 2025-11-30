@@ -266,6 +266,7 @@ export const appRouter = router({
         return {
           prediction: predictionResult,
           predictionId: newPrediction.id,
+          shareToken: newPrediction.shareToken!,
           remainingToday: subscription.dailyLimit - subscription.usedToday - 1,
         };
       }),
@@ -377,6 +378,24 @@ export const appRouter = router({
         const { url } = await storagePut(fileKey, buffer, input.mimeType);
         
         return { url, fileName: input.fileName };
+      }),
+    
+    getSharedPrediction: publicProcedure
+      .input(z.object({
+        shareToken: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const { getPredictionByShareToken } = await import("./db");
+        const prediction = await getPredictionByShareToken(input.shareToken);
+        
+        if (!prediction) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Prediction not found",
+          });
+        }
+        
+        return prediction;
       }),
     
     submitFeedback: protectedProcedure

@@ -203,3 +203,15 @@
 - [x] Send weekly prediction summary email to active users (helper created)
 - [x] Integrate notifications into Stripe webhook handlers
 - [ ] Test email delivery for all notification types
+
+## Add Prediction Sharing Feature
+- [x] Add shareToken field to predictions table for unique shareable links
+- [x] Create public prediction view endpoint (no auth required)
+- [x] Build shareable prediction card page with branding
+- [x] Add share buttons to Dashboard prediction results
+- [ ] Add share buttons to History page predictions
+- [x] Implement Twitter/X share with pre-filled text
+- [x] Implement Facebook share
+- [x] Implement LinkedIn share
+- [x] Add copy link button with toast confirmation
+- [ ] Test sharing on different platforms

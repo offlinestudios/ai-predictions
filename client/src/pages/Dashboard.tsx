@@ -11,6 +11,7 @@ import { Link, useLocation } from "wouter";
 import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
+import ShareButtons from "@/components/ShareButtons";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -31,6 +32,7 @@ export default function Dashboard() {
   const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
   const [prediction, setPrediction] = useState<string | null>(null);
   const [currentPredictionId, setCurrentPredictionId] = useState<number | null>(null);
+  const [currentShareToken, setCurrentShareToken] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<"like" | "dislike" | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<Array<{ name: string; url: string; preview?: string; type: string }>>([]);
   const [uploading, setUploading] = useState(false);
@@ -57,6 +59,7 @@ export default function Dashboard() {
     onSuccess: (data) => {
       setPrediction(data.prediction);
       setCurrentPredictionId(data.predictionId); // Store prediction ID for feedback
+      setCurrentShareToken(data.shareToken); // Store share token for sharing
       setUserFeedback(null); // Reset feedback for new prediction
       toast.success(`Prediction generated! ${data.remainingToday} predictions remaining today.`);
       refetchSub();
@@ -546,9 +549,20 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none">
+                    <div className="prose prose-invert max-w-none mb-6">
                       <Streamdown>{prediction}</Streamdown>
                     </div>
+                    
+                    {/* Share Buttons */}
+                    {currentShareToken && (
+                      <div className="border-t border-border pt-4">
+                        <ShareButtons 
+                          shareToken={currentShareToken}
+                          predictionText={prediction}
+                          category={category}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}             </CardContent>
             </Card>

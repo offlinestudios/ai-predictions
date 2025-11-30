@@ -70,6 +70,8 @@ export const predictions = pgTable("predictions", {
   userFeedback: varchar("userFeedback", { length: 10 }),
   /** Timestamp when feedback was given */
   feedbackAt: timestamp("feedbackAt"),
+  /** Unique token for shareable links */
+  shareToken: varchar("shareToken", { length: 32 }).unique(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
