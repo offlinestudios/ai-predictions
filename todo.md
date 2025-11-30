@@ -246,5 +246,5 @@
 - [x] Improve server startup error logging
 - [x] Review Railway deployment logs with user
 - [x] Identify specific error causing crash (Nixpacks deprecated)
-- [ ] Remove nixpacks.toml and railway.json to use Railway auto-detection
-- [ ] Push changes and verify deployment works
+- [x] Remove nixpacks.toml and railway.json to use Railway auto-detection
+- [x] Push changes and verify deployment works
