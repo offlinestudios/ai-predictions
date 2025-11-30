@@ -215,3 +215,14 @@
 - [x] Implement LinkedIn share
 - [x] Add copy link button with toast confirmation
 - [ ] Test sharing on different platforms
+
+## Build Admin Analytics Dashboard
+- [x] Create owner-only procedure middleware using OWNER_OPEN_ID
+- [x] Add analytics queries for user stats (total, free vs paid)
+- [x] Add conversion rate calculations (free → Pro → Premium)
+- [x] Add revenue metrics (MRR, total revenue)
+- [x] Add prediction usage stats (total predictions, by category)
+- [x] Add sharing stats (most shared predictions)
+- [x] Build /admin page with metrics cards and charts
+- [x] Add navigation link to Admin page (only visible to owner)
+- [ ] Test admin access control and metrics accuracy

@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { ENV } from "./_core/env";
 import { z } from "zod";
 import { 
   getOrCreateSubscription, 
@@ -410,6 +411,42 @@ export const appRouter = router({
         
         return { success: true };
       }),
+  }),
+
+  admin: router({
+    getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+      // Check if user is owner
+      if (ctx.user.openId !== ENV.ownerOpenId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the project owner can access analytics" });
+      }
+
+      const {
+        getUserStats,
+        getPredictionStats,
+        getSharingStats,
+        getRevenueMetrics,
+        getConversionRates,
+        getRecentActivity,
+      } = await import("./analytics");
+
+      const [userStats, predictionStats, sharingStats, revenueMetrics, conversionRates, recentActivity] = await Promise.all([
+        getUserStats(),
+        getPredictionStats(),
+        getSharingStats(),
+        getRevenueMetrics(),
+        getConversionRates(),
+        getRecentActivity(),
+      ]);
+
+      return {
+        userStats,
+        predictionStats,
+        sharingStats,
+        revenueMetrics,
+        conversionRates,
+        recentActivity,
+      };
+    }),
   }),
 });
 
