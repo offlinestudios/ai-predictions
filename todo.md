@@ -240,3 +240,11 @@
 - [x] Bind to 0.0.0.0 instead of localhost for Railway proxy
 - [x] Test locally with production-like environment
 - [x] Push fix to GitHub
+
+## Debug Railway "Application failed to respond" Error
+- [x] Add health check endpoint for Railway
+- [x] Improve server startup error logging
+- [x] Review Railway deployment logs with user
+- [x] Identify specific error causing crash (Nixpacks deprecated)
+- [ ] Remove nixpacks.toml and railway.json to use Railway auto-detection
+- [ ] Push changes and verify deployment works

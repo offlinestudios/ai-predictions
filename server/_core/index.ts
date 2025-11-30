@@ -40,6 +40,12 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // Clerk handles authentication - no OAuth routes needed
+  
+  // Health check endpoint for Railway
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",
@@ -68,7 +74,19 @@ async function startServer() {
 
   server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${port}/`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`Health check: http://0.0.0.0:${port}/health`);
+  });
+  
+  // Handle server errors
+  server.on("error", (error) => {
+    console.error("Server error:", error);
+    process.exit(1);
   });
 }
 
-startServer().catch(console.error);
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  console.error("Stack trace:", error.stack);
+  process.exit(1);
+});
