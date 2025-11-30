@@ -15,6 +15,13 @@
       "when": 1764535585165,
       "tag": "0001_typical_silver_fox",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1764538651912,
+      "tag": "0002_young_viper",
+      "breakpoints": true
     }
   ]
 }
