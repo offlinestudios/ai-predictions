@@ -7,30 +7,40 @@ RUN npm install -g pnpm@10
 # Set working directory
 WORKDIR /app
 
-# Copy package files and patches
+# Copy package files and patches for dependency installation
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches
 
 # Install dependencies
-FROM base AS dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build application
-FROM dependencies AS build
+# Copy all source files
 COPY . .
+
+# Build application (creates dist/ and client/dist/)
 RUN pnpm build
 
-# Production image
-FROM base AS production
+# Production image - start fresh to keep it lean
+FROM node:22-slim AS production
 
-# Copy dependencies and built files
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/client/dist ./client/dist
-COPY --from=build /app/drizzle ./drizzle
-COPY --from=build /app/scripts ./scripts
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
+# Install pnpm in production image
+RUN npm install -g pnpm@10
+
+WORKDIR /app
+
+# Copy package files for production dependencies
+COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
+
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built files from base stage
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/client/dist ./client/dist
+COPY --from=base /app/drizzle ./drizzle
+COPY --from=base /app/scripts ./scripts
+COPY --from=base /app/drizzle.config.ts ./drizzle.config.ts
 
 # Expose port (Railway will set PORT env var)
 EXPOSE 3000

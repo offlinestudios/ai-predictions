@@ -259,3 +259,8 @@
 - [x] Identify missing patches directory causing pnpm install failure
 - [x] Update Dockerfile to copy patches directory
 - [x] Push fix and verify Railway deployment
+
+## Fix Dockerfile Build Order Issue
+- [x] Fix multi-stage build to ensure dist directories exist before copying
+- [x] Simplified Dockerfile to single build stage then production stage
+- [ ] Push fix and verify Railway deployment
