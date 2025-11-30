@@ -8,6 +8,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import { Loader2, ArrowLeft, Calendar, LogOut, Search, ThumbsUp, ThumbsDown, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import ShareButtons from "@/components/ShareButtons";
 
 import { useEffect, useState } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -237,9 +238,20 @@ export default function History() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose prose-invert prose-sm max-w-none">
+                    <div className="prose prose-invert prose-sm max-w-none mb-6">
                       <Streamdown>{pred.predictionResult}</Streamdown>
                     </div>
+                    
+                    {/* Share Buttons */}
+                    {pred.shareToken && (
+                      <div className="border-t border-border pt-4">
+                        <ShareButtons 
+                          shareToken={pred.shareToken}
+                          predictionText={pred.predictionResult}
+                          category={pred.category}
+                        />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

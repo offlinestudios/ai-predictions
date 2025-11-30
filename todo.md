@@ -209,7 +209,7 @@
 - [x] Create public prediction view endpoint (no auth required)
 - [x] Build shareable prediction card page with branding
 - [x] Add share buttons to Dashboard prediction results
-- [ ] Add share buttons to History page predictions
+- [x] Add share buttons to History page predictions
 - [x] Implement Twitter/X share with pre-filled text
 - [x] Implement Facebook share
 - [x] Implement LinkedIn share

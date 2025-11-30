@@ -4,16 +4,17 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface ShareButtonsProps {
-  shareToken: string;
+  shareToken: string | null;
   predictionText: string;
-  category: string;
+  category: string | null;
 }
 
 export default function ShareButtons({ shareToken, predictionText, category }: ShareButtonsProps) {
+  if (!shareToken) return null;
   const [copied, setCopied] = useState(false);
   
   const shareUrl = `${window.location.origin}/share/${shareToken}`;
-  const shareText = `Check out my ${category} prediction from AI Predictions! 🔮`;
+  const shareText = `Check out my ${category || 'AI'} prediction from AI Predictions! 🔮`;
   
   const handleCopyLink = async () => {
     try {
