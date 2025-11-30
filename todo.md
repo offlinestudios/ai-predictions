@@ -231,4 +231,4 @@
 - [x] Remove dependency on OWNER_OPEN_ID env variable
 - [x] Implement alternative admin access control using Clerk user ID or email
 - [x] Test fix locally
-- [ ] Push to GitHub and verify Railway deployment
+- [x] Push to GitHub and verify Railway deployment
