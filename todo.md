@@ -193,3 +193,13 @@
 - [x] Add "X/3 predictions used" warning before hitting limit
 - [x] Include direct upgrade buttons to Pro and Premium
 - [ ] Test modal triggers and conversion flow
+
+## Add Email Notifications
+- [x] Create email notification helper using built-in notification API
+- [x] Send welcome email when user generates first prediction
+- [x] Send subscription confirmation email after successful upgrade
+- [x] Send payment receipt email after each successful payment
+- [x] Send failed payment notification email
+- [x] Send weekly prediction summary email to active users (helper created)
+- [x] Integrate notifications into Stripe webhook handlers
+- [ ] Test email delivery for all notification types

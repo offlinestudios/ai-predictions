@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { stripe, Stripe } from "./_core/stripe";
 import { updateSubscriptionTier } from "./db";
+import { sendSubscriptionConfirmationEmail, sendPaymentReceiptEmail, sendFailedPaymentEmail } from "./email";
 
 const router = Router();
 
@@ -50,6 +51,16 @@ router.post("/api/stripe/webhook", async (req, res) => {
           // Update user subscription in database
           await updateSubscriptionTier(parseInt(userId), tier);
           console.log(`[Stripe Webhook] Updated user ${userId} to ${tier} tier`);
+          
+          // Send subscription confirmation email
+          const userEmail = session.customer_details?.email || session.metadata?.user_email;
+          const userName = session.customer_details?.name || session.metadata?.user_name || "there";
+          const amount = session.amount_total || 0;
+          
+          if (userEmail) {
+            await sendSubscriptionConfirmationEmail(userEmail, userName, tier, amount);
+            console.log(`[Stripe Webhook] Sent subscription confirmation email to ${userEmail}`);
+          }
         }
         break;
       }
@@ -84,7 +95,33 @@ router.post("/api/stripe/webhook", async (req, res) => {
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         console.log("[Stripe Webhook] Payment failed for invoice:", invoice.id);
-        // Could send email notification to user here
+        
+        // Send failed payment email
+        const customerEmail = invoice.customer_email;
+        const amount = invoice.amount_due;
+        
+        if (customerEmail) {
+          await sendFailedPaymentEmail(customerEmail, "there", amount);
+          console.log(`[Stripe Webhook] Sent failed payment email to ${customerEmail}`);
+        }
+        break;
+      }
+      
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice;
+        console.log("[Stripe Webhook] Payment succeeded for invoice:", invoice.id);
+        
+        // Send payment receipt email (skip for first invoice as confirmation email covers it)
+        if (invoice.billing_reason !== "subscription_create") {
+          const customerEmail = invoice.customer_email;
+          const amount = invoice.amount_paid;
+          const invoiceUrl = invoice.hosted_invoice_url;
+          
+          if (customerEmail) {
+            await sendPaymentReceiptEmail(customerEmail, "there", amount, invoiceUrl || undefined);
+            console.log(`[Stripe Webhook] Sent payment receipt email to ${customerEmail}`);
+          }
+        }
         break;
       }
 

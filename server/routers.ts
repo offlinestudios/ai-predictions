@@ -22,6 +22,7 @@ import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import { stripe } from "./_core/stripe";
 import { STRIPE_PRODUCTS } from "./products";
+import { sendWelcomeEmail } from "./email";
 
 export const appRouter = router({
   system: systemRouter,
@@ -251,6 +252,16 @@ export const appRouter = router({
 
         // Increment usage counter
         await incrementPredictionUsage(ctx.user.id);
+        
+        // Send welcome email on first prediction
+        if (subscription.totalUsed === 0) {
+          const userName = ctx.user.name || "there";
+          const userEmail = ctx.user.email || "";
+          if (userEmail) {
+            await sendWelcomeEmail(userEmail, userName);
+            console.log(`[Email] Sent welcome email to ${userEmail}`);
+          }
+        }
 
         return {
           prediction: predictionResult,
