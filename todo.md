@@ -254,3 +254,8 @@
 - [x] Create Dockerfile for explicit build control
 - [x] Add .dockerignore for faster builds
 - [x] Push fix and verify Railway deployment
+
+## Fix Docker Build - Missing Patches Directory
+- [x] Identify missing patches directory causing pnpm install failure
+- [x] Update Dockerfile to copy patches directory
+- [ ] Push fix and verify Railway deployment
