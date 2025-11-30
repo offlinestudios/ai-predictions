@@ -164,3 +164,12 @@
 - [x] Analyze user preferences (favorite categories, feedback patterns)
 - [x] Adjust AI tone based on positive feedback patterns
 - [ ] Test personalization with multiple predictions
+
+## Add Subscription Management Page
+- [x] Create Stripe Customer Portal session endpoint
+- [x] Build /account page with subscription details
+- [x] Display current plan, billing cycle, and next payment date
+- [x] Show payment history from Stripe
+- [x] Add "Manage Subscription" button to open Stripe Customer Portal
+- [x] Add navigation link to Account page
+- [ ] Test subscription management flow

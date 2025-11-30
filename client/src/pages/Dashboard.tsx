@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 
 import { useState, useEffect } from "react";
@@ -228,6 +228,12 @@ export default function Dashboard() {
                 </Button>
               </Link>
             )}
+            <Link href="/account">
+              <Button variant="ghost" size="sm">
+                <Settings className="w-4 h-4 mr-2" />
+                Account
+              </Button>
+            </Link>
             <div className="text-sm text-muted-foreground">
               {user?.name || user?.email}
             </div>

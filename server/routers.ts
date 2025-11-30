@@ -93,6 +93,48 @@ export const appRouter = router({
           checkoutUrl: session.url,
         };
       }),
+    
+    createPortalSession: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const origin = ctx.req.headers.origin || "http://localhost:3000";
+        
+        // Get or create Stripe customer for this user
+        // First, try to find existing customer by email
+        let customerId: string | undefined;
+        
+        if (ctx.user.email) {
+          const customers = await stripe.customers.list({
+            email: ctx.user.email,
+            limit: 1,
+          });
+          
+          if (customers.data.length > 0) {
+            customerId = customers.data[0].id;
+          }
+        }
+        
+        // If no customer found, create one
+        if (!customerId) {
+          const customer = await stripe.customers.create({
+            email: ctx.user.email || undefined,
+            name: ctx.user.name || undefined,
+            metadata: {
+              user_id: ctx.user.id.toString(),
+            },
+          });
+          customerId = customer.id;
+        }
+        
+        // Create Customer Portal session
+        const session = await stripe.billingPortal.sessions.create({
+          customer: customerId,
+          return_url: `${origin}/account`,
+        });
+        
+        return {
+          portalUrl: session.url,
+        };
+      }),
   }),
 
   prediction: router({

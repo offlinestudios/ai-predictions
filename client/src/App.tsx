@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
+import Account from "./pages/Account";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/sign-up"} component={SignUp} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/history"} component={History} />
+      <Route path={"/account"} component={Account} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
