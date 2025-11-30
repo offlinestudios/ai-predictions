@@ -12,7 +12,10 @@ import {
   getUserPredictions,
   getUserPredictionHistory,
   getUserFeedbackStats,
+  getDb,
 } from "./db";
+import { predictions } from "../drizzle/schema";
+import { eq, desc, like, or, isNull, sql, and } from "drizzle-orm";
 import { invokeLLM } from "./_core/llm";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "./storage";
@@ -259,10 +262,90 @@ export const appRouter = router({
     getHistory: protectedProcedure
       .input(z.object({
         limit: z.number().min(1).max(100).optional(),
+        offset: z.number().min(0).optional(),
+        category: z.enum(["career", "love", "finance", "health", "general", "all"]).optional(),
+        search: z.string().optional(),
+        feedback: z.enum(["like", "dislike", "none", "all"]).optional(),
       }))
       .query(async ({ ctx, input }) => {
-        const history = await getUserPredictions(ctx.user.id, input.limit || 50);
-        return history;
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        
+        // Build where conditions
+        const conditions: any[] = [eq(predictions.userId, ctx.user.id)];
+        
+        // Apply category filter
+        if (input.category && input.category !== "all") {
+          conditions.push(eq(predictions.category, input.category));
+        }
+        
+        // Apply feedback filter
+        if (input.feedback && input.feedback !== "all") {
+          if (input.feedback === "none") {
+            conditions.push(isNull(predictions.userFeedback));
+          } else {
+            conditions.push(eq(predictions.userFeedback, input.feedback));
+          }
+        }
+        
+        // Apply search filter (search in userInput and predictionResult)
+        if (input.search && input.search.trim()) {
+          const searchTerm = `%${input.search.trim()}%`;
+          conditions.push(
+            or(
+              like(predictions.userInput, searchTerm),
+              like(predictions.predictionResult, searchTerm)
+            )!
+          );
+        }
+        
+        // Apply pagination
+        const limit = input.limit || 20;
+        const offset = input.offset || 0;
+        
+        const history = await db.select()
+          .from(predictions)
+          .where(and(...conditions))
+          .orderBy(desc(predictions.createdAt))
+          .limit(limit)
+          .offset(offset);
+        
+        // Get total count for pagination
+        const countConditions: any[] = [eq(predictions.userId, ctx.user.id)];
+        
+        if (input.category && input.category !== "all") {
+          countConditions.push(eq(predictions.category, input.category));
+        }
+        
+        if (input.feedback && input.feedback !== "all") {
+          if (input.feedback === "none") {
+            countConditions.push(isNull(predictions.userFeedback));
+          } else {
+            countConditions.push(eq(predictions.userFeedback, input.feedback));
+          }
+        }
+        
+        if (input.search && input.search.trim()) {
+          const searchTerm = `%${input.search.trim()}%`;
+          countConditions.push(
+            or(
+              like(predictions.userInput, searchTerm),
+              like(predictions.predictionResult, searchTerm)
+            )!
+          );
+        }
+        
+        const totalResult = await db.select({ count: sql<number>`count(*)` })
+          .from(predictions)
+          .where(and(...countConditions));
+        
+        const total = Number(totalResult[0]?.count || 0);
+        
+        return {
+          predictions: history,
+          total,
+          hasMore: offset + history.length < total,
+        };
       }),
 
     uploadFile: protectedProcedure

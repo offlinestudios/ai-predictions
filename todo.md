@@ -173,3 +173,14 @@
 - [x] Add "Manage Subscription" button to open Stripe Customer Portal
 - [x] Add navigation link to Account page
 - [ ] Test subscription management flow
+
+## Build Prediction History Page
+- [x] Enhance getHistory tRPC procedure with filtering and pagination
+- [x] Add category filter support
+- [x] Add date range filter support
+- [x] Add search functionality for prediction text
+- [x] Build History page UI with filter controls
+- [x] Display predictions in card layout with feedback indicators
+- [x] Add pagination or infinite scroll
+- [x] Show empty state for users with no predictions
+- [ ] Test history page with various filters
