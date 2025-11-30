@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import Account from "./pages/Account";
-import Admin from "./pages/Admin";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import SharedPrediction from "./pages/SharedPrediction";
@@ -22,7 +21,6 @@ function Router() {
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/history"} component={History} />
       <Route path={"/account"} component={Account} />
-      <Route path={"/admin"} component={Admin} />
       <Route path={"/share/:token"} component={SharedPrediction} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />

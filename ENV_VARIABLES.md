@@ -61,18 +61,10 @@ R2_PUBLIC_DOMAIN=your-custom-domain.com  # Optional
 NODE_ENV=production
 PORT=3000
 JWT_SECRET=your-super-secret-jwt-key-change-this
-ADMIN_USER_ID=your_clerk_user_id_here
 ```
 - **NODE_ENV**: Set to `production` for deployment
 - **PORT**: Port number (Railway auto-assigns, usually 3000)
 - **JWT_SECRET**: Random string for session security (generate with `openssl rand -base64 32`)
-- **ADMIN_USER_ID**: Your Clerk user ID for admin dashboard access
-  - **How to get it**: 
-    1. Sign in to your deployed app
-    2. Open browser console (F12)
-    3. Run: `fetch('/api/trpc/auth.me').then(r => r.json()).then(d => console.log('Your User ID:', d.result.data.json.id))`
-    4. Copy the numeric ID and set it as ADMIN_USER_ID in Railway
-    5. Redeploy the app to apply changes
 
 ## Setting Environment Variables in Railway
 

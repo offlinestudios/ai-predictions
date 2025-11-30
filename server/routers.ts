@@ -2,7 +2,6 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
-import { ENV } from "./_core/env";
 import { z } from "zod";
 import { 
   getOrCreateSubscription, 
@@ -411,54 +410,6 @@ export const appRouter = router({
         
         return { success: true };
       }),
-  }),
-
-  admin: router({
-    getAnalytics: protectedProcedure.query(async ({ ctx }) => {
-      // Check if admin access is configured
-      if (!ENV.adminUserId && !ENV.ownerOpenId) {
-        throw new TRPCError({ 
-          code: "INTERNAL_SERVER_ERROR", 
-          message: "Admin access not configured. Set ADMIN_USER_ID environment variable with your Clerk user ID." 
-        });
-      }
-
-      // Check if user is admin (use ADMIN_USER_ID env variable for Railway, fallback to OWNER_OPEN_ID for Manus)
-      const isAdmin = ENV.adminUserId 
-        ? ctx.user.id.toString() === ENV.adminUserId 
-        : ctx.user.openId === ENV.ownerOpenId;
-      
-      if (!isAdmin) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the project owner can access analytics" });
-      }
-
-      const {
-        getUserStats,
-        getPredictionStats,
-        getSharingStats,
-        getRevenueMetrics,
-        getConversionRates,
-        getRecentActivity,
-      } = await import("./analytics");
-
-      const [userStats, predictionStats, sharingStats, revenueMetrics, conversionRates, recentActivity] = await Promise.all([
-        getUserStats(),
-        getPredictionStats(),
-        getSharingStats(),
-        getRevenueMetrics(),
-        getConversionRates(),
-        getRecentActivity(),
-      ]);
-
-      return {
-        userStats,
-        predictionStats,
-        sharingStats,
-        revenueMetrics,
-        conversionRates,
-        recentActivity,
-      };
-    }),
   }),
 });
 

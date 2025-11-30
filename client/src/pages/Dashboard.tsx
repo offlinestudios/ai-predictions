@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings, BarChart3 } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
@@ -247,13 +247,6 @@ export default function Dashboard() {
               <Button variant="ghost" size="sm">
                 <Settings className="w-4 h-4 mr-2" />
                 Account
-              </Button>
-            </Link>
-            {/* Admin link - only shown to owner, will show error if not owner */}
-            <Link href="/admin">
-              <Button variant="ghost" size="sm">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Admin
               </Button>
             </Link>
             <div className="text-sm text-muted-foreground">

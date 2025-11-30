@@ -40,12 +40,6 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // Clerk handles authentication - no OAuth routes needed
-  
-  // Health check endpoint for Railway
-  app.get("/health", (req, res) => {
-    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
-  });
-  
   // tRPC API
   app.use(
     "/api/trpc",
@@ -61,32 +55,16 @@ async function startServer() {
     serveStatic(app);
   }
 
-  // In production (Railway, Vercel, etc.), use exact PORT provided by platform
-  // In development, find available port if preferred port is busy
   const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = process.env.NODE_ENV === "production" 
-    ? preferredPort 
-    : await findAvailablePort(preferredPort);
+  const port = await findAvailablePort(preferredPort);
 
-  if (port !== preferredPort && process.env.NODE_ENV === "development") {
+  if (port !== preferredPort) {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${port}/`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Health check: http://0.0.0.0:${port}/health`);
-  });
-  
-  // Handle server errors
-  server.on("error", (error) => {
-    console.error("Server error:", error);
-    process.exit(1);
+  server.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}/`);
   });
 }
 
-startServer().catch((error) => {
-  console.error("Failed to start server:", error);
-  console.error("Stack trace:", error.stack);
-  process.exit(1);
-});
+startServer().catch(console.error);
