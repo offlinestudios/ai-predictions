@@ -226,3 +226,9 @@
 - [x] Build /admin page with metrics cards and charts
 - [x] Add navigation link to Admin page (only visible to owner)
 - [ ] Test admin access control and metrics accuracy
+
+## Fix Railway Deployment Crash (Admin Dashboard)
+- [x] Remove dependency on OWNER_OPEN_ID env variable
+- [x] Implement alternative admin access control using Clerk user ID or email
+- [x] Test fix locally
+- [ ] Push to GitHub and verify Railway deployment

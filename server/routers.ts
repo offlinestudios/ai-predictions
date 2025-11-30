@@ -415,8 +415,20 @@ export const appRouter = router({
 
   admin: router({
     getAnalytics: protectedProcedure.query(async ({ ctx }) => {
-      // Check if user is owner
-      if (ctx.user.openId !== ENV.ownerOpenId) {
+      // Check if admin access is configured
+      if (!ENV.adminUserId && !ENV.ownerOpenId) {
+        throw new TRPCError({ 
+          code: "INTERNAL_SERVER_ERROR", 
+          message: "Admin access not configured. Set ADMIN_USER_ID environment variable with your Clerk user ID." 
+        });
+      }
+
+      // Check if user is admin (use ADMIN_USER_ID env variable for Railway, fallback to OWNER_OPEN_ID for Manus)
+      const isAdmin = ENV.adminUserId 
+        ? ctx.user.id.toString() === ENV.adminUserId 
+        : ctx.user.openId === ENV.ownerOpenId;
+      
+      if (!isAdmin) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Only the project owner can access analytics" });
       }
 
