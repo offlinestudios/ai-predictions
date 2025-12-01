@@ -1,6 +1,14 @@
-CREATE TYPE "public"."role" AS ENUM('user', 'admin');--> statement-breakpoint
-CREATE TYPE "public"."tier" AS ENUM('free', 'pro', 'premium');--> statement-breakpoint
-CREATE TABLE "predictions" (
+DO $$ BEGIN
+ CREATE TYPE "public"."role" AS ENUM('user', 'admin');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."tier" AS ENUM('free', 'pro', 'premium');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "predictions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"userId" integer NOT NULL,
 	"userInput" text NOT NULL,
@@ -10,7 +18,7 @@ CREATE TABLE "predictions" (
 	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "subscriptions" (
+CREATE TABLE IF NOT EXISTS "subscriptions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"userId" integer NOT NULL,
 	"tier" "tier" DEFAULT 'free' NOT NULL,
@@ -23,7 +31,7 @@ CREATE TABLE "subscriptions" (
 	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"openId" varchar(255) NOT NULL,
 	"name" text,

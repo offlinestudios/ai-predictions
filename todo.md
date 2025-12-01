@@ -1,9 +1,15 @@
 # Project TODO
 
+## Fix Railway Deployment Migration Error
+- [ ] Fix duplicate enum type error in migrations (role and tier enums already exist)
+- [ ] Update migration script to handle existing enum types gracefully
+- [ ] Deploy fix to Railway and verify deployment succeeds
+- [ ] Test prediction generation on Railway production
+
 ## Debug Prediction Query Failure on Railway
-- [ ] Get error details from user (browser console, error message)
-- [ ] Check if OpenAI API key is set in Railway
-- [ ] Verify database connection for saving predictions
-- [ ] Test prediction generation locally
-- [ ] Fix identified issue
-- [ ] Verify predictions work in production
+- [x] Get error details from user (browser console, error message)
+- [x] Check if OpenAI API key is set in Railway
+- [x] Verify database connection for saving predictions
+- [x] Test prediction generation locally
+- [x] Fix identified issue (added prepare: false to postgres connection)
+- [ ] Verify predictions work in production (blocked by migration error)
