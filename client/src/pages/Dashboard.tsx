@@ -13,6 +13,7 @@ import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation"
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
 import { TierBadge } from "@/components/Badge";
+import { PredictionLoader } from "@/components/PredictionLoader";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -676,8 +677,13 @@ export default function Dashboard() {
 
 
 
+                {/* Loading Animation */}
+                {(generateMutation.isPending || generateAnonymousMutation.isPending) && (
+                  <PredictionLoader />
+                )}
+
                 {/* Prediction Result */}
-                {prediction && (
+                {prediction && !generateMutation.isPending && !generateAnonymousMutation.isPending && (
                   <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">

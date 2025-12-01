@@ -109,3 +109,9 @@
 - [x] Remove diamond emoji from subscription card sign-up prompt
 - [x] Remove crystal ball emoji from upgrade modal header
 - [x] Fix upgrade modal width for desktop (increased from max-w-4xl to max-w-6xl)
+
+### Loading Animation
+- [x] Create engaging loading animation component (pulsing orb/sphere)
+- [x] Integrate loading animation into Dashboard prediction generation
+- [x] Add loading text messages ("AI is analyzing...", "Generating insights...")
+- [x] Replace basic spinner with custom animated component

@@ -228,3 +228,68 @@
 .animate-float {
   animation: float ease-in-out infinite;
 }
+
+/* Prediction Loader Animations */
+@keyframes float-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-10px, -30px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes float-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(15px, -25px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes float-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animate-float-1 {
+  animation: float-1 3s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 3.5s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 4s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
