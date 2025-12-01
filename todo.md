@@ -73,3 +73,16 @@
 - [x] Lock deep mode for Free/Starter users with upgrade prompt
 - [x] Update database to store predictionMode with each prediction
 - [x] Add confidence score to prediction results display
+
+### Prediction History Analytics (Premium Feature)
+- [x] Create Analytics page component (Premium-only access)
+- [x] Add analytics route in App.tsx
+- [x] Create backend analytics endpoint to fetch aggregated data
+- [x] Implement category breakdown chart (progress bars)
+- [x] Show feedback statistics (like/dislike ratio)
+- [x] Display prediction count by category
+- [x] Add streak statistics (current streak, longest streak)
+- [x] Show deep mode vs standard mode usage comparison
+- [x] Add confidence score trends for deep mode predictions
+- [x] Implement date range filter for analytics
+- [ ] Add export analytics data feature (CSV download) - Future enhancement

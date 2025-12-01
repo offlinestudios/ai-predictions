@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings, TrendingUp } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings, TrendingUp, BarChart3 } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
@@ -481,10 +481,22 @@ export default function Dashboard() {
                       ) : (
                         <>
                           <Crown className="w-4 h-4 mr-2" />
-                          Upgrade to Premium - $19.99/mo
+                          Upgrade to Premium - $29.99/mo
                         </>
                       )}
                     </Button>
+                  </div>
+                )}
+                
+                {subscription?.tier === "premium" && (
+                  <div className="space-y-2 pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">Premium Features</p>
+                    <Link href="/analytics">
+                      <Button variant="outline" className="w-full" size="sm">
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        View Analytics
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </CardContent>

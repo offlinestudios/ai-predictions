@@ -15,7 +15,7 @@ import {
   getDb,
 } from "./db";
 import { predictions } from "../drizzle/schema";
-import { eq, desc, like, or, isNull, sql, and } from "drizzle-orm";
+import { eq, desc, like, or, isNull, sql, and, gte } from "drizzle-orm";
 import { invokeLLM } from "./_core/llm";
 import { TRPCError } from "@trpc/server";
 import { storagePut } from "./storage";
@@ -436,6 +436,136 @@ export const appRouter = router({
         return prediction;
       }),
     
+    getAnalytics: protectedProcedure
+      .input(z.object({
+        dateRange: z.enum(["7d", "30d", "90d", "all"]).optional().default("30d"),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        // Calculate date threshold based on date range
+        const now = new Date();
+        let dateThreshold: Date | null = null;
+        
+        if (input.dateRange !== "all") {
+          const daysMap = { "7d": 7, "30d": 30, "90d": 90 };
+          const days = daysMap[input.dateRange];
+          dateThreshold = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        }
+
+        // Build where clause
+        const whereClause = dateThreshold
+          ? and(eq(predictions.userId, ctx.user.id), gte(predictions.createdAt, dateThreshold))
+          : eq(predictions.userId, ctx.user.id);
+
+        // Fetch all predictions for the user within date range
+        const userPredictions = await db
+          .select()
+          .from(predictions)
+          .where(whereClause)
+          .orderBy(desc(predictions.createdAt));
+
+        // Calculate analytics
+        const totalPredictions = userPredictions.length;
+
+        // Category breakdown
+        const categoryBreakdown: Record<string, number> = {
+          career: 0,
+          love: 0,
+          finance: 0,
+          health: 0,
+          general: 0,
+        };
+        
+        userPredictions.forEach(p => {
+          if (p.category && categoryBreakdown[p.category] !== undefined) {
+            categoryBreakdown[p.category]++;
+          }
+        });
+
+        // Feedback statistics
+        const feedbackStats = {
+          liked: userPredictions.filter(p => p.userFeedback === "like").length,
+          disliked: userPredictions.filter(p => p.userFeedback === "dislike").length,
+        };
+
+        // Deep mode statistics
+        const deepModePredictions = userPredictions.filter(p => p.predictionMode === "deep");
+        const deepModeStats = {
+          count: deepModePredictions.length,
+        };
+
+        // Average confidence score for deep mode predictions
+        const confidenceScores = deepModePredictions
+          .map(p => p.confidenceScore)
+          .filter((score): score is number => score !== null);
+        
+        const confidenceAverage = confidenceScores.length > 0
+          ? Math.round(confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length)
+          : null;
+
+        // Calculate streaks
+        const allUserPredictions = await db
+          .select({ createdAt: predictions.createdAt })
+          .from(predictions)
+          .where(eq(predictions.userId, ctx.user.id))
+          .orderBy(desc(predictions.createdAt));
+
+        let currentStreak = 0;
+        let longestStreak = 0;
+        let tempStreak = 0;
+        let lastDate: Date | null = null;
+
+        for (const pred of allUserPredictions) {
+          const predDate = new Date(pred.createdAt);
+          predDate.setHours(0, 0, 0, 0);
+
+          if (!lastDate) {
+            tempStreak = 1;
+            lastDate = predDate;
+            continue;
+          }
+
+          const daysDiff = Math.floor((lastDate.getTime() - predDate.getTime()) / (1000 * 60 * 60 * 24));
+
+          if (daysDiff === 1) {
+            tempStreak++;
+          } else if (daysDiff > 1) {
+            longestStreak = Math.max(longestStreak, tempStreak);
+            tempStreak = 1;
+          }
+
+          lastDate = predDate;
+        }
+
+        longestStreak = Math.max(longestStreak, tempStreak);
+
+        // Current streak (check if last prediction was today or yesterday)
+        if (allUserPredictions.length > 0) {
+          const lastPredDate = new Date(allUserPredictions[0]!.createdAt);
+          lastPredDate.setHours(0, 0, 0, 0);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const daysSinceLastPred = Math.floor((today.getTime() - lastPredDate.getTime()) / (1000 * 60 * 60 * 24));
+
+          if (daysSinceLastPred <= 1) {
+            currentStreak = tempStreak;
+          }
+        }
+
+        return {
+          totalPredictions,
+          categoryBreakdown,
+          feedbackStats,
+          deepModeStats,
+          confidenceAverage,
+          currentStreak,
+          longestStreak,
+          accuracyTrend: [], // Placeholder for future implementation
+        };
+      }),
+
     generateAnonymous: publicProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
