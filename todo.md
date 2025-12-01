@@ -134,3 +134,14 @@
 - [x] Add default OG tags to index.html
 - [ ] Create custom OG image generator (future enhancement)
 - [ ] Test social media preview (Facebook, Twitter, LinkedIn) - requires deployment
+
+### Dynamic OG Image Generator
+- [x] Install canvas for server-side image generation
+- [x] Create server endpoint /api/og-image/:shareToken
+- [x] Design OG image template with prediction preview
+- [x] Add category-specific colors and styling (career/love/finance/health/general)
+- [x] Include branding (logo circle, app name, footer CTA)
+- [x] Update SharedPrediction to use dynamic OG image URL
+- [x] Add image dimensions meta tags (1200x630)
+- [x] Implement caching headers (immutable, 1 year)
+- [ ] Test image generation with various predictions - requires deployment

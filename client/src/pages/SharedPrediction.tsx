@@ -54,6 +54,7 @@ export default function SharedPrediction() {
   const ogTitle = `${prediction.category?.toUpperCase() || "GENERAL"} Prediction: ${prediction.userInput.substring(0, 60)}${prediction.userInput.length > 60 ? "..." : ""}`;
   const ogDescription = prediction.predictionResult.substring(0, 155).replace(/[#*_`]/g, "") + "...";
   const shareUrl = `${window.location.origin}/share/${shareToken}`;
+  const ogImageUrl = `${window.location.origin}/api/og-image/${shareToken}`;
 
   return (
     <>
@@ -66,14 +67,16 @@ export default function SharedPrediction() {
         <meta property="og:url" content={shareUrl} />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={shareUrl} />
         <meta property="twitter:title" content={ogTitle} />
         <meta property="twitter:description" content={ogDescription} />
-        <meta property="twitter:image" content="/og-image.png" />
+        <meta property="twitter:image" content={ogImageUrl} />
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
