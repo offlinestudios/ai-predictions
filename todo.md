@@ -1,9 +1,9 @@
 # Project TODO
 
 ## Fix Railway Deployment Migration Error
-- [ ] Fix duplicate enum type error in migrations (role and tier enums already exist)
-- [ ] Update migration script to handle existing enum types gracefully
-- [ ] Deploy fix to Railway and verify deployment succeeds
+- [x] Fix duplicate enum type error in migrations (role and tier enums already exist)
+- [x] Update migration script to handle existing enum types gracefully
+- [x] Deploy fix to Railway and verify deployment succeeds
 - [ ] Test prediction generation on Railway production
 
 ## Debug Prediction Query Failure on Railway
