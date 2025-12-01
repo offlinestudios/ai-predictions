@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Sparkles, Calendar } from "lucide-react";
 import { Streamdown } from "streamdown";
+import { Helmet } from "react-helmet-async";
 
 export default function SharedPrediction() {
   const params = useParams();
@@ -49,8 +50,33 @@ export default function SharedPrediction() {
 
   const categoryColor = categoryColors[prediction.category || "general"] || categoryColors.general;
 
+  // Generate OG tags data
+  const ogTitle = `${prediction.category?.toUpperCase() || "GENERAL"} Prediction: ${prediction.userInput.substring(0, 60)}${prediction.userInput.length > 60 ? "..." : ""}`;
+  const ogDescription = prediction.predictionResult.substring(0, 155).replace(/[#*_`]/g, "") + "...";
+  const shareUrl = `${window.location.origin}/share/${shareToken}`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+    <>
+      <Helmet>
+        <title>{ogTitle} - AI Predictions</title>
+        <meta name="description" content={ogDescription} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={shareUrl} />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        <meta property="og:image" content="/og-image.png" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={shareUrl} />
+        <meta property="twitter:title" content={ogTitle} />
+        <meta property="twitter:description" content={ogDescription} />
+        <meta property="twitter:image" content="/og-image.png" />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
       {/* Header */}
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -104,6 +130,7 @@ export default function SharedPrediction() {
           <p>Powered by Advanced AI • Personalized Insights • Trusted by Thousands</p>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

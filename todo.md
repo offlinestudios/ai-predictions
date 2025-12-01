@@ -115,3 +115,22 @@
 - [x] Integrate loading animation into Dashboard prediction generation
 - [x] Add loading text messages ("AI is analyzing...", "Generating insights...")
 - [x] Replace basic spinner with custom animated component
+
+### Prediction History Page
+- [x] Create History page component with prediction list (already exists)
+- [x] Add filters: category, date range, feedback status
+- [x] Implement search functionality
+- [x] Add pagination for large prediction lists
+- [x] Show prediction details in expandable cards
+- [x] Add route to App.tsx
+- [x] Link from Dashboard navigation
+
+### Prediction Sharing with OG Tags
+- [x] Add Open Graph meta tags to shared prediction page
+- [x] Generate dynamic OG title, description from prediction content
+- [x] Add react-helmet-async for dynamic meta tags
+- [x] Add Twitter Card meta tags
+- [x] Add HelmetProvider to main.tsx
+- [x] Add default OG tags to index.html
+- [ ] Create custom OG image generator (future enhancement)
+- [ ] Test social media preview (Facebook, Twitter, LinkedIn) - requires deployment

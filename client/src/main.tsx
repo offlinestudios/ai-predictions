@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
+import { HelmetProvider } from "react-helmet-async";
 import "./index.css";
 
 // Get Clerk publishable key from environment
@@ -105,11 +106,13 @@ function MissingClerkKey() {
 
 createRoot(document.getElementById("root")!).render(
   CLERK_PUBLISHABLE_KEY ? (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-      <TrpcProvider>
-        <App />
-      </TrpcProvider>
-    </ClerkProvider>
+    <HelmetProvider>
+      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+        <TrpcProvider>
+          <App />
+        </TrpcProvider>
+      </ClerkProvider>
+    </HelmetProvider>
   ) : (
     <MissingClerkKey />
   )
