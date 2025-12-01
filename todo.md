@@ -1,8 +1,9 @@
 # Project TODO
 
-## Debug Railway Bad Gateway Despite Successful Build
-- [x] Check Deploy Logs for runtime errors
-- [x] Identified issue: --force flag not working, migration still prompts
-- [x] Changed migration strategy from 'push --force' to 'generate + migrate'
-- [x] Push fix to GitHub
-- [ ] Verify deployment loads successfully
+## Debug Prediction Query Failure on Railway
+- [ ] Get error details from user (browser console, error message)
+- [ ] Check if OpenAI API key is set in Railway
+- [ ] Verify database connection for saving predictions
+- [ ] Test prediction generation locally
+- [ ] Fix identified issue
+- [ ] Verify predictions work in production
