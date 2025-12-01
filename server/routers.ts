@@ -398,6 +398,38 @@ export const appRouter = router({
         return prediction;
       }),
     
+    generateAnonymous: publicProcedure
+      .input(z.object({
+        userInput: z.string().min(1).max(1000),
+        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Generate prediction without authentication
+        // Simple system prompt for anonymous users
+        const systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
+        
+        const textPrompt = input.category 
+          ? `Generate a ${input.category} prediction for: ${input.userInput}`
+          : `Generate a prediction for: ${input.userInput}`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: textPrompt },
+          ],
+        });
+
+        const messageContent = response.choices[0]?.message?.content;
+        const predictionResult = typeof messageContent === 'string' 
+          ? messageContent 
+          : "Unable to generate prediction at this time.";
+
+        return {
+          prediction: predictionResult,
+          category: input.category || "general",
+        };
+      }),
+    
     submitFeedback: protectedProcedure
       .input(z.object({
         predictionId: z.number(),

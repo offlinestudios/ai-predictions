@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings } from "lucide-react";
+import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Sparkles, LogOut, ThumbsUp, ThumbsDown, Settings, TrendingUp } from "lucide-react";
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
@@ -20,6 +20,7 @@ import { Streamdown } from "streamdown";
 
 const TIER_ICONS = {
   free: Star,
+  starter: TrendingUp,
   pro: Zap,
   premium: Crown,
 };

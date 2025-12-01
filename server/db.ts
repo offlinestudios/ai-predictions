@@ -120,14 +120,15 @@ export async function getOrCreateSubscription(userId: number) {
   return created[0]!;
 }
 
-export async function updateSubscriptionTier(userId: number, tier: "free" | "pro" | "premium") {
+export async function updateSubscriptionTier(userId: number, tier: "free" | "starter" | "pro" | "premium") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const dailyLimits = {
-    free: 3,
-    pro: 20,
-    premium: 100,
+    free: 3, // 3 per week
+    starter: 3, // 3 per day
+    pro: 20, // 20 per day
+    premium: -1, // unlimited
   };
 
   await db.update(subscriptions)
@@ -149,13 +150,32 @@ export async function checkAndResetDailyLimit(userId: number) {
   const now = new Date();
   const lastReset = new Date(sub.lastResetDate);
   
-  // For free tier, use total limit instead of daily limit
+  // For free tier, use weekly limit (reset every 7 days)
   if (sub.tier === "free") {
-    // Free tier has a lifetime limit of 3 predictions
+    const daysSinceReset = Math.floor((now.getTime() - lastReset.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceReset >= 7) {
+      // Reset weekly limit
+      await db.update(subscriptions)
+        .set({ 
+          usedToday: 0, 
+          lastResetDate: now,
+          updatedAt: now,
+        })
+        .where(eq(subscriptions.userId, userId));
+      
+      return { ...sub, usedToday: 0, lastResetDate: now };
+    }
+    
     return sub;
   }
   
-  // For paid tiers (pro, premium), reset daily
+  // For premium tier, no limits
+  if (sub.tier === "premium") {
+    return sub;
+  }
+  
+  // For starter and pro tiers, reset daily
   const needsReset = now.getDate() !== lastReset.getDate() || 
                      now.getMonth() !== lastReset.getMonth() || 
                      now.getFullYear() !== lastReset.getFullYear();

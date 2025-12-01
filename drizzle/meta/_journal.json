@@ -22,6 +22,13 @@
       "when": 1764538651912,
       "tag": "0002_young_viper",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1764615073923,
+      "tag": "0003_smart_vargas",
+      "breakpoints": true
     }
   ]
 }

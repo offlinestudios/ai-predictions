@@ -15,21 +15,28 @@ const TIER_INFO = {
     name: "Free Plan",
     color: "text-gray-400",
     bgColor: "bg-gray-500/10",
-    limit: "3 predictions total",
+    limit: "3 predictions per week",
+  },
+  starter: {
+    icon: TrendingUp,
+    name: "Starter Plan",
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/10",
+    limit: "3 predictions per day",
   },
   pro: {
     icon: Zap,
-    name: "Pro Plan",
+    name: "Pro Plan - Smarter Predictions",
     color: "text-yellow-400",
     bgColor: "bg-yellow-500/10",
     limit: "20 predictions per day",
   },
   premium: {
     icon: Crown,
-    name: "Premium Plan",
+    name: "Premium Plan - Professional Insights",
     color: "text-purple-400",
     bgColor: "bg-purple-500/10",
-    limit: "100 predictions per day",
+    limit: "Unlimited predictions",
   },
 };
 
