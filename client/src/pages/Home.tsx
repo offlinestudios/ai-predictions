@@ -4,7 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp } from "lucide-react";
+import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp, Users, TrendingUp as TrendingUpIcon } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { useEffect, useState } from "react";
 
 
 const SUBSCRIPTION_TIERS = [
@@ -137,6 +139,9 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
+            
+            {/* Social Proof Stats */}
+            <SocialProofStats />
           </div>
         </div>
       </section>
@@ -219,6 +224,77 @@ export default function Home() {
           <p>© 2024 AI Predictions. Powered by advanced artificial intelligence.</p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function SocialProofStats() {
+  const { data: stats, isLoading } = trpc.stats.getGlobal.useQuery();
+  const [animatedPredictionsToday, setAnimatedPredictionsToday] = useState(0);
+  const [animatedTotalPredictions, setAnimatedTotalPredictions] = useState(0);
+  const [animatedTotalUsers, setAnimatedTotalUsers] = useState(0);
+
+  // Animate numbers on load
+  useEffect(() => {
+    if (!stats) return;
+
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const interval = duration / steps;
+
+    let currentStep = 0;
+    const timer = setInterval(() => {
+      currentStep++;
+      const progress = currentStep / steps;
+
+      setAnimatedPredictionsToday(Math.floor(stats.predictionsToday * progress));
+      setAnimatedTotalPredictions(Math.floor(stats.totalPredictions * progress));
+      setAnimatedTotalUsers(Math.floor(stats.totalUsers * progress));
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setAnimatedPredictionsToday(stats.predictionsToday);
+        setAnimatedTotalPredictions(stats.totalPredictions);
+        setAnimatedTotalUsers(stats.totalUsers);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [stats]);
+
+  if (isLoading || !stats) {
+    return null;
+  }
+
+  return (
+    <div className="pt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+      <div className="text-center">
+        <div className="flex items-center justify-center mb-2">
+          <Sparkles className="w-5 h-5 text-primary mr-2" />
+        </div>
+        <div className="text-3xl font-bold text-primary">
+          {animatedPredictionsToday.toLocaleString()}
+        </div>
+        <div className="text-sm text-muted-foreground mt-1">Predictions Today</div>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center mb-2">
+          <TrendingUpIcon className="w-5 h-5 text-primary mr-2" />
+        </div>
+        <div className="text-3xl font-bold text-primary">
+          {animatedTotalPredictions.toLocaleString()}
+        </div>
+        <div className="text-sm text-muted-foreground mt-1">Total Predictions</div>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center mb-2">
+          <Users className="w-5 h-5 text-primary mr-2" />
+        </div>
+        <div className="text-3xl font-bold text-primary">
+          {animatedTotalUsers.toLocaleString()}
+        </div>
+        <div className="text-sm text-muted-foreground mt-1">Happy Users</div>
+      </div>
     </div>
   );
 }

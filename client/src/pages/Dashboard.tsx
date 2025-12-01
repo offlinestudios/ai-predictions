@@ -12,6 +12,7 @@ import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Spar
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
+import { TierBadge } from "@/components/Badge";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -349,8 +350,9 @@ export default function Dashboard() {
                     Account
                   </Button>
                 </Link>
-                <div className="text-sm text-muted-foreground">
-                  {user?.name || user?.email}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{user?.name || user?.email}</span>
+                  {subscription && <TierBadge tier={subscription.tier} size="sm" />}
                 </div>
                 <Button 
                   variant="ghost" 

@@ -86,3 +86,21 @@
 - [x] Add confidence score trends for deep mode predictions
 - [x] Implement date range filter for analytics
 - [ ] Add export analytics data feature (CSV download) - Future enhancement
+
+### Badges System
+- [x] Create Badge component with tier variants (free/starter/pro/premium)
+- [x] Add tier badges to user header/profile in Dashboard
+- [ ] Display badges in prediction history - Future enhancement
+- [x] Add badge colors matching tier levels
+- [x] Create achievement badges for milestones (10/50/100 predictions, streaks)
+- [ ] Store user achievements in database - Future enhancement
+- [ ] Add badges to shared predictions - Future enhancement
+
+### Social Proof Features
+- [x] Add live prediction counter to landing page
+- [x] Create backend endpoint for global stats (total predictions, users)
+- [ ] Add testimonials section to Home page - Future enhancement
+- [x] Display trust indicators (total users, predictions generated)
+- [ ] Add "Recently Generated" section with anonymized predictions - Future enhancement
+- [x] Implement real-time counter animation
+- [ ] Add social proof metrics to footer - Future enhancement

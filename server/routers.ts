@@ -37,6 +37,40 @@ export const appRouter = router({
     }),
   }),
 
+  stats: router({
+    getGlobal: publicProcedure.query(async () => {
+      const db = await getDb();
+      if (!db) return { totalPredictions: 0, totalUsers: 0, predictionsToday: 0 };
+
+      // Get total predictions
+      const totalPredictionsResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(predictions);
+      const totalPredictions = totalPredictionsResult[0]?.count || 0;
+
+      // Get total users (from predictions table, unique userIds)
+      const totalUsersResult = await db
+        .select({ count: sql<number>`count(distinct ${predictions.userId})` })
+        .from(predictions);
+      const totalUsers = totalUsersResult[0]?.count || 0;
+
+      // Get predictions today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const predictionsTodayResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(predictions)
+        .where(gte(predictions.createdAt, today));
+      const predictionsToday = predictionsTodayResult[0]?.count || 0;
+
+      return {
+        totalPredictions,
+        totalUsers,
+        predictionsToday,
+      };
+    }),
+  }),
+
   subscription: router({
     getCurrent: protectedProcedure.query(async ({ ctx }) => {
       const subscription = await checkAndResetDailyLimit(ctx.user.id);
