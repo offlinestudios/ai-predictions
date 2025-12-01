@@ -57,3 +57,10 @@
 - [x] Allow users to generate predictions without signing up on Home page
 - [x] Show prediction result with sign-up CTA after generation
 - [ ] Implement rate limiting for anonymous predictions (optional future enhancement)
+
+### Fix Landing Page Flow
+- [x] Revert Home page to clean marketing-focused landing page
+- [x] Remove prediction form from Home page
+- [x] Update "Start Free" button to link to /dashboard instead of login
+- [x] Allow Dashboard to work for anonymous users (3 free predictions/week)
+- [x] Show sign-up prompt in Dashboard after anonymous predictions

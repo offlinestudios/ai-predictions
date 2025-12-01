@@ -79,6 +79,50 @@ export default function Dashboard() {
     },
   });
 
+  // Anonymous prediction mutation for non-authenticated users
+  const generateAnonymousMutation = trpc.prediction.generateAnonymous.useMutation({
+    onSuccess: (data) => {
+      setPrediction(data.prediction);
+      setUserFeedback(null);
+      
+      // Track anonymous usage in localStorage
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
+      const now = Date.now();
+      const weekInMs = 7 * 24 * 60 * 60 * 1000;
+      
+      // Reset if more than a week has passed
+      if (now - anonymousUsage.lastReset > weekInMs) {
+        anonymousUsage.count = 1;
+        anonymousUsage.lastReset = now;
+      } else {
+        anonymousUsage.count += 1;
+      }
+      
+      localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
+      
+      const remaining = 3 - anonymousUsage.count;
+      toast.success(`Prediction generated! ${remaining} free predictions remaining this week.`);
+      
+      // Show sign-up prompt after first prediction
+      if (anonymousUsage.count === 1) {
+        setTimeout(() => {
+          toast.info("Sign up to save your predictions and get more features!", { duration: 5000 });
+        }, 3000);
+      }
+      
+      // Show upgrade modal when limit is reached
+      if (anonymousUsage.count >= 3) {
+        setTimeout(() => {
+          setUpgradeReason("limit_reached");
+          setShowUpgradeModal(true);
+        }, 2000);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const checkoutMutation = trpc.subscription.createCheckoutSession.useMutation({
     onSuccess: (data) => {
       if (data.checkoutUrl) {
@@ -95,11 +139,12 @@ export default function Dashboard() {
     checkoutMutation.mutate({ tier, interval: "month" });
   };
 
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      window.location.href = getLoginUrl();
-    }
-  }, [authLoading, isAuthenticated]);
+  // Allow anonymous users to access dashboard
+  // useEffect(() => {
+  //   if (!authLoading && !isAuthenticated) {
+  //     window.location.href = getLoginUrl();
+  //   }
+  // }, [authLoading, isAuthenticated]);
   
   // Handle payment success/cancel from URL params
   useEffect(() => {
@@ -118,7 +163,8 @@ export default function Dashboard() {
     }
   }, [refetchSub]);
 
-  if (authLoading || !isAuthenticated) {
+  // Show loading only during auth check, not for anonymous users
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -193,14 +239,40 @@ export default function Dashboard() {
       return;
     }
     
-    // Check if free tier limit is reached
+    setPrediction(null);
+    
+    // Use anonymous mutation for non-authenticated users
+    if (!isAuthenticated) {
+      // Check anonymous usage limit
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
+      const now = Date.now();
+      const weekInMs = 7 * 24 * 60 * 60 * 1000;
+      
+      // Reset if more than a week has passed
+      if (now - anonymousUsage.lastReset > weekInMs) {
+        anonymousUsage.count = 0;
+        anonymousUsage.lastReset = now;
+        localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
+      }
+      
+      // Check if limit is reached
+      if (anonymousUsage.count >= 3) {
+        setUpgradeReason("limit_reached");
+        setShowUpgradeModal(true);
+        return;
+      }
+      
+      generateAnonymousMutation.mutate({ userInput, category });
+      return;
+    }
+    
+    // Check if free tier limit is reached for authenticated users
     if (subscription?.tier === "free" && subscription.totalUsed >= 3) {
       setUpgradeReason("limit_reached");
       setShowUpgradeModal(true);
       return;
     }
     
-    setPrediction(null);
     generateMutation.mutate({ 
       userInput, 
       category,
@@ -208,8 +280,22 @@ export default function Dashboard() {
     });
   };
   
-  const isGenerateDisabled = generateMutation.isPending || 
-    (subscription?.tier === "free" && subscription.totalUsed >= 3);
+  // Calculate anonymous usage for disabled state
+  const getAnonymousUsage = () => {
+    if (isAuthenticated) return { count: 0, lastReset: 0 };
+    const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
+    const now = Date.now();
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    if (now - anonymousUsage.lastReset > weekInMs) {
+      return { count: 0, lastReset: now };
+    }
+    return anonymousUsage;
+  };
+  
+  const anonymousUsage = getAnonymousUsage();
+  const isGenerateDisabled = generateMutation.isPending || generateAnonymousMutation.isPending ||
+    (!isAuthenticated && anonymousUsage.count >= 3) ||
+    (isAuthenticated && subscription?.tier === "free" && subscription.totalUsed >= 3);
 
   const usagePercent = subscription 
     ? subscription.tier === "free" 
@@ -236,31 +322,39 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {subscription?.tier !== "free" && (
-              <Link href="/history">
-                <Button variant="ghost" size="sm">
-                  <History className="w-4 h-4 mr-2" />
-                  History
+            {isAuthenticated ? (
+              <>
+                {subscription?.tier !== "free" && (
+                  <Link href="/history">
+                    <Button variant="ghost" size="sm">
+                      <History className="w-4 h-4 mr-2" />
+                      History
+                    </Button>
+                  </Link>
+                )}
+                <Link href="/account">
+                  <Button variant="ghost" size="sm">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Account
+                  </Button>
+                </Link>
+                <div className="text-sm text-muted-foreground">
+                  {user?.name || user?.email}
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => signOut(() => navigate("/"))}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
                 </Button>
-              </Link>
-            )}
-            <Link href="/account">
-              <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
-                Account
+              </>
+            ) : (
+              <Button asChild variant="default" size="sm">
+                <a href={getLoginUrl()}>Sign In</a>
               </Button>
-            </Link>
-            <div className="text-sm text-muted-foreground">
-              {user?.name || user?.email}
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => signOut(() => navigate("/"))}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+            )}
           </div>
         </div>
       </header>
@@ -273,37 +367,60 @@ export default function Dashboard() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   {TierIcon && <TierIcon className="w-5 h-5 text-primary" />}
-                  <CardTitle className="capitalize">{subscription?.tier} Plan</CardTitle>
+                  <CardTitle className="capitalize">
+                    {isAuthenticated ? `${subscription?.tier} Plan` : "Free Trial"}
+                  </CardTitle>
                 </div>
-                <CardDescription>Your current subscription</CardDescription>
+                <CardDescription>
+                  {isAuthenticated ? "Your current subscription" : "Try before you sign up"}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">
-                      {subscription?.tier === "free" ? "Total Predictions" : "Daily Usage"}
+                      {!isAuthenticated ? "Weekly Predictions" : subscription?.tier === "free" ? "Weekly Predictions" : "Daily Usage"}
                     </span>
                     <span className="font-medium">
-                      {subscription?.tier === "free" 
-                        ? `${subscription?.totalUsed} / 3`
-                        : `${subscription?.usedToday} / ${subscription?.dailyLimit}`
+                      {!isAuthenticated
+                        ? `${anonymousUsage.count} / 3`
+                        : subscription?.tier === "free" 
+                          ? `${subscription?.totalUsed} / 3`
+                          : `${subscription?.usedToday} / ${subscription?.dailyLimit}`
                       }
                     </span>
                   </div>
-                  <Progress value={usagePercent} className="h-2" />
-                  {subscription?.tier === "free" && (
+                  <Progress value={!isAuthenticated ? (anonymousUsage.count / 3) * 100 : usagePercent} className="h-2" />
+                  {(!isAuthenticated || subscription?.tier === "free") && (
                     <p className="text-xs text-muted-foreground mt-2">
-                      {3 - (subscription?.totalUsed || 0)} predictions remaining
+                      {!isAuthenticated 
+                        ? `${3 - anonymousUsage.count} predictions remaining this week`
+                        : `${3 - (subscription?.totalUsed || 0)} predictions remaining this week`
+                      }
                     </p>
                   )}
                 </div>
                 
-                {subscription?.tier === "free" && (
+                {!isAuthenticated && (
+                  <div className="space-y-2 pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
+                      💎 Sign up to save your predictions and get more features!
+                    </p>
+                    <Button asChild className="w-full" size="sm">
+                      <a href={getLoginUrl()}>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Sign Up Free
+                      </a>
+                    </Button>
+                  </div>
+                )}
+                
+                {isAuthenticated && subscription?.tier === "free" && (
                   <div className="space-y-2 pt-4 border-t border-border">
                     <p className="text-sm text-muted-foreground">
                       {subscription.totalUsed >= 3 
                         ? "🔒 You've used all 3 free predictions. Upgrade to continue!" 
-                        : "Upgrade for unlimited predictions"}
+                        : "Upgrade for more predictions and features"}
                     </p>
                     <Button
                       onClick={() => handleUpgrade("pro")}
@@ -332,7 +449,7 @@ export default function Dashboard() {
                       ) : (
                         <>
                           <Crown className="w-4 h-4 mr-2" />
-                          Upgrade to Premium - $19.99/mo
+                          Upgrade to Premium - $29.99/mo
                         </>
                       )}
                     </Button>

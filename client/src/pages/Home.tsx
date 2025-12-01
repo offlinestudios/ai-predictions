@@ -2,15 +2,9 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Zap, Crown, History, ArrowRight, Star, Sparkles, Loader2, TrendingUp } from "lucide-react";
-import { trpc } from "@/lib/trpc";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Streamdown } from "streamdown";
+import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp } from "lucide-react";
 
 
 const SUBSCRIPTION_TIERS = [
@@ -81,27 +75,6 @@ const SUBSCRIPTION_TIERS = [
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
-  const [userInput, setUserInput] = useState("");
-  const [category, setCategory] = useState<"career" | "love" | "finance" | "health" | "general">("general");
-  const [prediction, setPrediction] = useState<string | null>(null);
-
-  const generateMutation = trpc.prediction.generateAnonymous.useMutation({
-    onSuccess: (data) => {
-      setPrediction(data.prediction);
-      toast.success("Prediction generated!");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to generate prediction");
-    },
-  });
-
-  const handleGenerate = () => {
-    if (!userInput.trim()) {
-      toast.error("Please enter a question");
-      return;
-    }
-    generateMutation.mutate({ userInput, category });
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -138,111 +111,32 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section with Prediction Form */}
+      {/* Hero Section */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
         <div className="container relative">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="text-center space-y-6">
-              <Badge variant="secondary" className="mb-4">
-                Powered by Advanced AI
-              </Badge>
-              <h2 className="text-5xl md:text-6xl font-bold leading-tight">
-                Unlock Your Future with{" "}
-                <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                  AI-Powered Predictions
-                </span>
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Get personalized insights about your career, love life, finances, and health. 
-                Try it free - no sign up required!
-              </p>
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <Badge variant="secondary" className="mb-4">
+              Powered by Advanced AI
+            </Badge>
+            <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+              Unlock Your Future with{" "}
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                AI-Powered Predictions
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Get personalized insights about your career, love life, finances, and health. 
+              Our advanced AI analyzes your questions and provides meaningful predictions tailored just for you.
+            </p>
+            <div className="flex gap-4 justify-center pt-4">
+              <Button asChild size="lg" className="text-lg px-8">
+                <Link href="/dashboard">
+                  Start Free
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
             </div>
-
-            {/* Prediction Form */}
-            <Card className="border-primary/20 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl">Try a Free Prediction</CardTitle>
-                <CardDescription>Ask anything - no account needed</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Category</label>
-                  <Select value={category} onValueChange={(v: any) => setCategory(v)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general">General</SelectItem>
-                      <SelectItem value="career">Career</SelectItem>
-                      <SelectItem value="love">Love & Relationships</SelectItem>
-                      <SelectItem value="finance">Finance</SelectItem>
-                      <SelectItem value="health">Health & Wellness</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Your Question</label>
-                  <Textarea
-                    placeholder="e.g., Will I get the promotion I'm hoping for?"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    rows={4}
-                    maxLength={1000}
-                    className="resize-none"
-                  />
-                  <div className="text-xs text-muted-foreground mt-1 text-right">
-                    {userInput.length} / 1000
-                  </div>
-                </div>
-
-                <Button 
-                  onClick={handleGenerate}
-                  disabled={generateMutation.isPending || !userInput.trim()}
-                  className="w-full"
-                  size="lg"
-                >
-                  {generateMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate Prediction
-                    </>
-                  )}
-                </Button>
-
-                {prediction && (
-                  <div className="mt-6 p-6 bg-primary/5 rounded-lg border border-primary/20">
-                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                      Your Prediction
-                    </h3>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <Streamdown>{prediction}</Streamdown>
-                    </div>
-                    
-                    {!isAuthenticated && (
-                      <div className="mt-6 p-4 bg-card rounded-lg border border-border">
-                        <p className="text-sm text-muted-foreground mb-3">
-                          💎 Want to save your predictions, get unlimited history, and unlock advanced features?
-                        </p>
-                        <Button asChild className="w-full" size="lg">
-                          <a href={getLoginUrl()}>
-                            Sign Up Free
-                            <ArrowRight className="ml-2 w-4 h-4" />
-                          </a>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
@@ -306,9 +200,9 @@ export default function Home() {
                       </Button>
                     ) : (
                       <Button asChild className="w-full" variant={tier.popular ? "default" : "outline"}>
-                        <a href={getLoginUrl()}>
+                        <Link href="/dashboard">
                           Get Started
-                        </a>
+                        </Link>
                       </Button>
                     )}
                   </CardFooter>
