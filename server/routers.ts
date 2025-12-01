@@ -147,10 +147,19 @@ export const appRouter = router({
         userInput: z.string().min(1).max(1000),
         category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
         attachmentUrls: z.array(z.string()).optional(),
+        deepMode: z.boolean().optional().default(false),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check subscription limits
         const subscription = await checkAndResetDailyLimit(ctx.user.id);
+        
+        // Check if user has access to deep mode (Pro/Premium only)
+        if (input.deepMode && !['pro', 'premium'].includes(subscription.tier)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Deep Prediction Mode is only available for Pro and Premium users. Upgrade to unlock advanced AI analysis!",
+          });
+        }
         
         // For free tier, check total lifetime limit
         if (subscription.tier === "free") {
@@ -174,8 +183,22 @@ export const appRouter = router({
         const userHistory = await getUserPredictionHistory(ctx.user.id, 5);
         const feedbackStats = await getUserFeedbackStats(ctx.user.id);
         
-        // Build personalized system prompt based on user preferences
-        let systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+        // Build personalized system prompt based on user preferences and mode
+        let systemPrompt = input.deepMode
+          ? `You are an advanced AI oracle and prediction specialist with deep analytical capabilities. Generate comprehensive, highly detailed predictions with multi-layered insights.
+
+**Deep Analysis Requirements:**
+- Provide 400-600 words of detailed analysis
+- Include specific timeframes and milestones
+- Analyze multiple possible outcomes with probability assessments
+- Consider psychological, practical, and external factors
+- Offer actionable steps and warning signs
+- Structure your response with clear sections: Overview, Key Insights, Timeline, Recommendations, and Confidence Assessment
+- Be specific with dates, percentages, and concrete details
+- If files are provided, perform thorough analysis and reference specific details
+
+**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"`
+          : `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
         
         // Add personalization based on user history
         if (userHistory.length > 0) {
@@ -237,9 +260,20 @@ export const appRouter = router({
         });
 
         const messageContent = response.choices[0]?.message?.content;
-        const predictionResult = typeof messageContent === 'string' 
+        let predictionResult = typeof messageContent === 'string' 
           ? messageContent 
           : "Unable to generate prediction at this time.";
+        
+        // Extract confidence score if present (for deep mode)
+        let confidenceScore: number | null = null;
+        if (input.deepMode && typeof predictionResult === 'string') {
+          const confidenceMatch = predictionResult.match(/Confidence:\s*(\d+)%/i);
+          if (confidenceMatch) {
+            confidenceScore = parseInt(confidenceMatch[1], 10);
+            // Remove the confidence line from the displayed result
+            predictionResult = predictionResult.replace(/\n?Confidence:\s*\d+%/i, '').trim();
+          }
+        }
 
         // Save prediction to database and get the ID
         const newPrediction = await createPrediction({
@@ -248,6 +282,8 @@ export const appRouter = router({
           predictionResult,
           category: input.category || "general",
           attachmentUrls: input.attachmentUrls ? JSON.stringify(input.attachmentUrls) : null,
+          predictionMode: input.deepMode ? 'deep' : 'standard',
+          confidenceScore,
         });
 
         // Increment usage counter
@@ -268,6 +304,8 @@ export const appRouter = router({
           predictionId: newPrediction.id,
           shareToken: newPrediction.shareToken!,
           remainingToday: subscription.dailyLimit - subscription.usedToday - 1,
+          confidenceScore,
+          deepMode: input.deepMode,
         };
       }),
 

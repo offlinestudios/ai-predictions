@@ -64,3 +64,12 @@
 - [x] Update "Start Free" button to link to /dashboard instead of login
 - [x] Allow Dashboard to work for anonymous users (3 free predictions/week)
 - [x] Show sign-up prompt in Dashboard after anonymous predictions
+
+### Deep Prediction Mode Implementation
+- [x] Add Deep Mode toggle in Dashboard UI (Pro/Premium only)
+- [x] Update prediction generation to use enhanced prompts for deep mode
+- [x] Add confidence score calculation and display
+- [x] Show visual indicator when deep mode is active
+- [x] Lock deep mode for Free/Starter users with upgrade prompt
+- [x] Update database to store predictionMode with each prediction
+- [x] Add confidence score to prediction results display

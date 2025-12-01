@@ -39,6 +39,8 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState<"limit_reached" | "feature_locked" | "approaching_limit">("limit_reached");
+  const [deepMode, setDeepMode] = useState(false);
+  const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -62,7 +64,10 @@ export default function Dashboard() {
       setCurrentPredictionId(data.predictionId); // Store prediction ID for feedback
       setCurrentShareToken(data.shareToken); // Store share token for sharing
       setUserFeedback(null); // Reset feedback for new prediction
-      toast.success(`Prediction generated! ${data.remainingToday} predictions remaining today.`);
+      setConfidenceScore(data.confidenceScore || null); // Store confidence score
+      
+      const modeText = data.deepMode ? " (Deep Mode)" : "";
+      toast.success(`Prediction generated${modeText}! ${data.remainingToday} predictions remaining today.`);
       refetchSub();
       setAttachedFiles([]); // Clear attachments after generation
       
@@ -76,6 +81,11 @@ export default function Dashboard() {
     },
     onError: (error) => {
       toast.error(error.message);
+      // If deep mode was locked, show upgrade modal
+      if (error.message.includes("Deep Prediction Mode")) {
+        setUpgradeReason("feature_locked");
+        setShowUpgradeModal(true);
+      }
     },
   });
 
@@ -277,6 +287,7 @@ export default function Dashboard() {
       userInput, 
       category,
       attachmentUrls: attachedFiles.length > 0 ? attachedFiles.map(f => f.url) : undefined,
+      deepMode,
     });
   };
   
@@ -606,6 +617,30 @@ export default function Dashboard() {
                   )}
                 </div>
 
+                {/* Deep Prediction Mode Toggle (Pro/Premium only) */}
+                {isAuthenticated && subscription && ['pro', 'premium'].includes(subscription.tier) && (
+                  <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Zap className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Deep Prediction Mode</p>
+                        <p className="text-xs text-muted-foreground">Advanced AI analysis with confidence scores</p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={deepMode}
+                        onChange={(e) => setDeepMode(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                )}
+
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerateDisabled || !userInput.trim()}
@@ -634,6 +669,12 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
                         <h3 className="font-semibold text-lg">Your Prediction</h3>
+                        {deepMode && (
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                            <Zap className="w-3 h-3" />
+                            Deep Mode
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground mr-2">Was this helpful?</span>
@@ -667,9 +708,31 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none mb-6">
+                    <div className="prose prose-invert max-w-none mb-4">
                       <Streamdown>{prediction}</Streamdown>
                     </div>
+                    
+                    {/* Confidence Score (Deep Mode only) */}
+                    {confidenceScore !== null && (
+                      <div className="mb-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-semibold text-foreground">Confidence Score</span>
+                          <span className="text-lg font-bold text-primary">{confidenceScore}%</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-500"
+                            style={{ width: `${confidenceScore}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {confidenceScore >= 80 ? "High confidence - Strong indicators support this prediction" :
+                           confidenceScore >= 60 ? "Moderate confidence - Several factors align with this outcome" :
+                           confidenceScore >= 40 ? "Fair confidence - Some uncertainty due to variable factors" :
+                           "Lower confidence - Multiple unpredictable elements at play"}
+                        </p>
+                      </div>
+                    )}
                     
                     {/* Share Buttons */}
                     {currentShareToken && (
