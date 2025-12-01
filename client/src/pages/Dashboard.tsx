@@ -417,7 +417,7 @@ export default function Dashboard() {
                 {!isAuthenticated && (
                   <div className="space-y-2 pt-4 border-t border-border">
                     <p className="text-sm text-muted-foreground">
-                      💎 Sign up to save your predictions and get more features!
+                      Sign up to save your predictions and get more features!
                     </p>
                     <Button asChild className="w-full" size="sm">
                       <a href={getLoginUrl()}>

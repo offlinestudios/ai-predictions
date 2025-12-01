@@ -81,7 +81,7 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
   const getTitle = () => {
     switch (reason) {
       case "limit_reached":
-        return "You've Used All Your Free Predictions! 🔮";
+        return "You've Used All Your Free Predictions!";
       case "approaching_limit":
         return `Only ${remainingPredictions} Prediction${remainingPredictions === 1 ? "" : "s"} Left! ⚡`;
       case "feature_locked":
@@ -106,7 +106,7 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             {getTitle()}

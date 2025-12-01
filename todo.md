@@ -104,3 +104,8 @@
 - [ ] Add "Recently Generated" section with anonymized predictions - Future enhancement
 - [x] Implement real-time counter animation
 - [ ] Add social proof metrics to footer - Future enhancement
+
+### UI Cleanup
+- [x] Remove diamond emoji from subscription card sign-up prompt
+- [x] Remove crystal ball emoji from upgrade modal header
+- [x] Fix upgrade modal width for desktop (increased from max-w-4xl to max-w-6xl)
