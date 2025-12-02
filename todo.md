@@ -193,3 +193,19 @@
 - [ ] Display timeline with milestones and key events
 - [ ] Add alternate scenario generation for Pro tier
 - [ ] Test trajectory generation with various questions
+
+
+### Personalized Onboarding Flow Implementation
+- [x] Update users schema with onboarding fields (interests, goals, relationship status, completed onboarding flag)
+- [x] Create OnboardingWizard component with multi-step flow
+- [x] Build Step 1: Welcome screen with compelling hook
+- [x] Build Step 2: Collect user name and primary interests
+- [x] Build Step 3: Collect focus areas (career, love, finance, health)
+- [x] Build Step 4: Collect relationship status and life goals
+- [x] Build Step 5: "Reading your pattern..." animated loading screen
+- [x] Add onboarding route and redirect logic for new users
+- [x] Create backend endpoint to save onboarding preferences
+- [x] Update prediction generation to use onboarding data for personalization
+- [x] Add skip onboarding option with default preferences
+- [x] Add onboarding completion tracking
+- [ ] Test onboarding flow for new user signup (requires deployment)

@@ -12,6 +12,7 @@ import Analytics from "./pages/Analytics";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import SharedPrediction from "./pages/SharedPrediction";
+import Onboarding from "./pages/Onboarding";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/sign-in"} component={SignIn} />
       <Route path={"/sign-up"} component={SignUp} />
+      <Route path={"/onboarding"} component={Onboarding} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/history"} component={History} />
       <Route path={"/account"} component={Account} />

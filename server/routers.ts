@@ -38,6 +38,30 @@ export const appRouter = router({
   }),
 
   user: router({
+    saveOnboarding: protectedProcedure
+      .input(z.object({
+        nickname: z.string(),
+        interests: z.array(z.string()),
+        relationshipStatus: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+        await db
+          .update(users)
+          .set({
+            nickname: input.nickname,
+            relationshipStatus: input.relationshipStatus,
+            interests: JSON.stringify(input.interests),
+            onboardingCompleted: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id));
+
+        return { success: true };
+      }),
+
     completeOnboarding: protectedProcedure
       .input(z.object({
         nickname: z.string().optional(),
@@ -261,6 +285,20 @@ export const appRouter = router({
         const userHistory = await getUserPredictionHistory(ctx.user.id, 5);
         const feedbackStats = await getUserFeedbackStats(ctx.user.id);
         
+        // Get user's onboarding preferences for personalization
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+        
+        const [userProfile] = await db
+          .select({
+            nickname: users.nickname,
+            relationshipStatus: users.relationshipStatus,
+            interests: users.interests,
+          })
+          .from(users)
+          .where(eq(users.id, ctx.user.id))
+          .limit(1);
+        
         // Build personalized system prompt based on trajectory type and mode
         let systemPrompt = "";
         
@@ -320,9 +358,33 @@ export const appRouter = router({
           systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
         }
         
+        // Add personalization based on user onboarding data
+        if (userProfile) {
+          const interests = userProfile.interests ? JSON.parse(userProfile.interests) : [];
+          const nickname = userProfile.nickname || "User";
+          const relationshipStatus = userProfile.relationshipStatus;
+          
+          if (interests.length > 0 || relationshipStatus) {
+            systemPrompt += `\n\n**User Profile:**\n`;
+            if (nickname) {
+              systemPrompt += `- Name: ${nickname}\n`;
+            }
+            if (interests.length > 0) {
+              systemPrompt += `- Primary Interests: ${interests.join(", ")}\n`;
+              systemPrompt += `- Tailor your prediction to resonate with their focus on ${interests[0]} and ${interests[1] || "personal growth"}.\n`;
+            }
+            if (relationshipStatus && relationshipStatus !== "prefer-not-say") {
+              systemPrompt += `- Relationship Status: ${relationshipStatus}\n`;
+              if (input.category === "love" || interests.includes("love")) {
+                systemPrompt += `- For love predictions, consider their ${relationshipStatus} status and provide relevant advice.\n`;
+              }
+            }
+          }
+        }
+        
         // Add personalization based on user history
         if (userHistory.length > 0) {
-          systemPrompt += `\n\n**Personalization Context:**\nThis user has received ${feedbackStats.total} predictions previously.`;
+          systemPrompt += `\n\n**Prediction History Context:**\nThis user has received ${feedbackStats.total} predictions previously.`;
           
           if (feedbackStats.liked > 0) {
             systemPrompt += ` They particularly enjoyed predictions about: ${feedbackStats.likedCategories.slice(0, 3).join(", ") || "various topics"}.`;

@@ -51,6 +51,13 @@ export default function Dashboard() {
     { enabled: isAuthenticated }
   );
 
+  // Redirect to onboarding if user hasn't completed it
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user && !user.onboardingCompleted) {
+      navigate("/onboarding");
+    }
+  }, [authLoading, isAuthenticated, user, navigate]);
+
   const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
 
   const feedbackMutation = trpc.prediction.submitFeedback.useMutation({
