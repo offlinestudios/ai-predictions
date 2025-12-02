@@ -17,19 +17,19 @@ const TIER_INFO = {
     bgColor: "bg-gray-500/10",
     limit: "3 predictions per week",
   },
-  starter: {
-    icon: TrendingUp,
-    name: "Starter Plan",
-    color: "text-blue-400",
-    bgColor: "bg-blue-500/10",
-    limit: "3 predictions per day",
+  plus: {
+    icon: Zap,
+    name: "Plus Plan",
+    color: "text-purple-400",
+    bgColor: "bg-purple-500/10",
+    limit: "Unlimited predictions",
   },
   pro: {
-    icon: Zap,
-    name: "Pro Plan - Smarter Predictions",
+    icon: Crown,
+    name: "Pro Plan",
     color: "text-yellow-400",
     bgColor: "bg-yellow-500/10",
-    limit: "20 predictions per day",
+    limit: "Unlimited + 90-day forecasts",
   },
   premium: {
     icon: Crown,

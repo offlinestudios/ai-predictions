@@ -2,9 +2,10 @@ import { pgTable, serial, varchar, text, timestamp, boolean, pgEnum, integer } f
 
 // Define enums before using them in tables
 export const roleEnum = pgEnum("role", ["user", "admin"]);
-export const tierEnum = pgEnum("tier", ["free", "starter", "pro", "premium"]);
-export const badgeEnum = pgEnum("badge", ["none", "starter", "pro", "premium"]);
+export const tierEnum = pgEnum("tier", ["free", "plus", "pro", "premium"]);
+export const badgeEnum = pgEnum("badge", ["none", "plus", "pro", "premium"]);
 export const predictionModeEnum = pgEnum("predictionMode", ["standard", "deep"]);
+export const trajectoryTypeEnum = pgEnum("trajectoryType", ["instant", "30day", "90day", "yearly"]);
 
 /**
  * Core user table backing auth flow.
@@ -25,6 +26,12 @@ export const users = pgTable("users", {
   role: roleEnum("role").default("user").notNull(),
   /** User badge based on subscription tier */
   badge: badgeEnum("badge").default("none").notNull(),
+  /** Onboarding personalization fields */
+  nickname: varchar("nickname", { length: 100 }),
+  gender: varchar("gender", { length: 20 }),
+  relationshipStatus: varchar("relationshipStatus", { length: 50 }),
+  interests: text("interests"), // JSON array of selected interests
+  onboardingCompleted: boolean("onboardingCompleted").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -90,6 +97,8 @@ export const predictions = pgTable("predictions", {
   predictionMode: predictionModeEnum("predictionMode").default("standard").notNull(),
   /** Timeline for prediction (e.g., "1 week", "3 months", "1 year") */
   predictionTimeline: varchar("predictionTimeline", { length: 50 }),
+  /** Trajectory type: instant (immediate), 30day, 90day, or yearly forecast */
+  trajectoryType: trajectoryTypeEnum("trajectoryType").default("instant").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

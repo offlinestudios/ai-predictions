@@ -145,3 +145,36 @@
 - [x] Add image dimensions meta tags (1200x630)
 - [x] Implement caching headers (immutable, 1 year)
 - [ ] Test image generation with various predictions - requires deployment
+
+
+### Phase 1: Conversion Optimization (AI Analyst Recommendations)
+
+#### Onboarding Flow
+- [ ] Create multi-step onboarding component
+- [ ] Screen 1: Hook with compelling headline
+- [ ] Screen 2: Collect personalization data (name, interests, relationship status)
+- [ ] Screen 3: "Reading your pattern..." animated loading
+- [ ] Screen 4: First free prediction with emotional hook
+- [ ] Add "Reveal what this leads to" paywall trigger
+- [ ] Store user preferences in database
+- [ ] Update user schema with onboarding fields
+
+#### Long-Term Trajectory Predictions
+- [ ] Add trajectory type field to predictions (instant/30day/90day/yearly)
+- [ ] Create trajectory generation prompts for 30-day forecasts
+- [ ] Create trajectory generation prompts for 90-day forecasts
+- [ ] Lock trajectory predictions for Plus/Pro/Premium only
+- [ ] Add trajectory visualization component
+- [ ] Create "Unlock Your 30-Day Path" paywall trigger
+- [ ] Add alternate scenario generation (Pro+ feature)
+- [ ] Display timeline with key dates and milestones
+
+#### Revised Pricing Structure
+- [x] Remove Starter tier ($4.99)
+- [x] Rename Pro to Plus ($9.99/month)
+- [x] Create new Pro tier ($19.99/month) with 90-day trajectories
+- [x] Update Premium to $59/year (best value positioning)
+- [x] Update Stripe products with new pricing (products.ts)
+- [x] Update feature comparison table (Home page)
+- [x] Update all UI references to new tier names (Dashboard, Account, Badge)
+- [x] Generate database migration for tier enum changes

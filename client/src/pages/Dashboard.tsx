@@ -22,8 +22,8 @@ import { Streamdown } from "streamdown";
 
 const TIER_ICONS = {
   free: Star,
-  starter: TrendingUp,
-  pro: Zap,
+  plus: Zap,
+  pro: Crown,
   premium: Crown,
 };
 

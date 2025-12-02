@@ -14,7 +14,7 @@ import {
   getUserFeedbackStats,
   getDb,
 } from "./db";
-import { predictions } from "../drizzle/schema";
+import { predictions, users } from "../drizzle/schema";
 import { eq, desc, like, or, isNull, sql, and, gte } from "drizzle-orm";
 import { invokeLLM } from "./_core/llm";
 import { TRPCError } from "@trpc/server";
@@ -35,6 +35,34 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+  }),
+
+  user: router({
+    completeOnboarding: protectedProcedure
+      .input(z.object({
+        nickname: z.string().optional(),
+        gender: z.string().optional(),
+        relationshipStatus: z.string().optional(),
+        interests: z.string().optional(), // JSON string
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+        await db
+          .update(users)
+          .set({
+            nickname: input.nickname,
+            gender: input.gender,
+            relationshipStatus: input.relationshipStatus,
+            interests: input.interests,
+            onboardingCompleted: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id));
+
+        return { success: true };
+      }),
   }),
 
   stats: router({

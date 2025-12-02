@@ -2,7 +2,7 @@ import { Crown, Zap, Star, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type TierBadgeProps = {
-  tier: "free" | "starter" | "pro" | "premium";
+  tier: "free" | "plus" | "pro" | "premium";
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
 };
@@ -16,19 +16,19 @@ export function TierBadge({ tier, size = "md", showLabel = true }: TierBadgeProp
       textColor: "text-gray-400",
       borderColor: "border-gray-500/20",
     },
-    starter: {
-      icon: TrendingUp,
-      label: "Starter",
-      bgColor: "bg-blue-500/10",
-      textColor: "text-blue-400",
-      borderColor: "border-blue-500/20",
-    },
-    pro: {
+    plus: {
       icon: Zap,
-      label: "Pro",
+      label: "Plus",
       bgColor: "bg-purple-500/10",
       textColor: "text-purple-400",
       borderColor: "border-purple-500/20",
+    },
+    pro: {
+      icon: Crown,
+      label: "Pro",
+      bgColor: "bg-yellow-500/10",
+      textColor: "text-yellow-400",
+      borderColor: "border-yellow-500/20",
     },
     premium: {
       icon: Crown,

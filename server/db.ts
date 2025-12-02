@@ -120,14 +120,14 @@ export async function getOrCreateSubscription(userId: number) {
   return created[0]!;
 }
 
-export async function updateSubscriptionTier(userId: number, tier: "free" | "starter" | "pro" | "premium") {
+export async function updateSubscriptionTier(userId: number, tier: "free" | "plus" | "pro" | "premium") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const dailyLimits = {
     free: 3, // 3 per week
-    starter: 3, // 3 per day
-    pro: 20, // 20 per day
+    plus: -1, // unlimited
+    pro: -1, // unlimited
     premium: -1, // unlimited
   };
 
@@ -175,7 +175,7 @@ export async function checkAndResetDailyLimit(userId: number) {
     return sub;
   }
   
-  // For starter and pro tiers, reset daily
+  // For plus and pro tiers, reset daily
   const needsReset = now.getDate() !== lastReset.getDate() || 
                      now.getMonth() !== lastReset.getMonth() || 
                      now.getFullYear() !== lastReset.getFullYear();
