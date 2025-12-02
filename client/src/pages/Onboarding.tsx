@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 
 const INTERESTS = [
   { id: "career", label: "Career & Success", icon: Briefcase, color: "text-blue-400" },
@@ -25,12 +27,57 @@ const RELATIONSHIP_STATUS = [
 ];
 
 export default function Onboarding() {
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [relationshipStatus, setRelationshipStatus] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Check if user is authenticated and already completed onboarding
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      if (user?.onboardingCompleted) {
+        // User already completed onboarding, redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        // User just signed up, check if they have localStorage data
+        const savedData = localStorage.getItem("onboardingData");
+        if (savedData) {
+          try {
+            const data = JSON.parse(savedData);
+            // Auto-save their preferences from localStorage
+            setIsProcessing(true);
+            setStep(5); // Show loading animation
+            setTimeout(() => {
+              saveOnboardingMutation.mutate(data);
+              localStorage.removeItem("onboardingData"); // Clean up
+            }, 2000);
+          } catch (e) {
+            // Invalid data, let them complete onboarding normally
+          }
+        }
+      }
+    }
+  }, [authLoading, isAuthenticated, user, navigate]);
+
+  // Load from localStorage if anonymous user returns
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const savedData = localStorage.getItem("onboardingData");
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          setNickname(data.nickname || "");
+          setSelectedInterests(data.interests || []);
+          setRelationshipStatus(data.relationshipStatus || "");
+        } catch (e) {
+          // Invalid data, ignore
+        }
+      }
+    }
+  }, [isAuthenticated]);
 
   const saveOnboardingMutation = trpc.user.saveOnboarding.useMutation({
     onSuccess: () => {
@@ -39,7 +86,7 @@ export default function Onboarding() {
     },
     onError: (error) => {
       toast.error("Failed to save preferences: " + error.message);
-      setIsGenerating(false);
+      setIsProcessing(false);
     },
   });
 
@@ -71,28 +118,58 @@ export default function Onboarding() {
         toast.error("Please select your relationship status");
         return;
       }
+      
+      // Save to localStorage for anonymous users
+      const onboardingData = {
+        nickname,
+        interests: selectedInterests,
+        relationshipStatus,
+      };
+      localStorage.setItem("onboardingData", JSON.stringify(onboardingData));
+      
       // Start "reading pattern" animation
       setStep(5);
-      setIsGenerating(true);
+      setIsProcessing(true);
       
-      // Simulate reading pattern for 3 seconds, then save
+      // After 3 seconds, check if user is authenticated
       setTimeout(() => {
-        saveOnboardingMutation.mutate({
-          nickname,
-          interests: selectedInterests,
-          relationshipStatus,
-        });
+        if (isAuthenticated) {
+          // User is authenticated, save to database
+          saveOnboardingMutation.mutate(onboardingData);
+        } else {
+          // User is anonymous, show sign-up prompt
+          setStep(6);
+          setIsProcessing(false);
+        }
       }, 3000);
     }
   };
 
   const handleSkip = () => {
-    // Save minimal data and skip to dashboard
-    saveOnboardingMutation.mutate({
-      nickname: "User",
-      interests: ["general"],
-      relationshipStatus: "prefer-not-say",
-    });
+    if (isAuthenticated) {
+      // Save minimal data for authenticated users
+      saveOnboardingMutation.mutate({
+        nickname: "User",
+        interests: ["general"],
+        relationshipStatus: "prefer-not-say",
+      });
+    } else {
+      // For anonymous users, just go to dashboard
+      navigate("/dashboard");
+    }
+  };
+
+  const handleSignUp = () => {
+    // Save current data to localStorage before redirecting
+    const onboardingData = {
+      nickname,
+      interests: selectedInterests,
+      relationshipStatus,
+    };
+    localStorage.setItem("onboardingData", JSON.stringify(onboardingData));
+    
+    // Redirect to sign-up page
+    window.location.href = getLoginUrl() + "?redirect_url=/onboarding";
   };
 
   return (
@@ -284,6 +361,41 @@ export default function Onboarding() {
                 </div>
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 6: Sign-Up Prompt (Anonymous Users Only) */}
+        {step === 6 && (
+          <Card className="border-2 border-primary/20">
+            <CardHeader className="text-center space-y-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Sparkles className="w-10 h-10 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl mb-3">
+                  Your Profile is Ready, {nickname}!
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Sign up now to unlock your personalized predictions and save your preferences.
+                  We've tailored our AI specifically for your interests in{" "}
+                  <span className="font-semibold text-foreground">
+                    {selectedInterests.map(id => INTERESTS.find(i => i.id === id)?.label).join(", ")}
+                  </span>.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button onClick={handleSignUp} className="w-full" size="lg">
+                Sign Up Free
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+              <Button onClick={() => navigate("/dashboard")} variant="outline" className="w-full">
+                Continue as Guest
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                By signing up, you'll get unlimited predictions, history tracking, and personalized insights.
+              </p>
             </CardContent>
           </Card>
         )}

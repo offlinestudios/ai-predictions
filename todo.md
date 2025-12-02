@@ -209,3 +209,13 @@
 - [x] Add skip onboarding option with default preferences
 - [x] Add onboarding completion tracking
 - [ ] Test onboarding flow for new user signup (requires deployment)
+
+### Anonymous Onboarding Flow (Option A)
+- [x] Change "Start Free" button to link to /onboarding instead of /dashboard
+- [x] Update Onboarding component to work for anonymous users (no auth required)
+- [x] Store onboarding data in localStorage for anonymous users
+- [x] Show sign-up prompt after step 4 completion for anonymous users
+- [x] After sign-up, save localStorage preferences to database
+- [x] Redirect authenticated users directly to dashboard if onboarding already completed
+- [ ] Test anonymous onboarding flow (requires deployment)
+- [ ] Test authenticated onboarding flow (requires deployment)
