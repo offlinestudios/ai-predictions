@@ -15,6 +15,7 @@ import ShareButtons from "@/components/ShareButtons";
 import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
+import PredictionHistory from "@/components/PredictionHistory";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -345,6 +346,23 @@ export default function Dashboard() {
       : (subscription.usedToday / subscription.dailyLimit) * 100
     : 0;
   const TierIcon = subscription ? TIER_ICONS[subscription.tier] : Star;
+
+  // Handler for loading historical predictions
+  const handleSelectPrediction = (historicalPrediction: {
+    id: number;
+    predictionResult: string;
+    shareToken: string | null;
+    userFeedback: string | null;
+    confidenceScore: number | null;
+    trajectoryType: string | null;
+  }) => {
+    setPrediction(historicalPrediction.predictionResult);
+    setCurrentPredictionId(historicalPrediction.id);
+    setCurrentShareToken(historicalPrediction.shareToken);
+    setUserFeedback(historicalPrediction.userFeedback as "like" | "dislike" | null);
+    setConfidenceScore(historicalPrediction.confidenceScore);
+    setTrajectoryType(historicalPrediction.trajectoryType as "instant" | "30day" | "90day" | "yearly");
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -885,6 +903,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      
+      {/* Prediction History Panel - Only show for authenticated users */}
+      {isAuthenticated && (
+        <PredictionHistory 
+          onSelectPrediction={handleSelectPrediction}
+          currentPredictionId={currentPredictionId}
+        />
+      )}
       
       {/* Upgrade Modal */}
       <UpgradeModal 

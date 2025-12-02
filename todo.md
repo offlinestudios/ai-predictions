@@ -229,3 +229,17 @@
 - [x] Welcome prediction uses 30-day trajectory format for engaging first experience
 - [ ] Test welcome prediction flow for each interest category (requires deployment)
 - [ ] Verify welcome prediction generation timing and UX flow
+
+### Prediction History Panel
+- [x] Create PredictionHistory component with collapsible sidebar
+- [x] Fetch last 10 predictions with timestamps and categories
+- [x] Display predictions in chronological order (newest first)
+- [x] Add category icons and color coding
+- [x] Format timestamps as relative time (e.g., "2 hours ago")
+- [x] Add click handler to load selected prediction into main view
+- [x] Highlight currently displayed prediction in history list
+- [x] Add empty state for users with no prediction history
+- [x] Make panel collapsible with toggle button
+- [x] Add smooth transitions and animations
+- [x] Show trajectory type labels (Instant, 30-Day, 90-Day, Yearly)
+- [ ] Test history panel on deployed site
