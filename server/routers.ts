@@ -210,6 +210,7 @@ export const appRouter = router({
         category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
         attachmentUrls: z.array(z.string()).optional(),
         deepMode: z.boolean().optional().default(false),
+        trajectoryType: z.enum(["instant", "30day", "90day", "yearly"]).optional().default("instant"),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check subscription limits
@@ -220,6 +221,21 @@ export const appRouter = router({
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "Deep Prediction Mode is only available for Pro and Premium users. Upgrade to unlock advanced AI analysis!",
+          });
+        }
+        
+        // Check trajectory type access based on tier
+        if (input.trajectoryType === "30day" && !['plus', 'pro', 'premium'].includes(subscription.tier)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "30-Day Trajectory Predictions are only available for Plus, Pro, and Premium users. Upgrade to unlock your future path!",
+          });
+        }
+        
+        if ((input.trajectoryType === "90day" || input.trajectoryType === "yearly") && !['pro', 'premium'].includes(subscription.tier)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "90-Day and Yearly Trajectory Predictions are only available for Pro and Premium users. Upgrade to see your long-term future!",
           });
         }
         
@@ -245,9 +261,49 @@ export const appRouter = router({
         const userHistory = await getUserPredictionHistory(ctx.user.id, 5);
         const feedbackStats = await getUserFeedbackStats(ctx.user.id);
         
-        // Build personalized system prompt based on user preferences and mode
-        let systemPrompt = input.deepMode
-          ? `You are an advanced AI oracle and prediction specialist with deep analytical capabilities. Generate comprehensive, highly detailed predictions with multi-layered insights.
+        // Build personalized system prompt based on trajectory type and mode
+        let systemPrompt = "";
+        
+        if (input.trajectoryType === "30day") {
+          systemPrompt = `You are an advanced AI oracle specializing in 30-day trajectory forecasts. Generate a detailed month-long prediction path.
+
+**30-Day Trajectory Requirements:**
+- Provide a comprehensive 30-day forecast (500-700 words)
+- Break down the timeline into 4 weekly phases with specific predictions for each
+- Include 3-5 key dates or milestones within the 30 days
+- Identify potential challenges in weeks 1-2 and opportunities in weeks 3-4
+- Provide actionable steps for each week
+- End with a "30-Day Outlook Summary" highlighting the overall trajectory
+- Use specific dates relative to today (e.g., "Week 1 (Days 1-7)", "Around Day 15", etc.)
+- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+        } else if (input.trajectoryType === "90day") {
+          systemPrompt = `You are an advanced AI oracle specializing in 90-day trajectory forecasts. Generate a detailed quarterly prediction path.
+
+**90-Day Trajectory Requirements:**
+- Provide a comprehensive 90-day forecast (700-900 words)
+- Break down into 3 monthly phases with detailed predictions for each month
+- Include 5-8 key milestones across the 90 days
+- Analyze 2-3 alternate scenarios (best case, likely case, challenge case)
+- Identify critical decision points and their timing
+- Provide monthly action plans
+- End with a "90-Day Trajectory Summary" and "Alternate Paths" section
+- Use specific timeframes (e.g., "Month 1 (Days 1-30)", "Around Day 45", "Month 3", etc.)
+- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+        } else if (input.trajectoryType === "yearly") {
+          systemPrompt = `You are an advanced AI oracle specializing in yearly trajectory forecasts. Generate a detailed annual prediction path.
+
+**Yearly Trajectory Requirements:**
+- Provide a comprehensive 12-month forecast (800-1000 words)
+- Break down into 4 quarterly phases with detailed predictions
+- Include 8-12 key milestones throughout the year
+- Analyze seasonal patterns and their influence
+- Identify major turning points and transformation periods
+- Provide quarterly strategic guidance
+- Include a "Year-End Vision" section describing where they'll be in 12 months
+- Use specific timeframes (e.g., "Q1 (Jan-Mar)", "Mid-Year", "Q4", "Month 6", etc.)
+- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+        } else if (input.deepMode) {
+          systemPrompt = `You are an advanced AI oracle and prediction specialist with deep analytical capabilities. Generate comprehensive, highly detailed predictions with multi-layered insights.
 
 **Deep Analysis Requirements:**
 - Provide 400-600 words of detailed analysis
@@ -259,8 +315,10 @@ export const appRouter = router({
 - Be specific with dates, percentages, and concrete details
 - If files are provided, perform thorough analysis and reference specific details
 
-**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"`
-          : `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"`;
+        } else {
+          systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+        }
         
         // Add personalization based on user history
         if (userHistory.length > 0) {
@@ -346,6 +404,7 @@ export const appRouter = router({
           attachmentUrls: input.attachmentUrls ? JSON.stringify(input.attachmentUrls) : null,
           predictionMode: input.deepMode ? 'deep' : 'standard',
           confidenceScore,
+          trajectoryType: input.trajectoryType || 'instant',
         });
 
         // Increment usage counter

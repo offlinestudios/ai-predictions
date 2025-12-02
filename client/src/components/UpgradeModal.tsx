@@ -17,37 +17,64 @@ const FEATURES = [
   {
     name: "Daily Predictions",
     free: "3 total",
+    plus: "10 per day",
     pro: "20 per day",
     premium: "100 per day",
   },
   {
+    name: "30-Day Trajectory",
+    free: false,
+    plus: true,
+    pro: true,
+    premium: true,
+  },
+  {
+    name: "90-Day & Yearly Trajectory",
+    free: false,
+    plus: false,
+    pro: true,
+    premium: true,
+  },
+  {
+    name: "Deep Prediction Mode",
+    free: false,
+    plus: false,
+    pro: true,
+    premium: true,
+  },
+  {
     name: "Prediction History",
     free: false,
+    plus: true,
     pro: true,
     premium: true,
   },
   {
     name: "AI Personalization",
     free: false,
+    plus: true,
     pro: true,
     premium: true,
   },
   {
     name: "File Attachments",
     free: false,
+    plus: true,
     pro: true,
+    premium: true,
+  },
+  {
+    name: "Analytics Dashboard",
+    free: false,
+    plus: false,
+    pro: false,
     premium: true,
   },
   {
     name: "Priority Support",
     free: false,
+    plus: false,
     pro: false,
-    premium: true,
-  },
-  {
-    name: "Advanced Categories",
-    free: false,
-    pro: true,
     premium: true,
   },
 ];
@@ -162,7 +189,11 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">Advanced categories</span>
+                <span className="text-sm font-medium">Deep Prediction Mode</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                <span className="text-sm font-medium">90-Day & Yearly Trajectories</span>
               </li>
             </ul>
             <Button 
@@ -210,6 +241,10 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                <span className="text-sm font-medium">Analytics Dashboard</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm font-medium">Premium AI models</span>
               </li>
             </ul>
@@ -233,6 +268,7 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
                 <tr>
                   <th className="text-left p-3 font-medium">Feature</th>
                   <th className="text-center p-3 font-medium">Free</th>
+                  <th className="text-center p-3 font-medium">Plus</th>
                   <th className="text-center p-3 font-medium">Pro</th>
                   <th className="text-center p-3 font-medium">Premium</th>
                 </tr>
@@ -250,6 +286,17 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
                         )
                       ) : (
                         feature.free
+                      )}
+                    </td>
+                    <td className="p-3 text-center text-sm">
+                      {typeof feature.plus === "boolean" ? (
+                        feature.plus ? (
+                          <Check className="w-4 h-4 text-green-400 mx-auto" />
+                        ) : (
+                          <X className="w-4 h-4 text-muted-foreground mx-auto" />
+                        )
+                      ) : (
+                        feature.plus
                       )}
                     </td>
                     <td className="p-3 text-center text-sm">

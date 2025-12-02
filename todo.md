@@ -178,3 +178,18 @@
 - [x] Update feature comparison table (Home page)
 - [x] Update all UI references to new tier names (Dashboard, Account, Badge)
 - [x] Generate database migration for tier enum changes
+
+
+### Long-Term Trajectory Prediction Implementation
+- [ ] Update prediction generation endpoint to support trajectory types
+- [ ] Create 30-day trajectory prompt template (Plus tier)
+- [ ] Create 90-day trajectory prompt template (Pro tier)
+- [ ] Create yearly overview prompt template (Pro tier)
+- [ ] Add tier-based access control for trajectory types
+- [ ] Build TrajectoryTimeline visualization component
+- [ ] Add trajectory type selector in Dashboard UI
+- [ ] Create "Unlock Your 30-Day Path" paywall modal
+- [ ] Parse and structure trajectory response with key dates
+- [ ] Display timeline with milestones and key events
+- [ ] Add alternate scenario generation for Pro tier
+- [ ] Test trajectory generation with various questions

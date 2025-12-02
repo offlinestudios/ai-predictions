@@ -14,6 +14,7 @@ import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
 import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
+import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -43,6 +44,7 @@ export default function Dashboard() {
   const [upgradeReason, setUpgradeReason] = useState<"limit_reached" | "feature_locked" | "approaching_limit">("limit_reached");
   const [deepMode, setDeepMode] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
+  const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -290,6 +292,7 @@ export default function Dashboard() {
       category,
       attachmentUrls: attachedFiles.length > 0 ? attachedFiles.map(f => f.url) : undefined,
       deepMode,
+      trajectoryType: trajectoryType !== "instant" ? trajectoryType : undefined,
     });
   };
   
@@ -656,6 +659,112 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                {/* Trajectory Prediction Selection */}
+                {isAuthenticated && subscription && (
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium block">Prediction Timeframe</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {/* Instant Prediction - All tiers */}
+                      <button
+                        type="button"
+                        onClick={() => setTrajectoryType("instant")}
+                        className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          trajectoryType === "instant"
+                            ? "border-primary bg-primary/10"
+                            : "border-border bg-card hover:border-primary/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                          <span className="font-semibold text-sm">Instant</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Quick prediction</p>
+                      </button>
+
+                      {/* 30-Day Trajectory - Plus and above */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (['plus', 'pro', 'premium'].includes(subscription.tier)) {
+                            setTrajectoryType("30day");
+                          } else {
+                            setUpgradeReason("feature_locked");
+                            setShowUpgradeModal(true);
+                          }
+                        }}
+                        className={`p-4 rounded-lg border-2 transition-all text-left relative ${
+                          trajectoryType === "30day"
+                            ? "border-primary bg-primary/10"
+                            : "border-border bg-card hover:border-primary/50"
+                        } ${!['plus', 'pro', 'premium'].includes(subscription.tier) ? 'opacity-60' : ''}`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingUp className="w-4 h-4 text-purple-400" />
+                          <span className="font-semibold text-sm">30-Day Path</span>
+                          {!['plus', 'pro', 'premium'].includes(subscription.tier) && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">Plus+</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">Monthly forecast</p>
+                      </button>
+
+                      {/* 90-Day Trajectory - Pro and above */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (['pro', 'premium'].includes(subscription.tier)) {
+                            setTrajectoryType("90day");
+                          } else {
+                            setUpgradeReason("feature_locked");
+                            setShowUpgradeModal(true);
+                          }
+                        }}
+                        className={`p-4 rounded-lg border-2 transition-all text-left relative ${
+                          trajectoryType === "90day"
+                            ? "border-primary bg-primary/10"
+                            : "border-border bg-card hover:border-primary/50"
+                        } ${!['pro', 'premium'].includes(subscription.tier) ? 'opacity-60' : ''}`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingUp className="w-4 h-4 text-blue-400" />
+                          <span className="font-semibold text-sm">90-Day Journey</span>
+                          {!['pro', 'premium'].includes(subscription.tier) && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">Pro+</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">Quarterly outlook</p>
+                      </button>
+
+                      {/* Yearly Trajectory - Pro and above */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (['pro', 'premium'].includes(subscription.tier)) {
+                            setTrajectoryType("yearly");
+                          } else {
+                            setUpgradeReason("feature_locked");
+                            setShowUpgradeModal(true);
+                          }
+                        }}
+                        className={`p-4 rounded-lg border-2 transition-all text-left relative ${
+                          trajectoryType === "yearly"
+                            ? "border-primary bg-primary/10"
+                            : "border-border bg-card hover:border-primary/50"
+                        } ${!['pro', 'premium'].includes(subscription.tier) ? 'opacity-60' : ''}`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingUp className="w-4 h-4 text-amber-400" />
+                          <span className="font-semibold text-sm">Yearly Vision</span>
+                          {!['pro', 'premium'].includes(subscription.tier) && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">Pro+</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">Annual trajectory</p>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerateDisabled || !userInput.trim()}
@@ -728,31 +837,11 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none mb-4">
-                      <Streamdown>{prediction}</Streamdown>
-                    </div>
-                    
-                    {/* Confidence Score (Deep Mode only) */}
-                    {confidenceScore !== null && (
-                      <div className="mb-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-semibold text-foreground">Confidence Score</span>
-                          <span className="text-lg font-bold text-primary">{confidenceScore}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-500"
-                            style={{ width: `${confidenceScore}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {confidenceScore >= 80 ? "High confidence - Strong indicators support this prediction" :
-                           confidenceScore >= 60 ? "Moderate confidence - Several factors align with this outcome" :
-                           confidenceScore >= 40 ? "Fair confidence - Some uncertainty due to variable factors" :
-                           "Lower confidence - Multiple unpredictable elements at play"}
-                        </p>
-                      </div>
-                    )}
+                    <TrajectoryTimeline 
+                      predictionText={prediction}
+                      trajectoryType={trajectoryType}
+                      confidenceScore={confidenceScore || undefined}
+                    />
                     
                     {/* Share Buttons */}
                     {currentShareToken && (
