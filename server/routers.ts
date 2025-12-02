@@ -48,6 +48,7 @@ export const appRouter = router({
         const db = await getDb();
         if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
+        // Update user profile
         await db
           .update(users)
           .set({
@@ -59,7 +60,64 @@ export const appRouter = router({
           })
           .where(eq(users.id, ctx.user.id));
 
-        return { success: true };
+        // Generate welcome prediction based on primary interest
+        const primaryInterest = input.interests[0] || "general";
+        const welcomeQuestions = {
+          career: "What exciting opportunities and growth await me in my career over the next 30 days?",
+          love: "What beautiful moments and connections are coming into my love life this month?",
+          finance: "What financial opportunities and abundance are heading my way in the next 30 days?",
+          health: "What positive changes and vitality can I expect in my health and wellness journey this month?",
+          general: "What wonderful surprises and opportunities are coming my way in the next 30 days?",
+        };
+
+        const welcomeQuestion = welcomeQuestions[primaryInterest as keyof typeof welcomeQuestions] || welcomeQuestions.general;
+
+        // Build personalized system prompt for welcome prediction
+        const systemPrompt = `You are an AI oracle creating a special welcome prediction for ${input.nickname}. This is their first prediction, so make it warm, encouraging, and personalized.
+
+**Welcome Prediction Requirements:**
+- Provide an uplifting 30-day forecast (400-500 words)
+- Break down into 3-4 weekly phases
+- Include 3-5 specific positive milestones
+- Be encouraging and optimistic while staying realistic
+- Reference their interests: ${input.interests.join(", ")}
+- ${input.relationshipStatus !== "prefer-not-say" ? `Consider their relationship status: ${input.relationshipStatus}` : ""}
+- End with an inspiring call-to-action
+- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+
+        // Generate the welcome prediction
+        const llmResponse = await invokeLLM({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: welcomeQuestion },
+          ],
+        });
+
+        const predictionText = llmResponse.choices[0]?.message?.content;
+        const predictionString = typeof predictionText === 'string' ? predictionText : "Welcome! Your journey begins now.";
+        
+        // Extract confidence score
+        const confidenceMatch = predictionString.match(/Confidence:\s*(\d+)%/);
+        const confidenceScore = confidenceMatch ? parseInt(confidenceMatch[1]) : null;
+
+        // Save welcome prediction to database
+        const shareToken = nanoid(16);
+        await createPrediction({
+          userId: ctx.user.id,
+          userInput: welcomeQuestion,
+          predictionResult: predictionString,
+          category: primaryInterest as "career" | "love" | "finance" | "health" | "general",
+          shareToken,
+          confidenceScore,
+          trajectoryType: "30day",
+        });
+
+        return { 
+          success: true,
+          welcomePrediction: predictionText,
+          shareToken,
+          confidenceScore,
+        };
       }),
 
     completeOnboarding: protectedProcedure

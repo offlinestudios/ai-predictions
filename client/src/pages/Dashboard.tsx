@@ -58,6 +58,25 @@ export default function Dashboard() {
     }
   }, [authLoading, isAuthenticated, user, navigate]);
 
+  // Fetch latest prediction (for welcome prediction display)
+  const { data: latestPredictions } = trpc.prediction.getHistory.useQuery(
+    { limit: 1 },
+    { enabled: isAuthenticated && !prediction } // Only fetch if no prediction is currently displayed
+  );
+
+  // Auto-display welcome prediction on first visit
+  useEffect(() => {
+    if (latestPredictions && latestPredictions.predictions.length > 0 && !prediction) {
+      const latest = latestPredictions.predictions[0];
+      setPrediction(latest.predictionResult);
+      setCurrentPredictionId(latest.id);
+      setCurrentShareToken(latest.shareToken || null);
+      setUserFeedback(latest.userFeedback as "like" | "dislike" | null);
+      setConfidenceScore(latest.confidenceScore || null);
+      setTrajectoryType(latest.trajectoryType as "instant" | "30day" | "90day" | "yearly");
+    }
+  }, [latestPredictions, prediction]);
+
   const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
 
   const feedbackMutation = trpc.prediction.submitFeedback.useMutation({

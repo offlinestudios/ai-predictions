@@ -80,8 +80,10 @@ export default function Onboarding() {
   }, [isAuthenticated]);
 
   const saveOnboardingMutation = trpc.user.saveOnboarding.useMutation({
-    onSuccess: () => {
-      toast.success("Welcome! Your profile is ready.");
+    onSuccess: (data) => {
+      // Welcome prediction generated successfully
+      toast.success(`Welcome, ${nickname}! Your personalized prediction is ready.`);
+      // Redirect to dashboard where the prediction will be displayed
       navigate("/dashboard");
     },
     onError: (error) => {

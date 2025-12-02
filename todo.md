@@ -219,3 +219,13 @@
 - [x] Redirect authenticated users directly to dashboard if onboarding already completed
 - [ ] Test anonymous onboarding flow (requires deployment)
 - [ ] Test authenticated onboarding flow (requires deployment)
+
+### Welcome Prediction Feature
+- [x] Create backend endpoint for generating welcome prediction based on user interests
+- [x] Define welcome prediction templates for each interest category
+- [x] Update saveOnboarding mutation to trigger welcome prediction generation
+- [x] Store welcome prediction in database
+- [x] Update Dashboard to check for and display welcome prediction on first visit
+- [x] Welcome prediction uses 30-day trajectory format for engaging first experience
+- [ ] Test welcome prediction flow for each interest category (requires deployment)
+- [ ] Verify welcome prediction generation timing and UX flow
