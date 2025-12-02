@@ -121,14 +121,15 @@ export default function Home() {
               Powered by Advanced AI
             </Badge>
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
-              Unlock Your Future with{" "}
+              See What's{" "}
               <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                AI-Powered Predictions
+                Shifting
               </span>
+              {" "}in Your Life Right Now
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get personalized insights about your career, love life, finances, and health. 
-              Our advanced AI analyzes your questions and provides meaningful predictions tailored just for you.
+              Personalized AI predictions about your relationships, career, finances, and internal state. 
+              Understand what's coming, when it matters, and how to navigate the next chapter.
             </p>
             <div className="flex gap-4 justify-center pt-4">
               <Button asChild size="lg" className="text-lg px-8">
@@ -145,74 +146,73 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Feature Preview Section - Emotional Benefits */}
       <section className="py-20 bg-card/30">
         <div className="container">
-          <div className="text-center mb-12">
-            <h3 className="text-4xl font-bold mb-4">Choose Your Plan</h3>
-            <p className="text-xl text-muted-foreground">
-              Select the perfect plan for your prediction needs
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold mb-4">See What's Shifting in Your Life</h3>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Personalized AI predictions about your relationships, career, finances, and internal state
             </p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {SUBSCRIPTION_TIERS.map((tier) => {
-              const Icon = tier.icon;
-              return (
-                <Card 
-                  key={tier.tier} 
-                  className={`relative ${tier.popular ? 'border-primary shadow-lg shadow-primary/20 scale-105' : ''}`}
-                >
-                  {tier.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                        Most Popular
-                      </Badge>
-                    </div>
-                  )}
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      <Icon className="w-8 h-8 text-primary" />
-                      {tier.tier !== "free" && (
-                        <Badge variant="outline" className="text-xs">
-                          {tier.predictions}
-                        </Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-4xl font-bold">{tier.price}</span>
-                      <span className="text-muted-foreground ml-2">{tier.period}</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {tier.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
-                          <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter>
-                    {isAuthenticated ? (
-                      <Button asChild className="w-full" variant={tier.popular ? "default" : "outline"}>
-                        <Link href="/dashboard">
-                          {tier.tier === "free" ? "Current Plan" : "Upgrade"}
-                        </Link>
-                      </Button>
-                    ) : (
-                      <Button asChild className="w-full" variant={tier.popular ? "default" : "outline"}>
-                        <Link href="/dashboard">
-                          Get Started
-                        </Link>
-                      </Button>
-                    )}
-                  </CardFooter>
-                </Card>
-              );
-            })}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {/* Feature 1: 30-Day Trajectories */}
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-8 h-8 text-primary" />
+              </div>
+              <h4 className="text-xl font-semibold">See Your Next 30 Days</h4>
+              <p className="text-muted-foreground">
+                Understand what's coming and when key moments will arrive
+              </p>
+            </div>
+
+            {/* Feature 2: Relationship Insights */}
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-pink-500/10 flex items-center justify-center">
+                <Users className="w-8 h-8 text-pink-500" />
+              </div>
+              <h4 className="text-xl font-semibold">Explore Relationship Trajectories</h4>
+              <p className="text-muted-foreground">
+                Discover patterns in your connections and upcoming shifts
+              </p>
+            </div>
+
+            {/* Feature 3: Career Timing */}
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-blue-500/10 flex items-center justify-center">
+                <TrendingUpIcon className="w-8 h-8 text-blue-500" />
+              </div>
+              <h4 className="text-xl font-semibold">Understand Your Career Timing</h4>
+              <p className="text-muted-foreground">
+                Know when to act, when to wait, and what opportunities are emerging
+              </p>
+            </div>
+
+            {/* Feature 4: Daily Clarity */}
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-purple-500/10 flex items-center justify-center">
+                <Sparkles className="w-8 h-8 text-purple-500" />
+              </div>
+              <h4 className="text-xl font-semibold">Daily Clarity About Decisions</h4>
+              <p className="text-muted-foreground">
+                Get insights tailored to your energy patterns and life context
+              </p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-16">
+            <Button asChild size="lg" className="text-lg px-12">
+              <Link href="/onboarding">
+                Get Your First Prediction
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+            <p className="text-sm text-muted-foreground mt-4">
+              No credit card required • Start exploring in 2 minutes
+            </p>
           </div>
         </div>
       </section>

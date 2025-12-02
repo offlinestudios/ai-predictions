@@ -243,3 +243,16 @@
 - [x] Add smooth transitions and animations
 - [x] Show trajectory type labels (Instant, 30-Day, 90-Day, Yearly)
 - [ ] Test history panel on deployed site
+
+### Conversion Funnel Optimization (AI Analyst Recommendations)
+- [x] Remove "Choose Your Plan" pricing section from homepage
+- [x] Redesign homepage hero with emotional hook ("See What's Shifting in Your Life Right Now")
+- [x] Add feature preview section focused on emotional benefits (4 emotional cards)
+- [x] Replace pricing table with social proof and resonance triggers
+- [x] Add post-prediction paywall trigger after welcome prediction (3-second delay)
+- [x] Create "Unlock Your Full 30-Day Path" CTA after first prediction
+- [x] Add trajectory teaser content with blur effect for locked insights
+- [x] Update paywall modal to show after emotional engagement (not just limits)
+- [x] Rewrite homepage copy to focus on curiosity and identity vs features
+- [x] Create PostPredictionPaywall component with category-specific teasers
+- [ ] Test conversion rate improvements on deployed site

@@ -16,6 +16,7 @@ import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
 import PredictionHistory from "@/components/PredictionHistory";
+import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -46,6 +47,7 @@ export default function Dashboard() {
   const [deepMode, setDeepMode] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
+  const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -75,8 +77,16 @@ export default function Dashboard() {
       setUserFeedback(latest.userFeedback as "like" | "dislike" | null);
       setConfidenceScore(latest.confidenceScore || null);
       setTrajectoryType(latest.trajectoryType as "instant" | "30day" | "90day" | "yearly");
+      setCategory(latest.category as "career" | "love" | "finance" | "health" | "general");
+      
+      // Trigger post-prediction paywall after 3 seconds for Free tier users
+      if (subscription?.tier === "free") {
+        setTimeout(() => {
+          setShowPostPredictionPaywall(true);
+        }, 3000);
+      }
     }
-  }, [latestPredictions, prediction]);
+  }, [latestPredictions, prediction, subscription]);
 
   const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
 
@@ -919,6 +929,16 @@ export default function Dashboard() {
         reason={upgradeReason}
         remainingPredictions={subscription?.tier === "free" ? (3 - (subscription?.totalUsed || 0)) : 0}
       />
+      
+      {/* Post-Prediction Paywall - Triggers after welcome prediction */}
+      {isAuthenticated && subscription && (
+        <PostPredictionPaywall 
+          open={showPostPredictionPaywall}
+          onOpenChange={setShowPostPredictionPaywall}
+          userTier={subscription.tier}
+          predictionCategory={category}
+        />
+      )}
     </div>
   );
 }
