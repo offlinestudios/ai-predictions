@@ -85,9 +85,9 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain" />
+            <img src="/logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              AI Predictions
+              Predicsure AI
             </h1>
           </div>
           
@@ -346,7 +346,7 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
-            <p className="text-muted-foreground">Everything you need to know about AI Predictions</p>
+            <p className="text-muted-foreground">Everything you need to know about Predicsure AI</p>
           </div>
           
           <Accordion type="single" collapsible className="max-w-3xl mx-auto space-y-4">
@@ -410,7 +410,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2024 AI Predictions. Powered by advanced artificial intelligence.</p>
+          <p>© 2025 Predicsure AI. Powered by advanced artificial intelligence.</p>
         </div>
       </footer>
     </div>

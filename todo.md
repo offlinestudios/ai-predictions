@@ -332,3 +332,11 @@
 - [x] Generate favicon-192.png and favicon-512.png for modern browsers
 - [x] Update HTML to reference new favicon links
 - [x] Add apple-touch-icon for iOS devices
+
+### Branding Update to Predicsure AI
+- [x] Update header title from "AI Predictions" to "Predicsure AI"
+- [x] Update footer copyright to 2025
+- [x] Update footer copyright text to use "Predicsure AI"
+- [x] Update SharedPrediction page branding
+- [x] Update ShareButtons component branding
+- [x] Update Onboarding page branding

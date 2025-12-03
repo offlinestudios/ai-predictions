@@ -205,7 +205,7 @@ export default function Onboarding() {
               </div>
               <div>
                 <CardTitle className="text-3xl mb-3">
-                  Welcome to AI Predictions
+                  Welcome to Predicsure AI
                 </CardTitle>
                 <CardDescription className="text-base">
                   Let's personalize your experience. We'll ask a few questions to understand

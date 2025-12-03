@@ -59,7 +59,7 @@ export default function SharedPrediction() {
   return (
     <>
       <Helmet>
-        <title>{ogTitle} - AI Predictions</title>
+        <title>{ogTitle} - Predicsure AI</title>
         <meta name="description" content={ogDescription} />
         
         {/* Open Graph / Facebook */}
@@ -85,7 +85,7 @@ export default function SharedPrediction() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-400" />
-            <span className="text-xl font-bold text-white">AI Predictions</span>
+            <span className="text-xl font-bold text-white">Predicsure AI</span>
           </div>
           <Button asChild variant="default">
             <a href="/">Get Your Predictions</a>

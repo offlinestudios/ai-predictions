@@ -14,7 +14,7 @@ export default function ShareButtons({ shareToken, predictionText, category }: S
   const [copied, setCopied] = useState(false);
   
   const shareUrl = `${window.location.origin}/share/${shareToken}`;
-  const shareText = `Check out my ${category || 'AI'} prediction from AI Predictions! 🔮`;
+  const shareText = `Check out my ${category || 'AI'} prediction from Predicsure AI! 🔮`;
   
   const handleCopyLink = async () => {
     try {
