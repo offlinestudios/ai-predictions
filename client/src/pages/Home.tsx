@@ -240,7 +240,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
+      <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
         <div className="container text-center text-sm text-muted-foreground">
           <p>© 2024 AI Predictions. Powered by advanced artificial intelligence.</p>
         </div>

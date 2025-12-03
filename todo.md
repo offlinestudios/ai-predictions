@@ -294,3 +294,7 @@
 - [x] Add more vertical spacing between feature cards section and footer (pb-24 on section)
 - [x] Increase padding/margin to create breathing room (mt-16 on footer, py-12 instead of py-8)
 - [x] Ensure footer border line has proper distance from cards
+
+### Header/Footer Height Consistency
+- [x] Match header and footer padding for visual balance (both use py-3)
+- [x] Ensure both use same vertical padding values
