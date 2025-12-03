@@ -9,6 +9,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
+import CategoryQuestions, { type CategoryProfiles } from "@/components/CategoryQuestions";
 
 const INTERESTS = [
   { id: "career", label: "Career & Success", icon: Briefcase, color: "text-blue-400" },
@@ -32,6 +33,7 @@ export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [categoryProfiles, setCategoryProfiles] = useState<CategoryProfiles>({});
   const [relationshipStatus, setRelationshipStatus] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -72,6 +74,14 @@ export default function Onboarding() {
           setNickname(data.nickname || "");
           setSelectedInterests(data.interests || []);
           setRelationshipStatus(data.relationshipStatus || "");
+          if (data.careerProfile || data.moneyProfile || data.loveProfile || data.healthProfile) {
+            setCategoryProfiles({
+              careerProfile: data.careerProfile,
+              moneyProfile: data.moneyProfile,
+              loveProfile: data.loveProfile,
+              healthProfile: data.healthProfile,
+            });
+          }
         } catch (e) {
           // Invalid data, ignore
         }
@@ -114,8 +124,9 @@ export default function Onboarding() {
         toast.error("Please select at least one interest");
         return;
       }
+      // Move to category-specific questions
       setStep(4);
-    } else if (step === 4) {
+    } else if (step === 5) {
       if (!relationshipStatus) {
         toast.error("Please select your relationship status");
         return;
@@ -126,11 +137,12 @@ export default function Onboarding() {
         nickname,
         interests: selectedInterests,
         relationshipStatus,
+        ...categoryProfiles,
       };
       localStorage.setItem("onboardingData", JSON.stringify(onboardingData));
       
       // Start "reading pattern" animation
-      setStep(5);
+      setStep(6);
       setIsProcessing(true);
       
       // After 3 seconds, check if user is authenticated
@@ -140,7 +152,7 @@ export default function Onboarding() {
           saveOnboardingMutation.mutate(onboardingData);
         } else {
           // User is anonymous, show sign-up prompt
-          setStep(6);
+          setStep(7);
           setIsProcessing(false);
         }
       }, 3000);
@@ -178,10 +190,10 @@ export default function Onboarding() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Progress Indicator */}
-        {step < 5 && (
+        {step < 6 && (
           <div className="mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              {[1, 2, 3, 4].map((s) => (
+              {[1, 2, 3, 4, 5].map((s) => (
                 <div
                   key={s}
                   className={`h-2 rounded-full transition-all ${
@@ -191,7 +203,7 @@ export default function Onboarding() {
               ))}
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              Step {step} of 4
+              Step {step} of 5
             </p>
           </div>
         )}
@@ -367,8 +379,8 @@ export default function Onboarding() {
           </Card>
         )}
 
-        {/* Step 6: Sign-Up Prompt (Anonymous Users Only) */}
-        {step === 6 && (
+        {/* Step 7: Sign-Up Prompt (Anonymous Users Only) */}
+        {step === 7 && (
           <Card className="border-2 border-primary/20">
             <CardHeader className="text-center space-y-4">
               <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">

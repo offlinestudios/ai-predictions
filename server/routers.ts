@@ -43,18 +43,46 @@ export const appRouter = router({
         nickname: z.string(),
         interests: z.array(z.string()),
         relationshipStatus: z.string(),
+        // Category-specific micro-question responses
+        careerProfile: z.object({
+          position: z.string(),
+          direction: z.string(),
+          challenge: z.string(),
+          timeline: z.string(),
+        }).optional(),
+        moneyProfile: z.object({
+          stage: z.string(),
+          goal: z.string(),
+          incomeSource: z.string(),
+          stability: z.string(),
+        }).optional(),
+        loveProfile: z.object({
+          goal: z.string(),
+          patterns: z.string(),
+          desires: z.string(),
+        }).optional(),
+        healthProfile: z.object({
+          state: z.string(),
+          focus: z.string(),
+          consistency: z.string(),
+          obstacle: z.string(),
+        }).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
         if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
 
-        // Update user profile
+        // Update user profile with category-specific data
         await db
           .update(users)
           .set({
             nickname: input.nickname,
             relationshipStatus: input.relationshipStatus,
             interests: JSON.stringify(input.interests),
+            careerProfile: input.careerProfile ? JSON.stringify(input.careerProfile) : null,
+            moneyProfile: input.moneyProfile ? JSON.stringify(input.moneyProfile) : null,
+            loveProfile: input.loveProfile ? JSON.stringify(input.loveProfile) : null,
+            healthProfile: input.healthProfile ? JSON.stringify(input.healthProfile) : null,
             onboardingCompleted: true,
             updatedAt: new Date(),
           })
@@ -72,16 +100,56 @@ export const appRouter = router({
 
         const welcomeQuestion = welcomeQuestions[primaryInterest as keyof typeof welcomeQuestions] || welcomeQuestions.general;
 
-        // Build personalized system prompt for welcome prediction
-        const systemPrompt = `You are an AI oracle creating a special welcome prediction for ${input.nickname}. This is their first prediction, so make it warm, encouraging, and personalized.
+        // Build enhanced context from category profiles
+        let profileContext = "";
+        
+        if (input.careerProfile) {
+          profileContext += `\n\n**Career Context:**
+- Position: ${input.careerProfile.position}
+- Direction: ${input.careerProfile.direction}
+- Challenge: ${input.careerProfile.challenge}
+- Timeline: ${input.careerProfile.timeline}`;
+        }
+        
+        if (input.moneyProfile) {
+          profileContext += `\n\n**Financial Context:**
+- Stage: ${input.moneyProfile.stage}
+- Goal: ${input.moneyProfile.goal}
+- Income Source: ${input.moneyProfile.incomeSource}
+- Stability: ${input.moneyProfile.stability}`;
+        }
+        
+        if (input.loveProfile) {
+          profileContext += `\n\n**Relationship Context:**
+- Goal: ${input.loveProfile.goal}
+- Patterns: ${input.loveProfile.patterns}
+- Desires: ${input.loveProfile.desires}
+- Status: ${input.relationshipStatus}`;
+        }
+        
+        if (input.healthProfile) {
+          profileContext += `\n\n**Health Context:**
+- State: ${input.healthProfile.state}
+- Focus: ${input.healthProfile.focus}
+- Consistency: ${input.healthProfile.consistency}
+- Obstacle: ${input.healthProfile.obstacle}`;
+        }
 
-**Welcome Prediction Requirements:**
+        // Build personalized system prompt for welcome prediction
+        const systemPrompt = `You are an AI oracle creating a special welcome prediction for ${input.nickname}. This is their first prediction, so make it warm, encouraging, and uncannily personal.
+
+**User Profile:**${profileContext}
+
+**Prediction Requirements:**
 - Provide an uplifting 30-day forecast (400-500 words)
-- Break down into 3-4 weekly phases
-- Include 3-5 specific positive milestones
-- Be encouraging and optimistic while staying realistic
-- Reference their interests: ${input.interests.join(", ")}
-- ${input.relationshipStatus !== "prefer-not-say" ? `Consider their relationship status: ${input.relationshipStatus}` : ""}
+- Break down into 3-4 weekly phases with specific timelines
+- Reference their SPECIFIC situation (position, challenges, goals, constraints)
+- Address their stated timeline and urgency
+- Acknowledge their pain points with empathy
+- Predict momentum shifts based on their current trajectory
+- Include 3-5 specific, actionable milestones
+- Be encouraging yet realistic - acknowledge constraints
+- Use psychological triggers: identity, desire, momentum, timeline
 - End with an inspiring call-to-action
 - Include a confidence score (0-100) at the end: "Confidence: XX%"`;
 

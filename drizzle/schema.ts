@@ -32,6 +32,11 @@ export const users = pgTable("users", {
   relationshipStatus: varchar("relationshipStatus", { length: 50 }),
   interests: text("interests"), // JSON array of selected interests
   onboardingCompleted: boolean("onboardingCompleted").default(false).notNull(),
+  /** Category-specific micro-question responses stored as JSON */
+  careerProfile: text("careerProfile"), // JSON: position, direction, challenge, timeline, satisfaction
+  moneyProfile: text("moneyProfile"), // JSON: stage, goal, incomeSource, stability, milestone
+  loveProfile: text("loveProfile"), // JSON: goal, patterns, desires
+  healthProfile: text("healthProfile"), // JSON: state, focus, consistency, obstacle
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

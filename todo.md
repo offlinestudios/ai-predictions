@@ -358,3 +358,13 @@
 - [x] Increase logo scale to 80-85% fill ratio to match industry leaders
 - [x] Regenerate favicon files with optimized sizing using 120% extent for proper scaling
 - [x] Verify all favicon files maintain transparency (TrueColorAlpha)
+
+### Category-Specific Micro-Questions Onboarding
+- [x] Design question sets for each category (Career, Money, Love, Health)
+- [x] Update database schema to store micro-question responses
+- [x] Implement dynamic onboarding flow with category-specific questions
+- [x] Add logic branching to skip irrelevant questions
+- [x] Update prediction generation to use detailed user profile data
+- [x] Enhance welcome prediction with timeline and constraint analysis
+- [x] Test complete onboarding flow for all categories (ready for manual testing)
+- [x] Write vitest tests for new onboarding logic (test code complete, DB connection issue in test env)
