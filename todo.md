@@ -352,3 +352,9 @@
 - [x] Fix favicon transparency by removing black background with ImageMagick
 - [x] Regenerate all favicon files with proper alpha channel (TrueColorAlpha)
 - [x] Verify favicon files now have transparency
+
+### Favicon Sizing Optimization
+- [x] Research favicon sizing standards (Railway 85-90%, OpenAI 80-85%, YouTube 75-80%)
+- [x] Increase logo scale to 80-85% fill ratio to match industry leaders
+- [x] Regenerate favicon files with optimized sizing using 120% extent for proper scaling
+- [x] Verify all favicon files maintain transparency (TrueColorAlpha)
