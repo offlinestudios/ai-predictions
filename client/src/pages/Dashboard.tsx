@@ -97,6 +97,8 @@ export default function Dashboard() {
     }
   }, [latestPredictions, prediction, subscription]);
 
+
+
   const uploadFileMutation = trpc.prediction.uploadFile.useMutation();
 
   const feedbackMutation = trpc.prediction.submitFeedback.useMutation({
@@ -182,6 +184,34 @@ export default function Dashboard() {
       toast.error(error.message);
     },
   });
+
+  // Generate welcome prediction for anonymous users with onboarding data
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated && !prediction) {
+      const onboardingDataStr = localStorage.getItem('onboardingData');
+      const welcomePredictionGenerated = localStorage.getItem('welcomePredictionGenerated');
+      
+      if (onboardingDataStr && !welcomePredictionGenerated) {
+        try {
+          const data = JSON.parse(onboardingDataStr);
+          
+          // Generate welcome prediction using anonymous mutation
+          const welcomePrompt = `Based on my interests in ${data.interests?.join(', ')}, my relationship status (${data.relationshipStatus}), and my personal goals, what shifts or changes should I be aware of in my life right now?`;
+          
+          generateAnonymousMutation.mutate({
+            userInput: welcomePrompt,
+            category: data.interests?.[0] || 'general',
+            onboardingData: data,
+          });
+          
+          // Mark as generated to avoid repeated calls
+          localStorage.setItem('welcomePredictionGenerated', 'true');
+        } catch (error) {
+          console.error('Failed to parse onboarding data:', error);
+        }
+      }
+    }
+  }, [authLoading, isAuthenticated, prediction]);
 
   const checkoutMutation = trpc.subscription.createCheckoutSession.useMutation({
     onSuccess: (data) => {

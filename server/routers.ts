@@ -978,11 +978,46 @@ export const appRouter = router({
       .input(z.object({
         userInput: z.string().min(1).max(1000),
         category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
+        // Optional onboarding data for welcome predictions
+        onboardingData: z.object({
+          nickname: z.string().optional(),
+          interests: z.array(z.string()).optional(),
+          relationshipStatus: z.string().optional(),
+          careerProfile: z.any().optional(),
+          financeProfile: z.any().optional(),
+          loveProfile: z.any().optional(),
+          healthProfile: z.any().optional(),
+        }).optional(),
       }))
       .mutation(async ({ input }) => {
         // Generate prediction without authentication
-        // Simple system prompt for anonymous users
-        const systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
+        let systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
+        
+        // If onboarding data is provided, enhance the system prompt
+        if (input.onboardingData) {
+          const { nickname, interests, relationshipStatus, careerProfile, financeProfile, loveProfile, healthProfile } = input.onboardingData;
+          
+          systemPrompt += `\n\nUser Context:`;
+          if (nickname) systemPrompt += `\n- Name: ${nickname}`;
+          if (interests && interests.length > 0) systemPrompt += `\n- Interests: ${interests.join(', ')}`;
+          if (relationshipStatus) systemPrompt += `\n- Relationship Status: ${relationshipStatus}`;
+          
+          // Add category-specific profile data
+          if (careerProfile) {
+            systemPrompt += `\n- Career: ${JSON.stringify(careerProfile)}`;
+          }
+          if (financeProfile) {
+            systemPrompt += `\n- Finance: ${JSON.stringify(financeProfile)}`;
+          }
+          if (loveProfile) {
+            systemPrompt += `\n- Love: ${JSON.stringify(loveProfile)}`;
+          }
+          if (healthProfile) {
+            systemPrompt += `\n- Health: ${JSON.stringify(healthProfile)}`;
+          }
+          
+          systemPrompt += `\n\nUse this context to provide a deeply personalized, specific prediction that addresses their current situation, challenges, and timeline.`;
+        }
         
         const textPrompt = input.category 
           ? `Generate a ${input.category} prediction for: ${input.userInput}`

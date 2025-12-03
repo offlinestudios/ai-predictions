@@ -111,16 +111,22 @@ export type ResponseFormat =
   | { type: "json_object" }
   | { type: "json_schema"; json_schema: JsonSchema };
 
-// Initialize OpenAI client
+// Initialize OpenAI client with Manus Forge API
 function getOpenAIClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.BUILT_IN_FORGE_API_KEY;
+  const baseURL = process.env.BUILT_IN_FORGE_API_URL;
   
   if (!apiKey) {
-    throw new Error("OPENAI_API_KEY environment variable is not set");
+    throw new Error("BUILT_IN_FORGE_API_KEY environment variable is not set");
+  }
+  
+  if (!baseURL) {
+    throw new Error("BUILT_IN_FORGE_API_URL environment variable is not set");
   }
 
   return new OpenAI({
     apiKey,
+    baseURL: `${baseURL}/v1`,
   });
 }
 

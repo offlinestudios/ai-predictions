@@ -390,3 +390,13 @@
 - [x] Update progress indicator to show 6 steps instead of 5
 - [ ] Test complete onboarding flow from start to finish
 - [ ] Verify welcome prediction appears in dashboard after onboarding
+
+### Fix Guest User Welcome Prediction (Dec 3)
+- [x] Investigate why anonymous users don't receive welcome prediction after clicking "Continue as Guest"
+- [x] Implement welcome prediction generation in Dashboard for guest users with onboarding data
+- [x] Ensure prediction uses category-specific profile data from localStorage
+- [x] Fix LLM helper to use Manus Forge API instead of direct OpenAI (BUILT_IN_FORGE_API_KEY)
+- [x] Fix LLM baseURL endpoint from /llm/v1 to /v1
+- [x] Fix useEffect dependencies to prevent infinite loop (removed generateAnonymousMutation from deps)
+- [x] Test complete anonymous user flow: onboarding → continue as guest → see prediction in dashboard
+- [x] Verify prediction quality uses all onboarding data (name, interests, career profile, timeline, constraints)
