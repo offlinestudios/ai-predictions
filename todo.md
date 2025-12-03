@@ -270,3 +270,9 @@
 - [x] Add proper spacing between hero section and feature cards
 - [x] Ensure visual hierarchy matches design mockup
 - [x] Remove duplicate CTA from bottom of feature section
+
+### Homepage Spacing Fix
+- [x] Reduce gap between CTA button and feature cards (pb-12 on hero, py-16 on features)
+- [x] Adjust hero section height to create tighter layout (removed min-h-[70vh], using pt-20 pb-12)
+- [x] Match spacing to design mockup (cards closer to CTA)
+- [x] Remove bg-card/30 background for seamless flow

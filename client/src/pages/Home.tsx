@@ -113,9 +113,9 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-[70vh] flex items-center relative overflow-hidden">
+      <section className="relative overflow-hidden pt-20 pb-12">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
-        <div className="container relative py-20">
+        <div className="container relative">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <Badge variant="secondary" className="mb-4">
               Powered by Advanced AI
@@ -149,7 +149,7 @@ export default function Home() {
       </section>
 
       {/* Feature Preview Section - Emotional Benefits */}
-      <section className="py-24 bg-card/30">
+      <section className="py-16">
         <div className="container">
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
