@@ -262,3 +262,11 @@
 - [x] Remove social proof stats (0 predictions, 4 total, 2 users) from hero
 - [x] Keep only the second "Get Your First Prediction" CTA at bottom of feature section
 - [ ] Add social proof stats back later when platform has more users (future enhancement)
+
+### Homepage Layout Fix
+- [x] Remove duplicate "See What's Shifting in Your Life" heading
+- [x] Move CTA button back into hero section (centered below description)
+- [x] Increase hero section vertical padding for taller appearance (min-h-[70vh])
+- [x] Add proper spacing between hero section and feature cards
+- [x] Ensure visual hierarchy matches design mockup
+- [x] Remove duplicate CTA from bottom of feature section

@@ -113,10 +113,10 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="min-h-[70vh] flex items-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
-        <div className="container relative">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
+        <div className="container relative py-20">
+          <div className="max-w-3xl mx-auto text-center space-y-8">
             <Badge variant="secondary" className="mb-4">
               Powered by Advanced AI
             </Badge>
@@ -131,19 +131,26 @@ export default function Home() {
               Personalized AI predictions about your relationships, career, finances, and internal state. 
               Understand what's coming, when it matters, and how to navigate the next chapter.
             </p>
+            
+            {/* CTA Button */}
+            <div className="pt-4">
+              <Button asChild size="lg" className="text-lg px-12">
+                <Link href="/onboarding">
+                  Get Your First Prediction
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                No credit card required • Start exploring in 2 minutes
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Feature Preview Section - Emotional Benefits */}
-      <section className="py-20 bg-card/30">
+      <section className="py-24 bg-card/30">
         <div className="container">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-4">See What's Shifting in Your Life</h3>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Personalized AI predictions about your relationships, career, finances, and internal state
-            </p>
-          </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {/* Feature 1: 30-Day Trajectories */}
@@ -189,19 +196,6 @@ export default function Home() {
                 Get insights tailored to your energy patterns and life context
               </p>
             </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center mt-16">
-            <Button asChild size="lg" className="text-lg px-12">
-              <Link href="/onboarding">
-                Get Your First Prediction
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-            </Button>
-            <p className="text-sm text-muted-foreground mt-4">
-              No credit card required • Start exploring in 2 minutes
-            </p>
           </div>
         </div>
       </section>
