@@ -239,6 +239,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Social Proof - Testimonials */}
+      <section className="py-20 bg-card/20">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-3">What People Are Discovering</h3>
+            <p className="text-muted-foreground">Real insights from those navigating their paths</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Testimonial 1 */}
+            <div className="bg-card/50 border border-border/50 rounded-lg p-6 space-y-4">
+              <div className="flex gap-1 text-yellow-500">
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+              </div>
+              <p className="text-sm text-muted-foreground italic">
+                "The 30-day trajectory showed me exactly when to have that difficult conversation. Two weeks later, everything unfolded just as predicted. I'm still amazed."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-semibold">
+                  SM
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Sarah M.</p>
+                  <p className="text-xs text-muted-foreground">Marketing Director</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-card/50 border border-border/50 rounded-lg p-6 space-y-4">
+              <div className="flex gap-1 text-yellow-500">
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+              </div>
+              <p className="text-sm text-muted-foreground italic">
+                "I was skeptical at first, but the career timing prediction was eerily accurate. Got the job offer exactly when it said I would. This isn't your typical horoscope."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold">
+                  JC
+                </div>
+                <div>
+                  <p className="text-sm font-medium">James C.</p>
+                  <p className="text-xs text-muted-foreground">Software Engineer</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="bg-card/50 border border-border/50 rounded-lg p-6 space-y-4">
+              <div className="flex gap-1 text-yellow-500">
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+                <Star className="w-4 h-4 fill-current" />
+              </div>
+              <p className="text-sm text-muted-foreground italic">
+                "The relationship trajectory helped me understand patterns I couldn't see on my own. Knowing what was coming gave me the clarity to make better choices."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-sm font-semibold">
+                  ER
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Emily R.</p>
+                  <p className="text-xs text-muted-foreground">Entrepreneur</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
         <div className="container text-center text-sm text-muted-foreground">
