@@ -368,3 +368,12 @@
 - [x] Enhance welcome prediction with timeline and constraint analysis
 - [x] Test complete onboarding flow for all categories (ready for manual testing)
 - [x] Write vitest tests for new onboarding logic (test code complete, DB connection issue in test env)
+
+### Premium Precision Unlock Paywall
+- [x] Design premium data collection fields (age, location, income, industry, transitions)
+- [x] Update database schema for premium profile data
+- [x] Create PremiumUnlock modal component with upgrade CTA
+- [x] Integrate paywall into dashboard after welcome prediction
+- [x] Update prediction generation to use premium data for deeper insights
+- [x] Add "Skip for now" option that preserves free tier access
+- [x] Test premium unlock flow and subscription integration

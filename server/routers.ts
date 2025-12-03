@@ -213,6 +213,37 @@ export const appRouter = router({
 
         return { success: true };
       }),
+
+    savePremiumData: protectedProcedure
+      .input(z.object({
+        ageRange: z.string(),
+        location: z.string().nullable(),
+        incomeRange: z.string(),
+        industry: z.string(),
+        majorTransition: z.boolean(),
+        transitionType: z.string().nullable(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+        // Update user with premium data
+        await db
+          .update(users)
+          .set({
+            ageRange: input.ageRange,
+            location: input.location,
+            incomeRange: input.incomeRange,
+            industry: input.industry,
+            majorTransition: input.majorTransition,
+            transitionType: input.transitionType,
+            premiumDataCompleted: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id));
+
+        return { success: true };
+      }),
   }),
 
   stats: router({
@@ -420,6 +451,17 @@ export const appRouter = router({
             nickname: users.nickname,
             relationshipStatus: users.relationshipStatus,
             interests: users.interests,
+            careerProfile: users.careerProfile,
+            moneyProfile: users.moneyProfile,
+            loveProfile: users.loveProfile,
+            healthProfile: users.healthProfile,
+            ageRange: users.ageRange,
+            location: users.location,
+            incomeRange: users.incomeRange,
+            industry: users.industry,
+            majorTransition: users.majorTransition,
+            transitionType: users.transitionType,
+            premiumDataCompleted: users.premiumDataCompleted,
           })
           .from(users)
           .where(eq(users.id, ctx.user.id))
@@ -505,7 +547,64 @@ export const appRouter = router({
                 systemPrompt += `- For love predictions, consider their ${relationshipStatus} status and provide relevant advice.\n`;
               }
             }
+            
+            // Add category-specific profile data
+            if (userProfile.careerProfile && (input.category === "career" || interests.includes("career"))) {
+              const careerData = JSON.parse(userProfile.careerProfile);
+              systemPrompt += `- Career Profile: ${careerData.position} position, seeking ${careerData.direction}, challenged by ${careerData.challenge}, timeline: ${careerData.timeline}\n`;
+              systemPrompt += `- Tailor career predictions to their specific position and goals. Address their ${careerData.challenge} challenge directly.\n`;
+            }
+            
+            if (userProfile.moneyProfile && (input.category === "finance" || interests.includes("finance"))) {
+              const moneyData = JSON.parse(userProfile.moneyProfile);
+              systemPrompt += `- Finance Profile: ${moneyData.stage} stage, goal: ${moneyData.goal}, income source: ${moneyData.incomeSource}, stability: ${moneyData.stability}\n`;
+              systemPrompt += `- Provide financial predictions aligned with their ${moneyData.goal} goal and ${moneyData.stability} stability level.\n`;
+            }
+            
+            if (userProfile.loveProfile && (input.category === "love" || interests.includes("love"))) {
+              const loveData = JSON.parse(userProfile.loveProfile);
+              systemPrompt += `- Love Profile: seeking ${loveData.goal}, patterns: ${loveData.patterns}, desires: ${loveData.desires}\n`;
+              systemPrompt += `- Focus love predictions on their desire for ${loveData.desires} and their ${loveData.patterns} relationship patterns.\n`;
+            }
+            
+            if (userProfile.healthProfile && (input.category === "health" || interests.includes("health"))) {
+              const healthData = JSON.parse(userProfile.healthProfile);
+              systemPrompt += `- Health Profile: ${healthData.state} state, focus: ${healthData.focus}, consistency: ${healthData.consistency}, obstacle: ${healthData.obstacle}\n`;
+              systemPrompt += `- Tailor health predictions to their ${healthData.focus} focus and help them overcome their ${healthData.obstacle} obstacle.\n`;
+            }
           }
+        }
+        
+        // Add premium precision data if available
+        if (userProfile && userProfile.premiumDataCompleted) {
+          systemPrompt += `\n\n**Premium Precision Context:**\n`;
+          
+          if (userProfile.ageRange) {
+            systemPrompt += `- Age Range: ${userProfile.ageRange} - Tailor predictions to their life stage and generational context\n`;
+          }
+          
+          if (userProfile.location) {
+            systemPrompt += `- Location: ${userProfile.location} - Consider regional factors, opportunities, and cultural context\n`;
+          }
+          
+          if (userProfile.incomeRange) {
+            systemPrompt += `- Income Range: ${userProfile.incomeRange} - Align financial predictions with their economic reality\n`;
+          }
+          
+          if (userProfile.industry) {
+            systemPrompt += `- Industry: ${userProfile.industry} - Provide industry-specific insights and career predictions\n`;
+          }
+          
+          if (userProfile.majorTransition && userProfile.transitionType) {
+            systemPrompt += `- **Major Life Transition:** Currently undergoing ${userProfile.transitionType}\n`;
+            systemPrompt += `- **CRITICAL:** This user is in a major transition period. Predictions MUST acknowledge this transition and provide specific guidance for navigating it. Be extra specific about timing, challenges, and opportunities related to this change.\n`;
+          }
+          
+          systemPrompt += `\n**With this premium data, your predictions should be:**\n`;
+          systemPrompt += `- Uncannily specific to their exact life context\n`;
+          systemPrompt += `- Aligned with their age, location, income, and industry realities\n`;
+          systemPrompt += `- Acknowledge constraints and opportunities unique to their situation\n`;
+          systemPrompt += `- Provide timeline predictions that match their life stage\n`;
         }
         
         // Add personalization based on user history

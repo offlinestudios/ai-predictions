@@ -37,6 +37,14 @@ export const users = pgTable("users", {
   moneyProfile: text("moneyProfile"), // JSON: stage, goal, incomeSource, stability, milestone
   loveProfile: text("loveProfile"), // JSON: goal, patterns, desires
   healthProfile: text("healthProfile"), // JSON: state, focus, consistency, obstacle
+  /** Premium precision data for enhanced predictions */
+  ageRange: varchar("ageRange", { length: 20 }), // e.g., "25-34", "35-44"
+  location: varchar("location", { length: 100 }), // City or region
+  incomeRange: varchar("incomeRange", { length: 50 }), // Income bracket
+  industry: varchar("industry", { length: 100 }), // Professional industry/field
+  majorTransition: boolean("majorTransition").default(false), // Undergoing major life change
+  transitionType: varchar("transitionType", { length: 100 }), // Type of transition if applicable
+  premiumDataCompleted: boolean("premiumDataCompleted").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

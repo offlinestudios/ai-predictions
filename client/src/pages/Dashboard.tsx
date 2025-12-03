@@ -17,6 +17,7 @@ import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
 import PredictionHistory from "@/components/PredictionHistory";
 import PostPredictionPaywall from "@/components/PostPredictionPaywall";
+import PremiumUnlockModal from "@/components/PremiumUnlockModal";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -48,6 +49,7 @@ export default function Dashboard() {
   const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
+  const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -79,8 +81,15 @@ export default function Dashboard() {
       setTrajectoryType(latest.trajectoryType as "instant" | "30day" | "90day" | "yearly");
       setCategory(latest.category as "career" | "love" | "finance" | "health" | "general");
       
-      // Trigger post-prediction paywall after 3 seconds for Free tier users
-      if (subscription?.tier === "free") {
+      // Check if user has completed premium data
+      // If not, show premium unlock modal after 3 seconds
+      if (!user?.premiumDataCompleted) {
+        setTimeout(() => {
+          setShowPremiumUnlock(true);
+        }, 3000);
+      }
+      // Otherwise trigger post-prediction paywall for Free tier users
+      else if (subscription?.tier === "free") {
         setTimeout(() => {
           setShowPostPredictionPaywall(true);
         }, 3000);
@@ -930,6 +939,21 @@ export default function Dashboard() {
         remainingPredictions={subscription?.tier === "free" ? (3 - (subscription?.totalUsed || 0)) : 0}
       />
       
+      {/* Premium Unlock Modal - Triggers after welcome prediction for users without premium data */}
+      {isAuthenticated && (
+        <PremiumUnlockModal
+          open={showPremiumUnlock}
+          onClose={() => setShowPremiumUnlock(false)}
+          onComplete={() => {
+            setShowPremiumUnlock(false);
+            // Optionally show post-prediction paywall after premium unlock
+            if (subscription?.tier === "free") {
+              setTimeout(() => setShowPostPredictionPaywall(true), 1000);
+            }
+          }}
+        />
+      )}
+
       {/* Post-Prediction Paywall - Triggers after welcome prediction */}
       {isAuthenticated && subscription && (
         <PostPredictionPaywall 
