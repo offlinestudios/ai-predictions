@@ -377,3 +377,16 @@
 - [x] Update prediction generation to use premium data for deeper insights
 - [x] Add "Skip for now" option that preserves free tier access
 - [x] Test premium unlock flow and subscription integration
+
+### Fix Onboarding Flow Issues
+- [ ] Debug why category-specific questions aren't appearing in step 4
+- [ ] Fix prediction generation not triggering at onboarding completion
+- [ ] Verify CategoryQuestions component is properly integrated
+- [ ] Test complete onboarding flow from start to welcome prediction
+
+### Fix Onboarding Flow Issues (Dec 3)
+- [x] Debug why category questions weren't showing (Step 4) - Fixed step numbering and CategoryQuestions component integration
+- [x] Fix prediction generation not triggering at completion - Added API call during loading step for anonymous users
+- [x] Update progress indicator to show 6 steps instead of 5
+- [ ] Test complete onboarding flow from start to finish
+- [ ] Verify welcome prediction appears in dashboard after onboarding

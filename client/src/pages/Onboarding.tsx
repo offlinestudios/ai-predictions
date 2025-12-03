@@ -190,10 +190,10 @@ export default function Onboarding() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Progress Indicator */}
-        {step < 6 && (
+        {step < 7 && (
           <div className="mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              {[1, 2, 3, 4, 5].map((s) => (
+              {[1, 2, 3, 4, 5, 6].map((s) => (
                 <div
                   key={s}
                   className={`h-2 rounded-full transition-all ${
@@ -203,7 +203,7 @@ export default function Onboarding() {
               ))}
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              Step {step} of 5
+              Step {step} of 6
             </p>
           </div>
         )}
@@ -317,8 +317,20 @@ export default function Onboarding() {
           </Card>
         )}
 
-        {/* Step 4: Relationship Status */}
+        {/* Step 4: Category-Specific Questions */}
         {step === 4 && (
+          <CategoryQuestions
+            categories={selectedInterests}
+            onComplete={(profiles) => {
+              setCategoryProfiles(profiles);
+              setStep(5);
+            }}
+            onBack={() => setStep(3)}
+          />
+        )}
+
+        {/* Step 5: Relationship Status */}
+        {step === 5 && (
           <Card>
             <CardHeader>
               <CardTitle>What's your relationship status?</CardTitle>
@@ -346,7 +358,7 @@ export default function Onboarding() {
                 })}
               </div>
               <div className="flex gap-3">
-                <Button onClick={() => setStep(3)} variant="outline" className="flex-1">
+                <Button onClick={() => setStep(4)} variant="outline" className="flex-1">
                   Back
                 </Button>
                 <Button onClick={handleContinue} className="flex-1">
@@ -358,8 +370,8 @@ export default function Onboarding() {
           </Card>
         )}
 
-        {/* Step 5: Reading Pattern (Loading) */}
-        {step === 5 && (
+        {/* Step 6: Reading Pattern (Loading) */}
+        {step === 6 && (
           <Card className="border-2 border-primary/20">
             <CardContent className="py-16">
               <div className="flex flex-col items-center justify-center space-y-6">
