@@ -289,3 +289,8 @@
 - [x] Mobile menu closes when navigation link is clicked
 - [x] Hamburger icon toggles between Menu and X icons
 - [ ] Test mobile menu on different screen sizes (requires deployment)
+
+### Footer Spacing Fix
+- [x] Add more vertical spacing between feature cards section and footer (pb-24 on section)
+- [x] Increase padding/margin to create breathing room (mt-16 on footer, py-12 instead of py-8)
+- [x] Ensure footer border line has proper distance from cards

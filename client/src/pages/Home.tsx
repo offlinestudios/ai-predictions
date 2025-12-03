@@ -188,7 +188,7 @@ export default function Home() {
       </section>
 
       {/* Feature Preview Section - Emotional Benefits */}
-      <section className="py-16">
+      <section className="py-16 pb-24">
         <div className="container">
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -240,7 +240,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8 bg-card/30">
+      <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
         <div className="container text-center text-sm text-muted-foreground">
           <p>© 2024 AI Predictions. Powered by advanced artificial intelligence.</p>
         </div>
