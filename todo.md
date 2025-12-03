@@ -406,3 +406,13 @@
 - [x] Update onboarding to only show "Sign Up Free" button
 - [x] Simplify flow to require authentication for all users
 - [ ] Test sign-up required flow end-to-end
+
+### Dashboard Logo & Sharing Enhancements (Dec 3)
+- [x] Replace globe logo with custom Predicsure AI logo in Dashboard header
+- [x] Add Instagram share button to prediction sharing options
+- [x] Add TikTok share button to prediction sharing options
+- [x] Implement prediction accuracy percentage display (visual indicator with progress bar)
+- [x] Add intelligent accuracy improvement prompt (category-specific suggestions)
+- [x] Show specific missing information that would improve accuracy (e.g., "Add your industry and years of experience to improve by 25%")
+- [x] Create refinement loop: user provides suggested info → accuracy increases → generate improved prediction
+- [ ] Test all sharing options and accuracy improvement flow

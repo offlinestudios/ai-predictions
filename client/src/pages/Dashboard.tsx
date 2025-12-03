@@ -12,6 +12,7 @@ import { Loader2, Home, History, Zap, Crown, ArrowLeft, Star, Paperclip, X, Spar
 import PredictionLoadingAnimation from "@/components/PredictionLoadingAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import ShareButtons from "@/components/ShareButtons";
+import PredictionAccuracy from "@/components/PredictionAccuracy";
 import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
@@ -412,6 +413,35 @@ export default function Dashboard() {
     setConfidenceScore(historicalPrediction.confidenceScore);
     setTrajectoryType(historicalPrediction.trajectoryType as "instant" | "30day" | "90day" | "yearly");
   };
+  
+  // Determine missing fields based on category and user profile
+  const getMissingFields = (cat: string): string[] => {
+    const allFields: Record<string, string[]> = {
+      career: ["industry", "years of experience", "current role", "career goals"],
+      love: ["relationship timeline", "communication patterns", "past relationship history"],
+      finance: ["income range", "financial goals", "investment experience", "risk tolerance"],
+      health: ["current fitness level", "health goals", "lifestyle habits", "medical history"],
+      general: ["age range", "location", "life stage", "major life transitions"]
+    };
+    
+    // Check which premium fields are missing
+    const missing: string[] = [];
+    if (!user?.ageRange) missing.push("age range");
+    if (!user?.location) missing.push("location");
+    if (!user?.incomeRange) missing.push("income range");
+    if (!user?.industry) missing.push("industry");
+    if (!user?.majorTransition) missing.push("life transitions");
+    
+    // Add category-specific missing fields
+    const categoryFields = allFields[cat] || allFields.general;
+    return [...missing, ...categoryFields.filter(f => !missing.includes(f))].slice(0, 5);
+  };
+  
+  // Handle improve accuracy action
+  const handleImproveAccuracy = () => {
+    // Show premium unlock modal to collect missing information
+    setShowPremiumUnlock(true);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -426,7 +456,7 @@ export default function Dashboard() {
               </Button>
             </Link>
              <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain logo-pulse" />
+            <img src="/PREDICSURELOGO.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -946,6 +976,16 @@ export default function Dashboard() {
                         />
                       </div>
                     )}
+                    
+                    {/* Prediction Accuracy */}
+                    <div className="mt-4">
+                      <PredictionAccuracy 
+                        category={category}
+                        accuracyPercentage={confidenceScore || 65}
+                        missingFields={getMissingFields(category)}
+                        onImproveAccuracy={handleImproveAccuracy}
+                      />
+                    </div>
                   </div>
                 )}             </CardContent>
             </Card>
