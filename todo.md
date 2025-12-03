@@ -256,3 +256,9 @@
 - [x] Rewrite homepage copy to focus on curiosity and identity vs features
 - [x] Create PostPredictionPaywall component with category-specific teasers
 - [ ] Test conversion rate improvements on deployed site
+
+### Homepage Cleanup
+- [x] Remove first "Start Free" CTA button from hero section
+- [x] Remove social proof stats (0 predictions, 4 total, 2 users) from hero
+- [x] Keep only the second "Get Your First Prediction" CTA at bottom of feature section
+- [ ] Add social proof stats back later when platform has more users (future enhancement)

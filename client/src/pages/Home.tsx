@@ -131,17 +131,6 @@ export default function Home() {
               Personalized AI predictions about your relationships, career, finances, and internal state. 
               Understand what's coming, when it matters, and how to navigate the next chapter.
             </p>
-            <div className="flex gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="text-lg px-8">
-                <Link href="/onboarding">
-                  Start Free
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-            </div>
-            
-            {/* Social Proof Stats */}
-            <SocialProofStats />
           </div>
         </div>
       </section>
