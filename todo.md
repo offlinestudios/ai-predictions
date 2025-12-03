@@ -340,3 +340,9 @@
 - [x] Update SharedPrediction page branding
 - [x] Update ShareButtons component branding
 - [x] Update Onboarding page branding
+
+### Logo Pulse Effect & Transparent Favicon
+- [x] Add pulse animation to header logo
+- [x] Generate transparent background version of logo for favicon
+- [x] Replace favicon files with transparent background versions (favicon.ico, favicon-192.png, favicon-512.png)
+- [x] Test favicon appearance on different browsers
