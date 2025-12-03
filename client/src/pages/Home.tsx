@@ -85,7 +85,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain logo-pulse" />
+            <img src="/logo.png" alt="AI Predictions Logo" className="w-8 h-8 object-contain" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               AI Predictions
             </h1>

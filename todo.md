@@ -323,3 +323,12 @@
 - [x] Remove "See Your Next 30 Days" and other 4 feature cards section
 - [x] Keep only How It Works section for clarity
 - [x] Reduce visual clutter on homepage
+
+### Custom Logo & Favicon
+- [x] Copy PREDICSURELOGO.png to client/public folder as logo.png
+- [x] Adjust logo purple color to match button purple (#a855f7)
+- [x] Replace globe icon in header with custom logo
+- [x] Generate favicon.ico (32x32) from custom logo
+- [x] Generate favicon-192.png and favicon-512.png for modern browsers
+- [x] Update HTML to reference new favicon links
+- [x] Add apple-touch-icon for iOS devices
