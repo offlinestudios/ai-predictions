@@ -307,3 +307,14 @@
 - [x] Add 5-star ratings to each testimonial
 - [x] Position section with proper spacing (py-20, bg-card/20)
 - [x] Include job titles for credibility (Marketing Director, Software Engineer, Entrepreneur)
+
+### FAQ Accordion & How It Works Visual
+- [x] Create "How It Works" section with 3-step visual flow
+- [x] Design step icons (Sparkles, Zap, Star) with colored circular backgrounds
+- [x] Add connecting arrows between steps (hidden on mobile)
+- [x] Position How It Works between hero and feature cards
+- [x] Build FAQ accordion component using shadcn/ui Accordion
+- [x] Write 6 FAQ questions addressing common objections
+- [x] Position FAQ section after testimonials, before footer
+- [x] Add smooth expand/collapse animations (built into Accordion)
+- [x] FAQ topics: horoscope difference, accuracy, privacy, tiers, cancellation, best practices

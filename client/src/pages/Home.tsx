@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
@@ -187,6 +188,78 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works - 3-Step Visual Flow */}
+      <section className="py-16 bg-card/10">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-3">How It Works</h3>
+            <p className="text-muted-foreground">Get personalized insights in three simple steps</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {/* Step 1 */}
+            <div className="text-center space-y-4 relative">
+              <div className="w-20 h-20 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-primary" />
+                </div>
+              </div>
+              <div className="absolute top-10 left-[60%] hidden md:block">
+                <ArrowRight className="w-6 h-6 text-primary/40" />
+              </div>
+              <div className="space-y-2">
+                <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
+                  Step 1
+                </div>
+                <h4 className="text-lg font-semibold">Share Your Situation</h4>
+                <p className="text-sm text-muted-foreground">
+                  Tell us what area of life you want clarity on—career, love, finances, or personal growth
+                </p>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="text-center space-y-4 relative">
+              <div className="w-20 h-20 mx-auto rounded-full bg-blue-500/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-blue-500/30 flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-blue-500" />
+                </div>
+              </div>
+              <div className="absolute top-10 left-[60%] hidden md:block">
+                <ArrowRight className="w-6 h-6 text-primary/40" />
+              </div>
+              <div className="space-y-2">
+                <div className="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-semibold mb-2">
+                  Step 2
+                </div>
+                <h4 className="text-lg font-semibold">AI Analyzes Patterns</h4>
+                <p className="text-sm text-muted-foreground">
+                  Advanced AI processes your context and identifies emerging patterns and timing
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-green-500/30 flex items-center justify-center">
+                  <Star className="w-8 h-8 text-green-500" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-semibold mb-2">
+                  Step 3
+                </div>
+                <h4 className="text-lg font-semibold">Get Your Forecast</h4>
+                <p className="text-sm text-muted-foreground">
+                  Receive a detailed timeline showing what's coming, when it matters, and how to navigate it
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Feature Preview Section - Emotional Benefits */}
       <section className="py-16 pb-24">
         <div className="container">
@@ -317,6 +390,72 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
+            <p className="text-muted-foreground">Everything you need to know about AI Predictions</p>
+          </div>
+          
+          <Accordion type="single" collapsible className="max-w-3xl mx-auto space-y-4">
+            <AccordionItem value="item-1" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                How is this different from horoscopes or astrology?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Unlike traditional horoscopes that rely on birth dates and celestial positions, our AI analyzes your specific situation, context, and patterns using advanced machine learning. We focus on personalized insights based on your unique circumstances, not generalized zodiac predictions.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                How accurate are the predictions?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Our AI identifies patterns and likely trajectories based on your input and contextual analysis. While we can't guarantee specific outcomes (the future isn't fixed), users consistently report that our timing predictions and pattern insights align remarkably well with real-world events. Think of it as a sophisticated pattern recognition tool, not fortune-telling.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                Is my data private and secure?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Absolutely. Your predictions and personal information are encrypted and never shared with third parties. We use enterprise-grade security to protect your data. You can delete your account and all associated data at any time from your account settings.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                What's the difference between Free and paid tiers?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Free users get instant predictions with basic insights. Plus members unlock 30-day trajectory forecasts with weekly breakdowns. Pro members get 90-day and yearly forecasts plus Deep Mode for more detailed analysis. Premium includes unlimited predictions and priority AI processing.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-5" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                Can I cancel my subscription anytime?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Yes! You can cancel your subscription at any time from your account settings. You'll continue to have access to paid features until the end of your current billing period, and you can always resubscribe later.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-6" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                How do I get the most accurate predictions?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Be specific and provide context in your questions. Instead of "What will happen in my career?", try "I'm considering a job change in the next 3 months—what timing and patterns should I watch for?" The more context you provide, the more personalized and relevant your predictions will be.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
