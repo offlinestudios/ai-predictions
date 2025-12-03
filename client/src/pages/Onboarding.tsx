@@ -416,11 +416,8 @@ export default function Onboarding() {
                 Sign Up Free
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button onClick={() => navigate("/dashboard")} variant="outline" className="w-full">
-                Continue as Guest
-              </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                By signing up, you'll get unlimited predictions, history tracking, and personalized insights.
+              <p className="text-sm text-center text-muted-foreground mt-4">
+                Get unlimited predictions, history tracking, and personalized insights.
               </p>
             </CardContent>
           </Card>

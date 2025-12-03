@@ -400,3 +400,9 @@
 - [x] Fix useEffect dependencies to prevent infinite loop (removed generateAnonymousMutation from deps)
 - [x] Test complete anonymous user flow: onboarding → continue as guest → see prediction in dashboard
 - [x] Verify prediction quality uses all onboarding data (name, interests, career profile, timeline, constraints)
+
+### Remove Guest Option from Onboarding (Dec 3)
+- [x] Remove "Continue as Guest" button from onboarding completion screen
+- [x] Update onboarding to only show "Sign Up Free" button
+- [x] Simplify flow to require authentication for all users
+- [ ] Test sign-up required flow end-to-end
