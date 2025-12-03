@@ -276,3 +276,7 @@
 - [x] Adjust hero section height to create tighter layout (removed min-h-[70vh], using pt-20 pb-12)
 - [x] Match spacing to design mockup (cards closer to CTA)
 - [x] Remove bg-card/30 background for seamless flow
+
+### Header Height Reduction
+- [x] Reduce header navigation bar padding for more compact appearance (py-4 → py-3)
+- [x] Make header sleeker and less prominent
