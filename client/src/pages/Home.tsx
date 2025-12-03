@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp, Users, TrendingUp as TrendingUpIcon } from "lucide-react";
+import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp, Users, TrendingUp as TrendingUpIcon, Menu, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 
@@ -76,6 +76,7 @@ const SUBSCRIPTION_TIERS = [
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -88,7 +89,9 @@ export default function Home() {
               AI Predictions
             </h1>
           </div>
-          <div className="flex items-center gap-4">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
               <>
                 <Link href="/history">
@@ -104,12 +107,48 @@ export default function Home() {
                 </Link>
               </>
             ) : (
-              <Button asChild variant="default" size="sm">
+              <Button asChild variant="default" size="sm" className="relative animate-pulse-glow">
                 <a href={getLoginUrl()}>Sign In</a>
               </Button>
             )}
           </div>
+          
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden p-2 hover:bg-accent rounded-md transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+        
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
+            <div className="container py-4 flex flex-col gap-3">
+              {isAuthenticated ? (
+                <>
+                  <Link href="/history" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <History className="w-4 h-4 mr-2" />
+                      History
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="default" size="sm" className="w-full">
+                      Dashboard
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Button asChild variant="default" size="sm" className="w-full animate-pulse-glow">
+                  <a href={getLoginUrl()}>Sign In</a>
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
