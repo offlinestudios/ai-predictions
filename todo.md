@@ -346,3 +346,9 @@
 - [x] Generate transparent background version of logo for favicon
 - [x] Replace favicon files with transparent background versions (favicon.ico, favicon-192.png, favicon-512.png)
 - [x] Test favicon appearance on different browsers
+
+### Remove Pulse Effect & Fix Favicon
+- [x] Remove pulse animation from header logo
+- [x] Fix favicon transparency by removing black background with ImageMagick
+- [x] Regenerate all favicon files with proper alpha channel (TrueColorAlpha)
+- [x] Verify favicon files now have transparency
