@@ -260,58 +260,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Feature Preview Section - Emotional Benefits */}
-      <section className="py-16 pb-24">
-        <div className="container">
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {/* Feature 1: 30-Day Trajectories */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="w-8 h-8 text-primary" />
-              </div>
-              <h4 className="text-xl font-semibold">See Your Next 30 Days</h4>
-              <p className="text-muted-foreground">
-                Understand what's coming and when key moments will arrive
-              </p>
-            </div>
-
-            {/* Feature 2: Relationship Insights */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-pink-500/10 flex items-center justify-center">
-                <Users className="w-8 h-8 text-pink-500" />
-              </div>
-              <h4 className="text-xl font-semibold">Explore Relationship Trajectories</h4>
-              <p className="text-muted-foreground">
-                Discover patterns in your connections and upcoming shifts
-              </p>
-            </div>
-
-            {/* Feature 3: Career Timing */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-blue-500/10 flex items-center justify-center">
-                <TrendingUpIcon className="w-8 h-8 text-blue-500" />
-              </div>
-              <h4 className="text-xl font-semibold">Understand Your Career Timing</h4>
-              <p className="text-muted-foreground">
-                Know when to act, when to wait, and what opportunities are emerging
-              </p>
-            </div>
-
-            {/* Feature 4: Daily Clarity */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-purple-500/10 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-purple-500" />
-              </div>
-              <h4 className="text-xl font-semibold">Daily Clarity About Decisions</h4>
-              <p className="text-muted-foreground">
-                Get insights tailored to your energy patterns and life context
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Social Proof - Testimonials */}
       <section className="py-20 bg-card/20">
         <div className="container">

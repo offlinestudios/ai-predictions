@@ -318,3 +318,8 @@
 - [x] Position FAQ section after testimonials, before footer
 - [x] Add smooth expand/collapse animations (built into Accordion)
 - [x] FAQ topics: horoscope difference, accuracy, privacy, tiers, cancellation, best practices
+
+### Remove Redundant Feature Cards
+- [x] Remove "See Your Next 30 Days" and other 4 feature cards section
+- [x] Keep only How It Works section for clarity
+- [x] Reduce visual clutter on homepage
