@@ -111,22 +111,33 @@ export type ResponseFormat =
   | { type: "json_object" }
   | { type: "json_schema"; json_schema: JsonSchema };
 
-// Initialize OpenAI client with Manus Forge API
+// Initialize OpenAI client - supports both Manus Forge API and direct OpenAI
 function getOpenAIClient(): OpenAI {
-  const apiKey = process.env.BUILT_IN_FORGE_API_KEY;
-  const baseURL = process.env.BUILT_IN_FORGE_API_URL;
+  // Try Manus Forge API first (for Manus environment)
+  const manusApiKey = process.env.BUILT_IN_FORGE_API_KEY;
+  const manusBaseURL = process.env.BUILT_IN_FORGE_API_URL;
   
-  if (!apiKey) {
-    throw new Error("BUILT_IN_FORGE_API_KEY environment variable is not set");
+  if (manusApiKey && manusBaseURL) {
+    console.log('[LLM] Using Manus Forge API');
+    return new OpenAI({
+      apiKey: manusApiKey,
+      baseURL: `${manusBaseURL}/v1`,
+    });
   }
   
-  if (!baseURL) {
-    throw new Error("BUILT_IN_FORGE_API_URL environment variable is not set");
+  // Fall back to direct OpenAI API (for Railway/production environment)
+  const openaiApiKey = process.env.OPENAI_API_KEY;
+  
+  if (!openaiApiKey) {
+    throw new Error(
+      "No API key found. Please set either BUILT_IN_FORGE_API_KEY (Manus) or OPENAI_API_KEY (Railway) environment variable."
+    );
   }
-
+  
+  console.log('[LLM] Using OpenAI API directly');
   return new OpenAI({
-    apiKey,
-    baseURL: `${baseURL}/v1`,
+    apiKey: openaiApiKey,
+    // baseURL defaults to https://api.openai.com/v1
   });
 }
 

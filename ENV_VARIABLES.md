@@ -27,16 +27,18 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   4. Copy both Secret Key and Publishable Key
   5. Enable Google OAuth in "Configure" → "Social Connections"
 
-### OpenAI API
+### OpenAI API (Required for Railway/Production)
 ```
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 - **Description**: OpenAI API key for AI predictions (GPT-4)
+- **Required for**: Railway, Vercel, or any non-Manus deployment
 - **Where to get it**:
   1. Sign up at https://platform.openai.com
   2. Go to API Keys section
   3. Create new secret key
   4. Add credits to your account ($5-10 to start)
+- **Note**: The app automatically uses `BUILT_IN_FORGE_API_KEY` when running in Manus environment, and falls back to `OPENAI_API_KEY` for Railway/production deployments
 
 ### Cloudflare R2 Storage
 ```

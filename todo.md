@@ -428,3 +428,17 @@
 - [x] Redirect users directly to dashboard after completing Step 6 (loading animation)
 - [x] Remove unused handleSignUp function and getLoginUrl import
 - [x] Test complete anonymous user flow: onboarding → dashboard → prediction display
+
+### Fix Welcome Prediction Generation Bug (Dec 4)
+- [ ] Investigate missing key error preventing welcome prediction generation
+- [ ] Check Dashboard useEffect logic for anonymous users
+- [ ] Verify onboarding data is properly saved to localStorage
+- [ ] Fix API key or data structure issue
+- [ ] Test complete flow: onboarding → dashboard → prediction display
+
+### LLM API Configuration Fix (Dec 4, 2024)
+- [x] Updated LLM helper to support both Manus and Railway environments
+- [x] Added fallback logic: BUILT_IN_FORGE_API_KEY (Manus) → OPENAI_API_KEY (Railway)
+- [x] Tested welcome prediction generation with updated configuration
+- [x] Verified anonymous user onboarding flow works correctly
+- [x] Confirmed prediction counter and localStorage tracking functional
