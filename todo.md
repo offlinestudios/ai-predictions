@@ -449,3 +449,15 @@
 - [x] Added welcomePredictionGenerated flag to prevent infinite loop
 - [x] Added error handling and logging to generateAnonymous mutation
 - [x] Verify logo asset path is correct for production build - Path is correct (/globe-logo.png)
+
+### Refine Prediction Button Issue (Dec 4, 2024)
+- [x] Investigate why "Refine My Prediction" button does not generate updated prediction
+- [x] Check if PremiumUnlockModal is properly triggering prediction regeneration
+- [x] Added regeneration logic to PremiumUnlockModal onComplete callback
+- [ ] Test complete refinement flow on Railway
+
+### Logo Display Issue (Dec 4, 2024)
+- [x] Fix broken logo image in Dashboard header - Changed /PREDICSURELOGO.png to /globe-logo.png
+- [x] Verify logo file exists and path is correct - File exists at correct path
+- [x] Check if logo loads correctly in development vs production - Loads correctly in dev
+- [x] Ensure Vite build process includes public assets - Public folder served correctly

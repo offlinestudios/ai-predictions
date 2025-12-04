@@ -462,7 +462,7 @@ export default function Dashboard() {
               </Button>
             </Link>
              <div className="flex items-center gap-2">
-            <img src="/PREDICSURELOGO.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -1022,9 +1022,25 @@ export default function Dashboard() {
           onClose={() => setShowPremiumUnlock(false)}
           onComplete={() => {
             setShowPremiumUnlock(false);
+            
+            // Regenerate the current prediction with premium data
+            if (userInput || prediction) {
+              toast.info("Regenerating prediction with your enhanced profile...");
+              
+              // Use the last user input or generate a generic refinement prompt
+              const refinementPrompt = userInput || "Based on my profile and interests, provide an updated prediction.";
+              
+              generateMutation.mutate({ 
+                userInput: refinementPrompt, 
+                category,
+                deepMode,
+                trajectoryType 
+              });
+            }
+            
             // Optionally show post-prediction paywall after premium unlock
             if (subscription?.tier === "free") {
-              setTimeout(() => setShowPostPredictionPaywall(true), 1000);
+              setTimeout(() => setShowPostPredictionPaywall(true), 2000);
             }
           }}
         />
