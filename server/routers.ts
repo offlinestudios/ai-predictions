@@ -990,6 +990,9 @@ export const appRouter = router({
         }).optional(),
       }))
       .mutation(async ({ input }) => {
+        console.log('[generateAnonymous] Starting prediction generation');
+        console.log('[generateAnonymous] Input:', { category: input.category, hasOnboardingData: !!input.onboardingData });
+        
         // Generate prediction without authentication
         let systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
         
@@ -1023,22 +1026,33 @@ export const appRouter = router({
           ? `Generate a ${input.category} prediction for: ${input.userInput}`
           : `Generate a prediction for: ${input.userInput}`;
 
-        const response = await invokeLLM({
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: textPrompt },
-          ],
-        });
+        try {
+          console.log('[generateAnonymous] Calling LLM...');
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: textPrompt },
+            ],
+          });
 
-        const messageContent = response.choices[0]?.message?.content;
-        const predictionResult = typeof messageContent === 'string' 
-          ? messageContent 
-          : "Unable to generate prediction at this time.";
+          console.log('[generateAnonymous] LLM response received');
+          const messageContent = response.choices[0]?.message?.content;
+          const predictionResult = typeof messageContent === 'string' 
+            ? messageContent 
+            : "Unable to generate prediction at this time.";
 
-        return {
-          prediction: predictionResult,
-          category: input.category || "general",
-        };
+          console.log('[generateAnonymous] Prediction generated successfully');
+          return {
+            prediction: predictionResult,
+            category: input.category || "general",
+          };
+        } catch (error) {
+          console.error('[generateAnonymous] Error generating prediction:', error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to generate prediction: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        }
       }),
     
     submitFeedback: protectedProcedure

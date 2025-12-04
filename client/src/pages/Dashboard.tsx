@@ -148,6 +148,12 @@ export default function Dashboard() {
       setPrediction(data.prediction);
       setUserFeedback(null);
       
+      // Mark welcome prediction as generated if this was triggered by onboarding
+      const onboardingDataStr = localStorage.getItem('onboardingData');
+      if (onboardingDataStr) {
+        localStorage.setItem('welcomePredictionGenerated', 'true');
+      }
+      
       // Track anonymous usage in localStorage
       const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
       const now = Date.now();

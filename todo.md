@@ -442,3 +442,10 @@
 - [x] Tested welcome prediction generation with updated configuration
 - [x] Verified anonymous user onboarding flow works correctly
 - [x] Confirmed prediction counter and localStorage tracking functional
+
+### Railway Deployment Issues (Dec 4, 2024)
+- [ ] Fix logo not displaying in header on Railway deployment - Logo file exists, may be build/deployment issue
+- [x] Investigate why welcome prediction is not generated after onboarding on Railway
+- [x] Added welcomePredictionGenerated flag to prevent infinite loop
+- [x] Added error handling and logging to generateAnonymous mutation
+- [x] Verify logo asset path is correct for production build - Path is correct (/globe-logo.png)
