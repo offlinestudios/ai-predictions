@@ -454,7 +454,10 @@
 - [x] Investigate why "Refine My Prediction" button does not generate updated prediction
 - [x] Check if PremiumUnlockModal is properly triggering prediction regeneration
 - [x] Added regeneration logic to PremiumUnlockModal onComplete callback
-- [ ] Test complete refinement flow on Railway
+- [x] Fixed handleImproveAccuracy to show toast for anonymous users
+- [x] For anonymous users: Shows toast message and redirects to sign up
+- [x] For authenticated users: Opens PremiumUnlockModal to collect premium data
+- [ ] Test complete refinement flow on Railway with authenticated user
 
 ### Logo Display Issue (Dec 4, 2024)
 - [x] Fix broken logo image in Dashboard header - Changed /PREDICSURELOGO.png to /globe-logo.png

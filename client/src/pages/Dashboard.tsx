@@ -445,8 +445,17 @@ export default function Dashboard() {
   
   // Handle improve accuracy action
   const handleImproveAccuracy = () => {
-    // Show premium unlock modal to collect missing information
-    setShowPremiumUnlock(true);
+    if (!isAuthenticated) {
+      // For anonymous users, prompt them to sign up
+      toast.info("Sign up to unlock prediction refinement and save your predictions!", { duration: 5000 });
+      // Optionally redirect to sign up after a delay
+      setTimeout(() => {
+        window.location.href = getLoginUrl();
+      }, 2000);
+    } else {
+      // For authenticated users, show premium unlock modal to collect missing information
+      setShowPremiumUnlock(true);
+    }
   };
 
   return (
