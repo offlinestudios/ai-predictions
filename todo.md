@@ -416,3 +416,15 @@
 - [x] Show specific missing information that would improve accuracy (e.g., "Add your industry and years of experience to improve by 25%")
 - [x] Create refinement loop: user provides suggested info → accuracy increases → generate improved prediction
 - [ ] Test all sharing options and accuracy improvement flow
+
+### Fix Onboarding API Error (Dec 4)
+- [x] Investigate BUILT_IN_FORGE_API_KEY missing error during onboarding
+- [x] Check server environment variable configuration (env vars are set correctly)
+- [x] Restart server to ensure environment variables are loaded
+- [ ] Test complete onboarding flow to verify fix
+
+### Remove Sign-Up from Onboarding (Dec 4)
+- [x] Remove sign-up step (Step 7) from onboarding flow
+- [x] Redirect users directly to dashboard after completing Step 6 (loading animation)
+- [x] Remove unused handleSignUp function and getLoginUrl import
+- [x] Test complete anonymous user flow: onboarding → dashboard → prediction display

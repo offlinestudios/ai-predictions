@@ -8,7 +8,6 @@ import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2 }
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import CategoryQuestions, { type CategoryProfiles } from "@/components/CategoryQuestions";
 
 const INTERESTS = [
@@ -151,9 +150,9 @@ export default function Onboarding() {
           // User is authenticated, save to database
           saveOnboardingMutation.mutate(onboardingData);
         } else {
-          // User is anonymous, show sign-up prompt
-          setStep(7);
+          // User is anonymous, redirect to dashboard to see prediction
           setIsProcessing(false);
+          navigate("/dashboard");
         }
       }, 3000);
     }
@@ -173,18 +172,7 @@ export default function Onboarding() {
     }
   };
 
-  const handleSignUp = () => {
-    // Save current data to localStorage before redirecting
-    const onboardingData = {
-      nickname,
-      interests: selectedInterests,
-      relationshipStatus,
-    };
-    localStorage.setItem("onboardingData", JSON.stringify(onboardingData));
-    
-    // Redirect to sign-up page
-    window.location.href = getLoginUrl() + "?redirect_url=/onboarding";
-  };
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -391,37 +379,7 @@ export default function Onboarding() {
           </Card>
         )}
 
-        {/* Step 7: Sign-Up Prompt (Anonymous Users Only) */}
-        {step === 7 && (
-          <Card className="border-2 border-primary/20">
-            <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Sparkles className="w-10 h-10 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl mb-3">
-                  Your Profile is Ready, {nickname}!
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Sign up now to unlock your personalized predictions and save your preferences.
-                  We've tailored our AI specifically for your interests in{" "}
-                  <span className="font-semibold text-foreground">
-                    {selectedInterests.map(id => INTERESTS.find(i => i.id === id)?.label).join(", ")}
-                  </span>.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button onClick={handleSignUp} className="w-full" size="lg">
-                Sign Up Free
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <p className="text-sm text-center text-muted-foreground mt-4">
-                Get unlimited predictions, history tracking, and personalized insights.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+
       </div>
     </div>
   );
