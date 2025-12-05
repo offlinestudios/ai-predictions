@@ -597,4 +597,15 @@
 - [x] Add compelling signup CTA: "Sign up to get 3 more predictions this week"
 - [x] Update usage display to show "1 free prediction available"
 - [x] Test anonymous flow: first prediction works, second shows signup gate
-- [ ] Commit and push anonymous limit changes
+- [x] Commit and push anonymous limit changes
+
+### Scroll-Reveal Paywall Implementation (Dec 5, 2024)
+- [x] Create ScrollRevealPaywall component with narrative teasers
+- [x] Add blurred preview sections for locked content (progressive blur effect)
+- [x] Generate teaser text: "Day 17: A divergence emerges..." style (7 categories)
+- [x] Add gradient overlay and "Upgrade to Pro" CTA with feature comparison
+- [x] Integrate scroll-reveal paywall below free predictions in Dashboard
+- [x] Remove PostPredictionPaywall modal and all triggers
+- [x] Show scroll-reveal for Free tier users after instant (standard) predictions
+- [x] Test scroll-reveal display on Dashboard
+- [ ] Commit and push scroll-reveal paywall changes

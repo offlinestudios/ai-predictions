@@ -17,7 +17,7 @@ import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
 import PredictionHistory from "@/components/PredictionHistory";
-import PostPredictionPaywall from "@/components/PostPredictionPaywall";
+
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
 
 import { useState, useEffect } from "react";
@@ -25,6 +25,7 @@ import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import PredictionDisplay from "@/components/PredictionDisplay";
+import ScrollRevealPaywall from "@/components/ScrollRevealPaywall";
 
 const TIER_ICONS = {
   free: Star,
@@ -50,7 +51,7 @@ export default function Dashboard() {
   const [deepMode, setDeepMode] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
-  const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
+
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
@@ -90,12 +91,7 @@ export default function Dashboard() {
           setShowPremiumUnlock(true);
         }, 3000);
       }
-      // Otherwise trigger post-prediction paywall for Free tier users
-      else if (subscription?.tier === "free") {
-        setTimeout(() => {
-          setShowPostPredictionPaywall(true);
-        }, 3000);
-      }
+      // Scroll-reveal paywall will show automatically below prediction for Free tier
     }
   }, [latestPredictions, prediction, subscription]);
 
@@ -979,6 +975,14 @@ export default function Dashboard() {
                         onImproveAccuracy={handleImproveAccuracy}
                       />
                     </div>
+                    
+                    {/* Scroll-Reveal Paywall for Free Tier Users */}
+                    {isAuthenticated && subscription?.tier === "free" && !deepMode && trajectoryType === "instant" && (
+                      <ScrollRevealPaywall 
+                        category={category}
+                        userTier={subscription.tier}
+                      />
+                    )}
                   </div>
                 )}             </CardContent>
             </Card>
@@ -1027,23 +1031,12 @@ export default function Dashboard() {
               });
             }
             
-            // Optionally show post-prediction paywall after premium unlock
-            if (subscription?.tier === "free") {
-              setTimeout(() => setShowPostPredictionPaywall(true), 2000);
-            }
+            // Scroll-reveal paywall will show automatically below prediction for Free tier
           }}
         />
       )}
 
-      {/* Post-Prediction Paywall - Triggers after welcome prediction */}
-      {isAuthenticated && subscription && (
-        <PostPredictionPaywall 
-          open={showPostPredictionPaywall}
-          onOpenChange={setShowPostPredictionPaywall}
-          userTier={subscription.tier}
-          predictionCategory={category}
-        />
-      )}
+
     </div>
   );
 }
