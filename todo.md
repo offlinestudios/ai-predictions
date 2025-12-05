@@ -631,4 +631,14 @@
 - [x] Add hero trust indicators below CTA (12,400+ users, 89% accuracy, Private & Secure)
 - [x] Add differentiation tagline ("AI-powered forecasts based on behavioral patterns — not horoscopes")
 - [x] Test footer structure and hero trust indicators display
-- [ ] Commit and push landing page improvements
+- [x] Commit and push landing page improvements
+
+### Hero UI Preview - Sample Prediction Card (Dec 5, 2024)
+- [x] Create sample prediction card component with realistic content (Career 30-day trajectory)
+- [x] Add blur effect and "Preview" badge overlay
+- [x] Design card to show prediction structure (3 timeline phases with icons, 92% confidence)
+- [x] Integrate UI preview into hero section below trust indicators
+- [x] Add overlay CTA ("See Your Complete Prediction" + Get Started button)
+- [x] Make preview responsive with backdrop blur and gradient effects
+- [x] Test UI preview display
+- [ ] Commit and push hero UI preview
