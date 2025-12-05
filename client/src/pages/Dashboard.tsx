@@ -155,38 +155,23 @@ export default function Dashboard() {
         localStorage.setItem('welcomePredictionGenerated', 'true');
       }
       
-      // Track anonymous usage in localStorage
-      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
-      const now = Date.now();
-      const weekInMs = 7 * 24 * 60 * 60 * 1000;
-      
-      // Reset if more than a week has passed
-      if (now - anonymousUsage.lastReset > weekInMs) {
-        anonymousUsage.count = 1;
-        anonymousUsage.lastReset = now;
-      } else {
-        anonymousUsage.count += 1;
-      }
-      
+      // Track anonymous usage in localStorage (1 prediction total)
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0}');
+      anonymousUsage.count = 1;
       localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
       
-      const remaining = 3 - anonymousUsage.count;
-      toast.success(`Prediction generated! ${remaining} free predictions remaining this week.`);
+      toast.success("Prediction generated! Sign up to get 3 more predictions this week.");
       
-      // Show sign-up prompt after first prediction
-      if (anonymousUsage.count === 1) {
-        setTimeout(() => {
-          toast.info("Sign up to save your predictions and get more features!", { duration: 5000 });
-        }, 3000);
-      }
-      
-      // Show upgrade modal when limit is reached
-      if (anonymousUsage.count >= 3) {
-        setTimeout(() => {
-          setUpgradeReason("limit_reached");
-          setShowUpgradeModal(true);
-        }, 2000);
-      }
+      // Show sign-up prompt after first (and only) prediction
+      setTimeout(() => {
+        toast.info("Create a free account to continue - Get 3 more predictions this week!", { 
+          duration: 8000,
+          action: {
+            label: "Sign Up",
+            onClick: () => window.location.href = getLoginUrl()
+          }
+        });
+      }, 3000);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -341,20 +326,11 @@ export default function Dashboard() {
     
     // Use anonymous mutation for non-authenticated users
     if (!isAuthenticated) {
-      // Check anonymous usage limit
-      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
-      const now = Date.now();
-      const weekInMs = 7 * 24 * 60 * 60 * 1000;
+      // Check anonymous usage limit (1 prediction total)
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0}');
       
-      // Reset if more than a week has passed
-      if (now - anonymousUsage.lastReset > weekInMs) {
-        anonymousUsage.count = 0;
-        anonymousUsage.lastReset = now;
-        localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
-      }
-      
-      // Check if limit is reached
-      if (anonymousUsage.count >= 3) {
+      // Check if limit is reached (1 prediction only)
+      if (anonymousUsage.count >= 1) {
         setUpgradeReason("limit_reached");
         setShowUpgradeModal(true);
         return;
@@ -546,11 +522,11 @@ export default function Dashboard() {
                       }
                     </span>
                   </div>
-                  <Progress value={!isAuthenticated ? (anonymousUsage.count / 3) * 100 : usagePercent} className="h-2" />
+                  <Progress value={!isAuthenticated ? (anonymousUsage.count / 1) * 100 : usagePercent} className="h-2" />
                   {(!isAuthenticated || subscription?.tier === "free") && (
                     <p className="text-xs text-muted-foreground mt-2">
                       {!isAuthenticated 
-                        ? `${3 - anonymousUsage.count} predictions remaining this week`
+                        ? anonymousUsage.count >= 1 ? "Sign up to get 3 more predictions this week" : "1 free prediction available"
                         : `${3 - (subscription?.totalUsed || 0)} predictions remaining this week`
                       }
                     </p>
@@ -1024,6 +1000,7 @@ export default function Dashboard() {
         onOpenChange={setShowUpgradeModal}
         reason={upgradeReason}
         remainingPredictions={subscription?.tier === "free" ? (3 - (subscription?.totalUsed || 0)) : 0}
+        isAnonymous={!isAuthenticated}
       />
       
       {/* Premium Unlock Modal - Triggers after welcome prediction for users without premium data */}

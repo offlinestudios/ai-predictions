@@ -587,4 +587,14 @@
 - [x] Update Dashboard to use new PredictionDisplay component
 - [x] Add "Analyzed X data points | Deep Mode" footer to premium predictions
 - [x] Test both prediction formats on Dashboard
-- [ ] Commit and push premium contrast changes
+- [x] Commit and push premium contrast changes
+
+### Reduce Anonymous Prediction Limit (Dec 5, 2024)
+- [x] Change anonymous limit from 3/week to 1 total prediction
+- [x] Update Dashboard to show signup gate after first prediction
+- [x] Remove localStorage-based weekly tracking (simplified to count only)
+- [x] Update UpgradeModal to show "Sign Up" button for anonymous users
+- [x] Add compelling signup CTA: "Sign up to get 3 more predictions this week"
+- [x] Update usage display to show "1 free prediction available"
+- [x] Test anonymous flow: first prediction works, second shows signup gate
+- [ ] Commit and push anonymous limit changes
