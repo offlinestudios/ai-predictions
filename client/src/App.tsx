@@ -19,6 +19,7 @@ import DataSecurity from "./pages/DataSecurity";
 import AIMethodology from "./pages/AIMethodology";
 import Disclaimer from "./pages/Disclaimer";
 import About from "./pages/About";
+import Pricing from "./pages/Pricing";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
       <Route path={"/ai-methodology"} component={AIMethodology} />
       <Route path={"/disclaimer"} component={Disclaimer} />
       <Route path={"/about"} component={About} />
+      <Route path={"/pricing"} component={Pricing} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

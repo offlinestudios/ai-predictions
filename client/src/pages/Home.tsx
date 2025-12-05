@@ -153,7 +153,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-12">
+      <section id="hero" className="relative overflow-hidden pt-20 pb-12">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
         <div className="container relative">
           <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -215,7 +215,7 @@ export default function Home() {
       </section>
 
       {/* How It Works - 3-Step Visual Flow */}
-      <section className="py-16 bg-card/10">
+      <section id="how-it-works" className="py-16 bg-card/10">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">How It Works</h3>
@@ -368,7 +368,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20">
+      <section id="faq" className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
@@ -472,7 +472,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
                 <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
                 <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Sign In</Link></li>
               </ul>
