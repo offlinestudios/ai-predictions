@@ -85,7 +85,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               Predicsure AI
             </h1>
