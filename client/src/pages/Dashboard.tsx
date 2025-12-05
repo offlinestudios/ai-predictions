@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import PredictionDisplay from "@/components/PredictionDisplay";
 import ScrollRevealPaywall from "@/components/ScrollRevealPaywall";
+import SignupGate from "@/components/SignupGate";
 
 const TIER_ICONS = {
   free: Star,
@@ -53,6 +54,7 @@ export default function Dashboard() {
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
 
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
+  const [showSignupGate, setShowSignupGate] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -156,18 +158,12 @@ export default function Dashboard() {
       anonymousUsage.count = 1;
       localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
       
-      toast.success("Prediction generated! Sign up to get 3 more predictions this week.");
+      toast.success("Prediction generated!");
       
-      // Show sign-up prompt after first (and only) prediction
+      // Show hard signup gate after first (and only) prediction
       setTimeout(() => {
-        toast.info("Create a free account to continue - Get 3 more predictions this week!", { 
-          duration: 8000,
-          action: {
-            label: "Sign Up",
-            onClick: () => window.location.href = getLoginUrl()
-          }
-        });
-      }, 3000);
+        setShowSignupGate(true);
+      }, 2000);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -1007,6 +1003,14 @@ export default function Dashboard() {
         isAnonymous={!isAuthenticated}
       />
       
+      {/* Signup Gate - Hard gate for anonymous users after first prediction */}
+      {!isAuthenticated && (
+        <SignupGate 
+          open={showSignupGate}
+          predictionCategory={category}
+        />
+      )}
+
       {/* Premium Unlock Modal - Triggers after welcome prediction for users without premium data */}
       {isAuthenticated && (
         <PremiumUnlockModal

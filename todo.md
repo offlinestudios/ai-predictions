@@ -608,4 +608,15 @@
 - [x] Remove PostPredictionPaywall modal and all triggers
 - [x] Show scroll-reveal for Free tier users after instant (standard) predictions
 - [x] Test scroll-reveal display on Dashboard
-- [ ] Commit and push scroll-reveal paywall changes
+- [x] Commit and push scroll-reveal paywall changes
+
+### Hard Signup Gate After First Prediction (Dec 5, 2024)
+- [x] Create SignupGate modal component with value proposition
+- [x] Show benefits: "Get 3 more predictions this week" + save history + unlock features + personalized insights
+- [x] Add social proof elements (12.4K users, 89% accuracy, 250K+ predictions)
+- [x] Make modal non-dismissible (no X button, no backdrop click close, no ESC key)
+- [x] Show SignupGate automatically 2 seconds after first anonymous prediction completes
+- [x] Redirect to /api/oauth/login on "Create Free Account" button click
+- [x] Add upgrade teaser at bottom (Pro $9.99/mo with Deep Mode)
+- [x] Test SignupGate display on Dashboard
+- [ ] Commit and push hard signup gate changes
