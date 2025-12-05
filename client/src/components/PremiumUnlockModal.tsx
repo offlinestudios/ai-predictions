@@ -13,6 +13,7 @@ interface PremiumUnlockModalProps {
   open: boolean;
   onClose: () => void;
   onComplete: () => void;
+  category?: string; // Current prediction category for showing relevant fields
 }
 
 const AGE_RANGES = [
@@ -64,13 +65,66 @@ const TRANSITION_TYPES = [
   { value: "other", label: "Other major transition" },
 ];
 
-export default function PremiumUnlockModal({ open, onClose, onComplete }: PremiumUnlockModalProps) {
+// Sports-specific fields
+const BETTING_EXPERIENCE = [
+  { value: "never", label: "Never bet on sports" },
+  { value: "casual", label: "Casual bettor (occasionally)" },
+  { value: "regular", label: "Regular bettor (weekly)" },
+  { value: "serious", label: "Serious bettor (daily)" },
+];
+
+const FANTASY_EXPERIENCE = [
+  { value: "none", label: "Don't play fantasy sports" },
+  { value: "beginner", label: "Beginner (1-2 years)" },
+  { value: "intermediate", label: "Intermediate (3-5 years)" },
+  { value: "expert", label: "Expert (5+ years)" },
+];
+
+// Stocks-specific fields
+const PORTFOLIO_SIZE = [
+  { value: "0-10k", label: "Under $10,000" },
+  { value: "10-50k", label: "$10,000 - $50,000" },
+  { value: "50-100k", label: "$50,000 - $100,000" },
+  { value: "100-500k", label: "$100,000 - $500,000" },
+  { value: "500k+", label: "$500,000+" },
+  { value: "prefer-not-say", label: "Prefer not to say" },
+];
+
+const TRADING_EXPERIENCE = [
+  { value: "beginner", label: "Beginner (< 1 year)" },
+  { value: "intermediate", label: "Intermediate (1-3 years)" },
+  { value: "advanced", label: "Advanced (3-5 years)" },
+  { value: "expert", label: "Expert (5+ years)" },
+];
+
+const RISK_TOLERANCE = [
+  { value: "conservative", label: "Conservative (preserve capital)" },
+  { value: "moderate", label: "Moderate (balanced growth)" },
+  { value: "aggressive", label: "Aggressive (high growth)" },
+  { value: "very-aggressive", label: "Very Aggressive (maximum returns)" },
+];
+
+export default function PremiumUnlockModal({ open, onClose, onComplete, category }: PremiumUnlockModalProps) {
   const [ageRange, setAgeRange] = useState("");
   const [location, setLocation] = useState("");
   const [incomeRange, setIncomeRange] = useState("");
   const [industry, setIndustry] = useState("");
   const [majorTransition, setMajorTransition] = useState(false);
   const [transitionType, setTransitionType] = useState("");
+  
+  // Sports-specific state
+  const [bettingExperience, setBettingExperience] = useState("");
+  const [fantasyExperience, setFantasyExperience] = useState("");
+  const [favoriteTeams, setFavoriteTeams] = useState("");
+  
+  // Stocks-specific state
+  const [portfolioSize, setPortfolioSize] = useState("");
+  const [tradingExperience, setTradingExperience] = useState("");
+  const [riskTolerance, setRiskTolerance] = useState("");
+  const [investmentGoals, setInvestmentGoals] = useState("");
+  
+  const isSportsCategory = category === "sports";
+  const isStocksCategory = category === "stocks";
 
   const savePremiumDataMutation = trpc.user.savePremiumData.useMutation({
     onSuccess: () => {
@@ -83,8 +137,20 @@ export default function PremiumUnlockModal({ open, onClose, onComplete }: Premiu
   });
 
   const handleSubmit = () => {
+    // Base validation
     if (!ageRange || !incomeRange || !industry) {
       toast.error("Please complete all required fields");
+      return;
+    }
+    
+    // Category-specific validation
+    if (isSportsCategory && (!bettingExperience || !fantasyExperience)) {
+      toast.error("Please complete all sports-specific fields");
+      return;
+    }
+    
+    if (isStocksCategory && (!portfolioSize || !tradingExperience || !riskTolerance)) {
+      toast.error("Please complete all stocks-specific fields");
       return;
     }
 
@@ -95,6 +161,15 @@ export default function PremiumUnlockModal({ open, onClose, onComplete }: Premiu
       industry,
       majorTransition,
       transitionType: majorTransition ? transitionType : null,
+      // Sports-specific data
+      bettingExperience: isSportsCategory ? bettingExperience : null,
+      fantasyExperience: isSportsCategory ? fantasyExperience : null,
+      favoriteTeams: isSportsCategory ? (favoriteTeams || null) : null,
+      // Stocks-specific data
+      portfolioSize: isStocksCategory ? portfolioSize : null,
+      tradingExperience: isStocksCategory ? tradingExperience : null,
+      riskTolerance: isStocksCategory ? riskTolerance : null,
+      investmentGoals: isStocksCategory ? (investmentGoals || null) : null,
     });
   };
 
@@ -222,6 +297,130 @@ export default function PremiumUnlockModal({ open, onClose, onComplete }: Premiu
               </SelectContent>
             </Select>
           </div>
+
+          {/* Sports-specific fields */}
+          {isSportsCategory && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="betting-experience">
+                  Betting Experience <span className="text-destructive">*</span>
+                </Label>
+                <Select value={bettingExperience} onValueChange={setBettingExperience}>
+                  <SelectTrigger id="betting-experience">
+                    <SelectValue placeholder="Select your betting experience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BETTING_EXPERIENCE.map((exp) => (
+                      <SelectItem key={exp.value} value={exp.value}>
+                        {exp.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fantasy-experience">
+                  Fantasy Sports Experience <span className="text-destructive">*</span>
+                </Label>
+                <Select value={fantasyExperience} onValueChange={setFantasyExperience}>
+                  <SelectTrigger id="fantasy-experience">
+                    <SelectValue placeholder="Select your fantasy experience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FANTASY_EXPERIENCE.map((exp) => (
+                      <SelectItem key={exp.value} value={exp.value}>
+                        {exp.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="favorite-teams">
+                  Favorite Teams/Players <span className="text-muted-foreground text-sm">(Optional)</span>
+                </Label>
+                <Input
+                  id="favorite-teams"
+                  placeholder="e.g., Lakers, LeBron James, Warriors"
+                  value={favoriteTeams}
+                  onChange={(e) => setFavoriteTeams(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Stocks-specific fields */}
+          {isStocksCategory && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="portfolio-size">
+                  Portfolio Size <span className="text-destructive">*</span>
+                </Label>
+                <Select value={portfolioSize} onValueChange={setPortfolioSize}>
+                  <SelectTrigger id="portfolio-size">
+                    <SelectValue placeholder="Select your portfolio size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PORTFOLIO_SIZE.map((size) => (
+                      <SelectItem key={size.value} value={size.value}>
+                        {size.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="trading-experience">
+                  Trading Experience <span className="text-destructive">*</span>
+                </Label>
+                <Select value={tradingExperience} onValueChange={setTradingExperience}>
+                  <SelectTrigger id="trading-experience">
+                    <SelectValue placeholder="Select your trading experience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TRADING_EXPERIENCE.map((exp) => (
+                      <SelectItem key={exp.value} value={exp.value}>
+                        {exp.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="risk-tolerance">
+                  Risk Tolerance <span className="text-destructive">*</span>
+                </Label>
+                <Select value={riskTolerance} onValueChange={setRiskTolerance}>
+                  <SelectTrigger id="risk-tolerance">
+                    <SelectValue placeholder="Select your risk tolerance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RISK_TOLERANCE.map((risk) => (
+                      <SelectItem key={risk.value} value={risk.value}>
+                        {risk.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="investment-goals">
+                  Investment Goals <span className="text-muted-foreground text-sm">(Optional)</span>
+                </Label>
+                <Input
+                  id="investment-goals"
+                  placeholder="e.g., Retirement, wealth building, income generation"
+                  value={investmentGoals}
+                  onChange={(e) => setInvestmentGoals(e.target.value)}
+                />
+              </div>
+            </>
+          )}
 
           {/* Major Transition */}
           <div className="space-y-4">

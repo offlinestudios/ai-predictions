@@ -64,6 +64,13 @@
       "when": 1764958396021,
       "tag": "0008_confused_morlun",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1764961634898,
+      "tag": "0009_secret_wild_pack",
+      "breakpoints": true
     }
   ]
 }

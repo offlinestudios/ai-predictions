@@ -509,3 +509,25 @@
 - [ ] Test Finance template with sample questions on Railway
 - [ ] Test Health template with sample questions on Railway
 - [x] Verify all templates maintain consistent quality and structure
+
+### Add Category-Specific Premium Data Collection (Dec 5, 2024)
+- [ ] Design sports-specific premium data fields (betting history, fantasy league performance, favorite teams/players)
+- [ ] Design stocks-specific premium data fields (portfolio size, trading experience, risk tolerance, investment goals)
+- [ ] Update PremiumUnlockModal component to show category-specific fields based on current prediction category
+- [ ] Update database schema to store sports and stocks premium data
+- [ ] Update backend to accept and save category-specific premium data
+- [ ] Update prediction generation to include category-specific premium data in context
+- [ ] Test Sports refinement flow with new premium fields
+- [ ] Test Stocks refinement flow with new premium fields
+- [ ] Verify refined predictions show improved accuracy with premium data
+
+### Category-Specific Premium Data Collection (Dec 5, 2024)
+- [x] Design sports-specific premium data fields (betting history, fantasy performance, favorite teams)
+- [x] Design stocks-specific premium data fields (portfolio size, trading experience, risk tolerance, investment goals)
+- [x] Update PremiumUnlockModal to show category-specific fields based on prediction category
+- [x] Update database schema to store category-specific premium data
+- [x] Update savePremiumData mutation to accept and save category-specific fields
+- [x] Update prediction generation to include category-specific premium data in context
+- [ ] Test refinement flow with Sports category premium data on Railway
+- [ ] Test refinement flow with Stocks category premium data on Railway
+- [ ] Verify predictions improve with category-specific premium data on Railway

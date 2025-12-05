@@ -260,6 +260,15 @@ export const appRouter = router({
         industry: z.string(),
         majorTransition: z.boolean(),
         transitionType: z.string().nullable(),
+        // Sports-specific fields
+        bettingExperience: z.string().nullable().optional(),
+        fantasyExperience: z.string().nullable().optional(),
+        favoriteTeams: z.string().nullable().optional(),
+        // Stocks-specific fields
+        portfolioSize: z.string().nullable().optional(),
+        tradingExperience: z.string().nullable().optional(),
+        riskTolerance: z.string().nullable().optional(),
+        investmentGoals: z.string().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
@@ -275,6 +284,15 @@ export const appRouter = router({
             industry: input.industry,
             majorTransition: input.majorTransition,
             transitionType: input.transitionType,
+            // Sports-specific fields
+            bettingExperience: input.bettingExperience || null,
+            fantasyExperience: input.fantasyExperience || null,
+            favoriteTeams: input.favoriteTeams || null,
+            // Stocks-specific fields
+            portfolioSize: input.portfolioSize || null,
+            tradingExperience: input.tradingExperience || null,
+            riskTolerance: input.riskTolerance || null,
+            investmentGoals: input.investmentGoals || null,
             premiumDataCompleted: true,
             updatedAt: new Date(),
           })
@@ -487,18 +505,29 @@ export const appRouter = router({
         const [userProfile] = await db
           .select({
             nickname: users.nickname,
-            relationshipStatus: users.relationshipStatus,
             interests: users.interests,
+            relationshipStatus: users.relationshipStatus,
             careerProfile: users.careerProfile,
             moneyProfile: users.moneyProfile,
             loveProfile: users.loveProfile,
             healthProfile: users.healthProfile,
+            sportsProfile: users.sportsProfile,
+            stocksProfile: users.stocksProfile,
             ageRange: users.ageRange,
             location: users.location,
             incomeRange: users.incomeRange,
             industry: users.industry,
             majorTransition: users.majorTransition,
             transitionType: users.transitionType,
+            // Sports-specific premium data
+            bettingExperience: users.bettingExperience,
+            fantasyExperience: users.fantasyExperience,
+            favoriteTeams: users.favoriteTeams,
+            // Stocks-specific premium data
+            portfolioSize: users.portfolioSize,
+            tradingExperience: users.tradingExperience,
+            riskTolerance: users.riskTolerance,
+            investmentGoals: users.investmentGoals,
             premiumDataCompleted: users.premiumDataCompleted,
           })
           .from(users)
@@ -735,6 +764,35 @@ export const appRouter = router({
           if (userProfile.majorTransition && userProfile.transitionType) {
             systemPrompt += `- **Major Life Transition:** Currently undergoing ${userProfile.transitionType}\n`;
             systemPrompt += `- **CRITICAL:** This user is in a major transition period. Predictions MUST acknowledge this transition and provide specific guidance for navigating it. Be extra specific about timing, challenges, and opportunities related to this change.\n`;
+          }
+          
+          // Add Sports-specific premium data for Sports category
+          if (input.category === 'sports') {
+            if (userProfile.bettingExperience) {
+              systemPrompt += `- Betting Experience: ${userProfile.bettingExperience} - Adjust prediction detail level accordingly\n`;
+            }
+            if (userProfile.fantasyExperience) {
+              systemPrompt += `- Fantasy League Experience: ${userProfile.fantasyExperience} - Provide fantasy-relevant insights\n`;
+            }
+            if (userProfile.favoriteTeams) {
+              systemPrompt += `- Favorite Teams: ${userProfile.favoriteTeams} - Consider their team preferences in predictions\n`;
+            }
+          }
+          
+          // Add Stocks-specific premium data for Stocks category
+          if (input.category === 'stocks') {
+            if (userProfile.portfolioSize) {
+              systemPrompt += `- Portfolio Size: ${userProfile.portfolioSize} - Scale advice to their investment capacity\n`;
+            }
+            if (userProfile.tradingExperience) {
+              systemPrompt += `- Trading Experience: ${userProfile.tradingExperience} - Adjust complexity and risk assessment\n`;
+            }
+            if (userProfile.riskTolerance) {
+              systemPrompt += `- Risk Tolerance: ${userProfile.riskTolerance} - Align predictions with their risk profile\n`;
+            }
+            if (userProfile.investmentGoals) {
+              systemPrompt += `- Investment Goals: ${userProfile.investmentGoals} - Focus on relevant opportunities\n`;
+            }
           }
           
           systemPrompt += `\n**With this premium data, your predictions should be:**\n`;

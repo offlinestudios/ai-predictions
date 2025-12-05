@@ -46,6 +46,15 @@ export const users = pgTable("users", {
   industry: varchar("industry", { length: 100 }), // Professional industry/field
   majorTransition: boolean("majorTransition").default(false), // Undergoing major life change
   transitionType: varchar("transitionType", { length: 100 }), // Type of transition if applicable
+  // Sports-specific premium data
+  bettingExperience: varchar("bettingExperience", { length: 50 }), // Betting history level
+  fantasyExperience: varchar("fantasyExperience", { length: 50 }), // Fantasy sports experience
+  favoriteTeams: text("favoriteTeams"), // Comma-separated favorite teams
+  // Stocks-specific premium data
+  portfolioSize: varchar("portfolioSize", { length: 50 }), // Investment portfolio size
+  tradingExperience: varchar("tradingExperience", { length: 50 }), // Trading experience level
+  riskTolerance: varchar("riskTolerance", { length: 50 }), // Investment risk tolerance
+  investmentGoals: text("investmentGoals"), // Investment objectives
   premiumDataCompleted: boolean("premiumDataCompleted").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),

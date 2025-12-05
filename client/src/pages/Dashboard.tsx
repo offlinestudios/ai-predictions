@@ -1031,6 +1031,7 @@ export default function Dashboard() {
         <PremiumUnlockModal
           open={showPremiumUnlock}
           onClose={() => setShowPremiumUnlock(false)}
+          category={category}
           onComplete={() => {
             setShowPremiumUnlock(false);
             
