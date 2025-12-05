@@ -551,7 +551,7 @@
 - [x] Generate purple version of geometric flower of life logo
 - [x] Replace globe-logo.png with new purple geometric logo
 - [x] Generate new favicons from purple logo (32x32, 192x192, 512x512, favicon.ico)
-- [ ] Test logo display on homepage header
-- [ ] Test logo display on dashboard header
-- [ ] Test favicon display in browser tab
-- [ ] Commit and push changes to GitHub
+- [x] Test logo display on homepage header
+- [x] Test logo display on dashboard header
+- [x] Test favicon display in browser tab
+- [x] Commit and push changes to GitHub
