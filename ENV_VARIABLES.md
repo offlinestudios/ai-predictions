@@ -40,6 +40,18 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   4. Add credits to your account ($5-10 to start)
 - **Note**: The app automatically uses `BUILT_IN_FORGE_API_KEY` when running in Manus environment, and falls back to `OPENAI_API_KEY` for Railway/production deployments
 
+### Alpha Vantage API (Optional - For Real-Time Stock Data)
+```
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
+```
+- **Description**: Alpha Vantage API key for real-time stock market data in Stocks & Markets predictions
+- **Required for**: Stocks predictions with real-time market data
+- **Where to get it**:
+  1. Sign up at https://www.alphavantage.co/support/#api-key
+  2. Get your free API key (25 requests/day)
+  3. For higher limits, upgrade to premium ($49.99/month for 1200 requests/day)
+- **Note**: If not provided, stock predictions will work but without real-time market data. The free tier (25 calls/day) is sufficient for moderate usage due to aggressive caching (4-hour TTL).
+
 ### Cloudflare R2 Storage
 ```
 R2_ACCOUNT_ID=your_cloudflare_account_id
@@ -97,5 +109,7 @@ For local development, create a `.env` file in the project root with all the var
 - **Clerk Auth**: $0 (free up to 10,000 users)
 - **OpenAI API**: ~$0.01-0.03 per prediction (pay-as-you-go)
 - **Cloudflare R2**: $0 (free up to 10GB storage)
+- **Alpha Vantage API**: $0 (free tier: 25 calls/day) or $49.99/month (premium: 1200 calls/day)
+- **The Sports DB API**: $0 (completely free, no rate limits)
 
-**Total estimated cost**: $5-15/month to start
+**Total estimated cost**: $5-15/month to start (without premium Alpha Vantage)

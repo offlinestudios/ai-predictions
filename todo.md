@@ -531,3 +531,18 @@
 - [ ] Test refinement flow with Sports category premium data on Railway
 - [ ] Test refinement flow with Stocks category premium data on Railway
 - [ ] Verify predictions improve with category-specific premium data on Railway
+
+### Real-Time Data Integration for Sports & Stocks (Dec 5, 2024)
+- [x] Set up API integration modules (server/integrations/sports.ts and stocks.ts)
+- [x] Add environment variables for API keys (ALPHA_VANTAGE_API_KEY - The Sports DB is free, no key needed)
+- [x] Implement Sports data fetching using The Sports DB API (team stats, recent games, player info)
+- [x] Implement Stocks data fetching using Alpha Vantage API (real-time prices, company info, market data)
+- [x] Add data enrichment to authenticated prediction generation (Sports & Stocks)
+- [x] Add data enrichment to anonymous prediction generation (Sports & Stocks)
+- [x] Implement in-memory caching layer with 4-hour TTL to reduce API calls
+- [x] Add error handling for API failures (graceful degradation)
+- [x] Update ENV_VARIABLES.md with Alpha Vantage API key setup instructions
+- [ ] Test Sports predictions with real-time game data on Railway
+- [ ] Test Stocks predictions with real-time market data on Railway
+- [ ] Verify API rate limits are respected (Alpha Vantage: 25 calls/day free tier)
+- [ ] Deploy to Railway and verify API integrations work in production

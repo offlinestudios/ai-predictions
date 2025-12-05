@@ -23,6 +23,8 @@ import { nanoid } from "nanoid";
 import { stripe } from "./_core/stripe";
 import { STRIPE_PRODUCTS } from "./products";
 import { sendWelcomeEmail } from "./email";
+import { getSportsContext, formatSportsContext } from "./integrations/sports";
+import { getStocksContext, formatStocksContext } from "./integrations/stocks";
 
 export const appRouter = router({
   system: systemRouter,
@@ -821,6 +823,23 @@ export const appRouter = router({
           }
         }
         
+        // Fetch real-time data for Sports and Stocks predictions
+        if (input.category === 'sports') {
+          console.log('[Prediction] Fetching real-time sports data...');
+          const sportsContext = await getSportsContext(input.userInput);
+          const sportsData = formatSportsContext(sportsContext);
+          if (sportsData) {
+            systemPrompt += sportsData;
+          }
+        } else if (input.category === 'stocks') {
+          console.log('[Prediction] Fetching real-time stock market data...');
+          const stocksContext = await getStocksContext(input.userInput);
+          const stocksData = formatStocksContext(stocksContext);
+          if (stocksData) {
+            systemPrompt += stocksData;
+          }
+        }
+        
         // Build user message with text and file attachments
         type MessageContent = 
           | { type: "text"; text: string } 
@@ -1295,6 +1314,23 @@ export const appRouter = router({
           }
           
           systemPrompt += `\n\nUse this context to provide a deeply personalized, specific prediction that addresses their current situation, challenges, and timeline.`;
+        }
+        
+        // Fetch real-time data for Sports and Stocks predictions
+        if (input.category === 'sports') {
+          console.log('[generateAnonymous] Fetching real-time sports data...');
+          const sportsContext = await getSportsContext(input.userInput);
+          const sportsData = formatSportsContext(sportsContext);
+          if (sportsData) {
+            systemPrompt += sportsData;
+          }
+        } else if (input.category === 'stocks') {
+          console.log('[generateAnonymous] Fetching real-time stock market data...');
+          const stocksContext = await getStocksContext(input.userInput);
+          const stocksData = formatStocksContext(stocksContext);
+          if (stocksData) {
+            systemPrompt += stocksData;
+          }
         }
         
         const textPrompt = input.category 
