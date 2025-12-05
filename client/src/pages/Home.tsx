@@ -209,72 +209,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* UI Preview - Sample Prediction Card */}
-            <div className="mt-16 relative">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-primary/90 backdrop-blur-sm">
-                Preview
-              </Badge>
-              <Card className="max-w-2xl mx-auto backdrop-blur-sm bg-card/50 border-primary/20 shadow-2xl shadow-primary/10 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
-                <CardHeader className="relative">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <CardTitle className="text-xl">Your Career Trajectory</CardTitle>
-                      <CardDescription>Next 30 Days • Generated with Deep Mode</CardDescription>
-                    </div>
-                    <Badge variant="outline" className="gap-1">
-                      <TrendingUpIcon className="w-3 h-3" />
-                      92% Confidence
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="relative space-y-4">
-                  {/* Blurred Content */}
-                  <div className="space-y-3 blur-sm select-none pointer-events-none">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-primary/10 mt-1">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="text-sm font-medium">Days 1-7: Foundation Phase</p>
-                        <p className="text-sm text-muted-foreground">A period of strategic positioning emerges. Your recent efforts begin to gain recognition from key stakeholders...</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-primary/10 mt-1">
-                        <TrendingUpIcon className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="text-sm font-medium">Days 8-15: Momentum Builds</p>
-                        <p className="text-sm text-muted-foreground">An unexpected opportunity surfaces around day 12. This aligns with your long-term vision and requires decisive action...</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-primary/10 mt-1">
-                        <Star className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="text-sm font-medium">Days 16-23: Critical Window</p>
-                        <p className="text-sm text-muted-foreground">A convergence point appears. Multiple threads come together, creating a rare window for advancement...</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Overlay CTA */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-background/95 via-background/60 to-transparent">
-                    <div className="text-center space-y-3 pt-12">
-                      <p className="text-lg font-semibold">See Your Complete Prediction</p>
-                      <Button asChild size="lg" className="shadow-lg">
-                        <Link href="/onboarding">
-                          Get Started Free
-                          <ArrowRight className="ml-2 w-4 h-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+
           </div>
         </div>
       </section>
@@ -547,11 +482,11 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Legal & Safety</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Data Security</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">AI Methodology</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Disclaimer</a></li>
+                <li><Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                <li><Link href="/data-security" className="hover:text-foreground transition-colors">Data Security</Link></li>
+                <li><Link href="/ai-methodology" className="hover:text-foreground transition-colors">AI Methodology</Link></li>
+                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
               </ul>
             </div>
 
@@ -559,7 +494,7 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
                 <li><a href="mailto:support@predicsure.ai" className="hover:text-foreground transition-colors">Contact: support@predicsure.ai</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">LinkedIn</a></li>
               </ul>

@@ -659,4 +659,38 @@
 - [x] Create FAQ entry: "How do predictions actually work?" explaining AI methodology, NLP, pattern recognition, real-time data integration
 - [x] Test hero problem-solution display
 - [x] Test new FAQ entries display
-- [ ] Commit and push trust-building improvements
+- [x] Commit and push trust-building improvements
+
+### Remove Career Trajectory Preview Card (Dec 5, 2024)
+- [ ] Remove UI preview card from hero section (creates funnel confusion)
+- [ ] Keep single CTA: "Get Your First Prediction"
+- [ ] Test simplified hero section
+- [ ] Commit and push preview removal
+
+### Footer Links Audit & Missing Pages (Dec 5, 2024)
+- [ ] Audit all footer links (Quick Links, Legal & Safety, Company)
+- [ ] Create Privacy Policy page
+- [ ] Create Terms of Service page
+- [ ] Create Data Security page
+- [ ] Create AI Methodology page
+- [ ] Create Disclaimer page
+- [ ] Create About page
+- [ ] Update footer links to point to new pages
+- [ ] Test all footer links work correctly
+- [ ] Commit and push footer pages
+
+### Remove Career Trajectory Preview Card & Complete Footer Pages (Dec 5, 2024)
+- [x] Remove UI preview card from hero section (creates funnel confusion)
+- [x] Keep single CTA: "Get Your First Prediction"
+- [x] Test simplified hero section
+- [x] Audit all footer links (Quick Links, Legal & Safety, Company)
+- [x] Create Privacy Policy page (comprehensive GDPR/CCPA compliant)
+- [x] Create Terms of Service page (subscription tiers, refund policy, disclaimers)
+- [x] Create Data Security page (encryption, infrastructure, compliance)
+- [x] Create AI Methodology page (NLP, pattern recognition, real-time data)
+- [x] Create Disclaimer page (not professional advice, accuracy limitations)
+- [x] Create About page (mission, values, technology, community)
+- [x] Update footer links to point to new pages (using Link component)
+- [x] Add routes in App.tsx for all new pages
+- [x] Test all footer links work correctly
+- [ ] Commit and push all changes
