@@ -464,3 +464,17 @@
 - [x] Verify logo file exists and path is correct - File exists at correct path
 - [x] Check if logo loads correctly in development vs production - Loads correctly in dev
 - [x] Ensure Vite build process includes public assets - Public folder served correctly
+
+### Add Sports Predictions & Stocks & Markets Categories (Dec 4, 2024)
+- [x] Add "Sports Predictions" and "Stocks & Markets" to onboarding interest selection
+- [x] Add both categories to dashboard dropdown for prediction type selection
+- [x] Implement Sports Predictions onboarding flow with 5 follow-up questions
+- [x] Implement Stocks & Markets onboarding flow with 6 follow-up questions
+- [x] Update prediction generation logic to include context from new category questions
+- [x] Update database schema with sportsProfile and stocksProfile columns
+- [x] Update backend routers to handle new profile types
+- [x] Add sports and stocks to category enum validation in all tRPC procedures
+- [x] Update database schema comments to include new categories
+- [x] Test Sports Predictions onboarding flow locally - all 5 questions working
+- [ ] Test Stocks & Markets onboarding flow on Railway
+- [ ] Verify predictions generate correctly with new category data on Railway

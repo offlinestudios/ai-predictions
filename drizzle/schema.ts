@@ -37,6 +37,8 @@ export const users = pgTable("users", {
   moneyProfile: text("moneyProfile"), // JSON: stage, goal, incomeSource, stability, milestone
   loveProfile: text("loveProfile"), // JSON: goal, patterns, desires
   healthProfile: text("healthProfile"), // JSON: state, focus, consistency, obstacle
+  sportsProfile: text("sportsProfile"), // JSON: sport, predictionType, engagement, favorite, frequency
+  stocksProfile: text("stocksProfile"), // JSON: markets, investingStyle, riskLevel, financialGoal, focusAssets, predictionFrequency
   /** Premium precision data for enhanced predictions */
   ageRange: varchar("ageRange", { length: 20 }), // e.g., "25-34", "35-44"
   location: varchar("location", { length: 100 }), // City or region
@@ -94,7 +96,7 @@ export const predictions = pgTable("predictions", {
   userInput: text("userInput").notNull(),
   /** AI-generated prediction result */
   predictionResult: text("predictionResult").notNull(),
-  /** Category of prediction (career, love, finance, health, general) */
+  /** Category of prediction (career, love, finance, health, sports, stocks, general) */
   category: varchar("category", { length: 50 }),
   /** JSON array of uploaded file URLs for context */
   attachmentUrls: text("attachmentUrls"),

@@ -67,6 +67,21 @@ export const appRouter = router({
           consistency: z.string(),
           obstacle: z.string(),
         }).optional(),
+        sportsProfile: z.object({
+          sport: z.string(),
+          predictionType: z.string(),
+          engagement: z.string(),
+          favorite: z.string(),
+          frequency: z.string(),
+        }).optional(),
+        stocksProfile: z.object({
+          markets: z.string(),
+          investingStyle: z.string(),
+          riskLevel: z.string(),
+          financialGoal: z.string(),
+          focusAssets: z.string(),
+          predictionFrequency: z.string(),
+        }).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
@@ -83,6 +98,8 @@ export const appRouter = router({
             moneyProfile: input.moneyProfile ? JSON.stringify(input.moneyProfile) : null,
             loveProfile: input.loveProfile ? JSON.stringify(input.loveProfile) : null,
             healthProfile: input.healthProfile ? JSON.stringify(input.healthProfile) : null,
+            sportsProfile: input.sportsProfile ? JSON.stringify(input.sportsProfile) : null,
+            stocksProfile: input.stocksProfile ? JSON.stringify(input.stocksProfile) : null,
             onboardingCompleted: true,
             updatedAt: new Date(),
           })
@@ -95,6 +112,8 @@ export const appRouter = router({
           love: "What beautiful moments and connections are coming into my love life this month?",
           finance: "What financial opportunities and abundance are heading my way in the next 30 days?",
           health: "What positive changes and vitality can I expect in my health and wellness journey this month?",
+          sports: "What thrilling moments and game-changing predictions await in my sports interests over the next 30 days?",
+          stocks: "What market opportunities and winning moves can I expect in my investments over the next 30 days?",
           general: "What wonderful surprises and opportunities are coming my way in the next 30 days?",
         };
 
@@ -133,6 +152,25 @@ export const appRouter = router({
 - Focus: ${input.healthProfile.focus}
 - Consistency: ${input.healthProfile.consistency}
 - Obstacle: ${input.healthProfile.obstacle}`;
+        }
+        
+        if (input.sportsProfile) {
+          profileContext += `\n\n**Sports Context:**
+- Sport: ${input.sportsProfile.sport}
+- Prediction Type: ${input.sportsProfile.predictionType}
+- Engagement: ${input.sportsProfile.engagement}
+- Favorite: ${input.sportsProfile.favorite}
+- Frequency: ${input.sportsProfile.frequency}`;
+        }
+        
+        if (input.stocksProfile) {
+          profileContext += `\n\n**Investment Context:**
+- Markets: ${input.stocksProfile.markets}
+- Investing Style: ${input.stocksProfile.investingStyle}
+- Risk Level: ${input.stocksProfile.riskLevel}
+- Financial Goal: ${input.stocksProfile.financialGoal}
+- Focus Assets: ${input.stocksProfile.focusAssets}
+- Prediction Frequency: ${input.stocksProfile.predictionFrequency}`;
         }
 
         // Build personalized system prompt for welcome prediction
@@ -174,7 +212,7 @@ export const appRouter = router({
           userId: ctx.user.id,
           userInput: welcomeQuestion,
           predictionResult: predictionString,
-          category: primaryInterest as "career" | "love" | "finance" | "health" | "general",
+          category: primaryInterest as "career" | "love" | "finance" | "health" | "sports" | "stocks" | "general",
           shareToken,
           confidenceScore,
           trajectoryType: "30day",
@@ -388,7 +426,7 @@ export const appRouter = router({
     generate: protectedProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
-        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general"]).optional(),
         attachmentUrls: z.array(z.string()).optional(),
         deepMode: z.boolean().optional().default(false),
         trajectoryType: z.enum(["instant", "30day", "90day", "yearly"]).optional().default("instant"),
@@ -721,7 +759,7 @@ export const appRouter = router({
       .input(z.object({
         limit: z.number().min(1).max(100).optional(),
         offset: z.number().min(0).optional(),
-        category: z.enum(["career", "love", "finance", "health", "general", "all"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general", "all"]).optional(),
         search: z.string().optional(),
         feedback: z.enum(["like", "dislike", "none", "all"]).optional(),
       }))
@@ -977,7 +1015,7 @@ export const appRouter = router({
     generateAnonymous: publicProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
-        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general"]).optional(),
         // Optional onboarding data for welcome predictions
         onboardingData: z.object({
           nickname: z.string().optional(),

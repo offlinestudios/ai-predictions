@@ -669,6 +669,8 @@ export default function Dashboard() {
                       <SelectItem value="love">Love & Relationships</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
                       <SelectItem value="health">Health & Wellness</SelectItem>
+                      <SelectItem value="sports">Sports Predictions</SelectItem>
+                      <SelectItem value="stocks">Stocks & Markets</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

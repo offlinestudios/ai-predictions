@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2, Trophy, TrendingUp } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -15,6 +15,8 @@ const INTERESTS = [
   { id: "love", label: "Love & Relationships", icon: Heart, color: "text-pink-400" },
   { id: "finance", label: "Money & Wealth", icon: DollarSign, color: "text-green-400" },
   { id: "health", label: "Health & Wellness", icon: Activity, color: "text-purple-400" },
+  { id: "sports", label: "Sports Predictions", icon: Trophy, color: "text-orange-400" },
+  { id: "stocks", label: "Stocks & Markets", icon: TrendingUp, color: "text-cyan-400" },
 ];
 
 const RELATIONSHIP_STATUS = [
@@ -73,12 +75,14 @@ export default function Onboarding() {
           setNickname(data.nickname || "");
           setSelectedInterests(data.interests || []);
           setRelationshipStatus(data.relationshipStatus || "");
-          if (data.careerProfile || data.moneyProfile || data.loveProfile || data.healthProfile) {
+          if (data.careerProfile || data.moneyProfile || data.loveProfile || data.healthProfile || data.sportsProfile || data.stocksProfile) {
             setCategoryProfiles({
               careerProfile: data.careerProfile,
               moneyProfile: data.moneyProfile,
               loveProfile: data.loveProfile,
               healthProfile: data.healthProfile,
+              sportsProfile: data.sportsProfile,
+              stocksProfile: data.stocksProfile,
             });
           }
         } catch (e) {
