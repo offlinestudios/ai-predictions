@@ -24,6 +24,7 @@ import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
+import PredictionDisplay from "@/components/PredictionDisplay";
 
 const TIER_ICONS = {
   free: Star,
@@ -933,20 +934,18 @@ export default function Dashboard() {
 
                 {/* Prediction Result */}
                 {prediction && !generateMutation.isPending && !generateAnonymousMutation.isPending && (
-                  <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="mt-6 space-y-4">
+                    <PredictionDisplay 
+                      prediction={prediction}
+                      isPremium={deepMode}
+                      confidenceScore={confidenceScore}
+                      category={category}
+                    />
+                    
+                    {/* Feedback Buttons */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Was this helpful?</span>
                       <div className="flex items-center gap-2">
-                        <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
-                        <h3 className="font-semibold text-lg">Your Prediction</h3>
-                        {deepMode && (
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
-                            <Zap className="w-3 h-3" />
-                            Deep Mode
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground mr-2">Was this helpful?</span>
                         <Button
                           variant={userFeedback === "like" ? "default" : "outline"}
                           size="sm"
@@ -977,6 +976,7 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
+                    
                     <TrajectoryTimeline 
                       predictionText={prediction}
                       trajectoryType={trajectoryType}
