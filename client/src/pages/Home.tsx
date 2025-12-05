@@ -281,7 +281,7 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">How It Works</h3>
-            <p className="text-muted-foreground">Get personalized insights in three simple steps</p>
+            <p className="text-muted-foreground">Your journey to clarity begins here</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -299,9 +299,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
                   Step 1
                 </div>
-                <h4 className="text-lg font-semibold">Share Your Situation</h4>
+                <h4 className="text-lg font-semibold">Tell Us What You Want Clarity On</h4>
                 <p className="text-sm text-muted-foreground">
-                  Tell us what area of life you want clarity on—career, love, finances, or personal growth
+                  Whether you're facing a crossroads, sensing a shift, or simply wondering what's next—share what's on your mind
                 </p>
               </div>
             </div>
@@ -320,9 +320,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-semibold mb-2">
                   Step 2
                 </div>
-                <h4 className="text-lg font-semibold">AI Analyzes Patterns</h4>
+                <h4 className="text-lg font-semibold">We Analyze Your Unique Pattern</h4>
                 <p className="text-sm text-muted-foreground">
-                  Advanced AI processes your context and identifies emerging patterns and timing
+                  Our AI reads between the lines, connecting dots you might not see—uncovering the rhythm of change in your life
                 </p>
               </div>
             </div>
@@ -338,9 +338,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-semibold mb-2">
                   Step 3
                 </div>
-                <h4 className="text-lg font-semibold">Get Your Forecast</h4>
+                <h4 className="text-lg font-semibold">Discover What's Shifting in Your Life</h4>
                 <p className="text-sm text-muted-foreground">
-                  Receive a detailed timeline showing what's coming, when it matters, and how to navigate it
+                  See the path ahead with clarity—understand the timing, recognize the moments that matter, and move forward with confidence
                 </p>
               </div>
             </div>

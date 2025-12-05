@@ -641,4 +641,14 @@
 - [x] Add overlay CTA ("See Your Complete Prediction" + Get Started button)
 - [x] Make preview responsive with backdrop blur and gradient effects
 - [x] Test UI preview display
-- [ ] Commit and push hero UI preview
+- [x] Commit and push hero UI preview
+
+### How It Works - Emotional Language Rewrite (Dec 5, 2024)
+- [x] Replace mechanical step titles with emotional, story-driven language
+- [x] Step 1: "Tell Us What You Want Clarity On" (facing crossroads, sensing shift)
+- [x] Step 2: "We Analyze Your Unique Pattern" (reads between lines, connects dots)
+- [x] Step 3: "Discover What's Shifting in Your Life" (see path ahead, move with confidence)
+- [x] Update section tagline: "Your journey to clarity begins here"
+- [x] Update step descriptions with relatable, human-centered copy
+- [x] Test How It Works section display
+- [ ] Commit and push emotional language changes
