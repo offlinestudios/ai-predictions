@@ -478,3 +478,21 @@
 - [x] Test Sports Predictions onboarding flow locally - all 5 questions working
 - [ ] Test Stocks & Markets onboarding flow on Railway
 - [ ] Verify predictions generate correctly with new category data on Railway
+
+### Add Category-Specific Prediction Templates (Dec 5, 2024)
+- [ ] Create specialized system prompt for Sports Predictions (game outcomes, player performance, betting insights)
+- [ ] Create specialized system prompt for Stocks & Markets (market movements, investment timing, risk analysis)
+- [ ] Update prediction generation logic to select appropriate template based on category
+- [ ] Add category-specific formatting and structure to predictions
+- [ ] Test Sports predictions with new template
+- [ ] Test Stocks predictions with new template
+- [ ] Verify existing categories (Career, Love, Finance, Health) still work correctly
+
+### Category-Specific Prediction Templates (Dec 4, 2024)
+- [x] Create specialized system prompts for Sports Predictions
+- [x] Create specialized system prompts for Stocks & Markets
+- [x] Update authenticated prediction generation to use category-specific templates
+- [x] Update anonymous prediction generation to use category-specific templates
+- [x] Test Sports Predictions template with sample questions - Working perfectly!
+- [ ] Test Stocks & Markets template with sample questions on Railway
+- [x] Verify templates improve prediction relevance and accuracy - Significant improvement confirmed
