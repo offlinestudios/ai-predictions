@@ -651,4 +651,12 @@
 - [x] Update section tagline: "Your journey to clarity begins here"
 - [x] Update step descriptions with relatable, human-centered copy
 - [x] Test How It Works section display
-- [ ] Commit and push emotional language changes
+- [x] Commit and push emotional language changes
+
+### Hero Problem-Solution & FAQ Trust Barriers (Dec 5, 2024)
+- [x] Add problem-solution copy above hero headline ("If you're facing uncertainty, stuck between choices, or sensing something's about to change...")
+- [x] Create FAQ entry: "What's your satisfaction guarantee?" with 7-day money-back guarantee
+- [x] Create FAQ entry: "How do predictions actually work?" explaining AI methodology, NLP, pattern recognition, real-time data integration
+- [x] Test hero problem-solution display
+- [x] Test new FAQ entries display
+- [ ] Commit and push trust-building improvements

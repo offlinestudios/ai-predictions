@@ -160,6 +160,9 @@ export default function Home() {
             <Badge variant="secondary" className="mb-4">
               Powered by Advanced AI
             </Badge>
+            <p className="text-lg text-muted-foreground/90 max-w-2xl mx-auto">
+              If you're facing uncertainty, stuck between choices, or sensing something's about to change...
+            </p>
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               See What's{" "}
               <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
@@ -489,6 +492,24 @@ export default function Home() {
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
                 Be specific and provide context in your questions. Instead of "What will happen in my career?", try "I'm considering a job change in the next 3 months—what timing and patterns should I watch for?" The more context you provide, the more personalized and relevant your predictions will be.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-7" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                What's your satisfaction guarantee?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                We offer a 7-day money-back guarantee on all paid subscriptions. If you're not satisfied with the quality or accuracy of your predictions within the first week, simply contact us at support@predicsure.ai for a full refund—no questions asked. We're confident you'll find value in our insights, but we want you to feel secure in your purchase.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-8" className="bg-card/30 border border-border/50 rounded-lg px-6">
+              <AccordionTrigger className="text-left font-semibold hover:no-underline">
+                How do predictions actually work?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Our AI uses advanced natural language processing to analyze your situation, identify behavioral patterns, and cross-reference contextual signals. For Sports and Stocks predictions, we integrate real-time data (team stats, market indicators) to enhance accuracy. The system looks for recurring patterns, timing correlations, and trajectory signals—similar to how an experienced advisor might read between the lines of your story. It's not magic or mysticism; it's sophisticated pattern recognition applied to human experiences.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
