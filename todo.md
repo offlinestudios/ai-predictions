@@ -619,4 +619,16 @@
 - [x] Redirect to /api/oauth/login on "Create Free Account" button click
 - [x] Add upgrade teaser at bottom (Pro $9.99/mo with Deep Mode)
 - [x] Test SignupGate display on Dashboard
-- [ ] Commit and push hard signup gate changes
+- [x] Commit and push hard signup gate changes
+
+### Landing Page Improvements - Footer & Hero Trust (Dec 5, 2024)
+- [x] Overhaul footer with 4-column layout (Quick Links, Legal & Safety, Company, Trust Signals)
+- [x] Add Quick Links section (Home, How It Works, Pricing, FAQ, Sign In)
+- [x] Add Legal & Safety section (Privacy Policy, Terms, Data Security, AI Methodology, Disclaimer)
+- [x] Add Company section (About, Contact: support@predicsure.ai, LinkedIn placeholder)
+- [x] Add trust badges (Stripe secure payments, data encryption, Manus + AI powered)
+- [x] Add ethical disclaimer at bottom (guidance only, not professional advice)
+- [x] Add hero trust indicators below CTA (12,400+ users, 89% accuracy, Private & Secure)
+- [x] Add differentiation tagline ("AI-powered forecasts based on behavioral patterns — not horoscopes")
+- [x] Test footer structure and hero trust indicators display
+- [ ] Commit and push landing page improvements

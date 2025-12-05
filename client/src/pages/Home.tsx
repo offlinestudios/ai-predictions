@@ -171,6 +171,9 @@ export default function Home() {
               Personalized AI predictions about your relationships, career, finances, and internal state. 
               Understand what's coming, when it matters, and how to navigate the next chapter.
             </p>
+            <p className="text-base text-muted-foreground/80 max-w-xl mx-auto italic">
+              AI-powered forecasts based on behavioral patterns — not horoscopes.
+            </p>
             
             {/* CTA Button */}
             <div className="pt-4">
@@ -183,6 +186,24 @@ export default function Home() {
               <p className="text-sm text-muted-foreground mt-4">
                 No credit card required • Start exploring in 2 minutes
               </p>
+              
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-sm">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span>Trusted by 12,400+ users</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <TrendingUpIcon className="w-4 h-4 text-primary" />
+                  <span>89% accuracy rate</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>Private & Secure</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -408,9 +429,87 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 Predicsure AI. Powered by advanced artificial intelligence.</p>
+      <footer className="border-t border-border/50 py-16 mt-16 bg-card/30">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Brand Column */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <img src="/globe-logo.png" alt="Predicsure AI" className="w-8 h-8" />
+                <span className="text-lg font-bold">Predicsure AI</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Personalized AI predictions to help you understand what's shifting in your life.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
+                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Sign In</Link></li>
+              </ul>
+            </div>
+
+            {/* Legal & Safety */}
+            <div>
+              <h3 className="font-semibold mb-4">Legal & Safety</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Data Security</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">AI Methodology</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Disclaimer</a></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="mailto:support@predicsure.ai" className="hover:text-foreground transition-colors">Contact: support@predicsure.ai</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">LinkedIn</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="border-t border-border/50 pt-8 mb-8">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Secure Payments by Stripe</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Data Encrypted – We Never Sell Your Information</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Powered by Manus + Advanced AI Models</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright & Disclaimer */}
+          <div className="text-center space-y-4">
+            <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
+              Predictions are for guidance only. They are based on pattern analysis and should not replace professional advice. 
+              Predicsure AI does not provide medical, legal, or financial advice.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              © 2025 Predicsure AI. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
