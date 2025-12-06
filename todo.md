@@ -493,3 +493,9 @@
 - [x] Apply futuristic font to hero headline
 - [x] Keep Space Grotesk/Inter for body content
 - [x] Test font rendering and readability
+
+### Revert to Purple Color Scheme (Dec 6, 2024)
+- [x] Revert primary color from electric blue back to purple (#a855f7)
+- [x] Restore original purple logo
+- [x] Keep all other improvements (no gradients, Orbitron font, simplified hero)
+- [x] Test and save checkpoint
