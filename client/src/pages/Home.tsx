@@ -77,7 +77,6 @@ const SUBSCRIPTION_TIERS = [
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -114,42 +113,26 @@ export default function Home() {
             )}
           </div>
           
-          {/* Mobile Hamburger */}
-          <button
-            className="md:hidden p-2 hover:bg-accent rounded-md transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-        
-        {/* Mobile Menu Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
-            <div className="container py-4 flex flex-col gap-3">
-              {isAuthenticated ? (
-                <>
-                  <Link href="/history" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start">
-                      <History className="w-4 h-4 mr-2" />
-                      History
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="default" size="sm" className="w-full">
-                      Dashboard
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <Button asChild variant="default" size="sm" className="w-full animate-pulse-glow">
-                  <a href={getLoginUrl()}>Sign In</a>
-                </Button>
-              )}
+          {/* Mobile Sign In Button */}
+          {!isAuthenticated && (
+            <div className="md:hidden">
+              <Button asChild variant="default" size="sm">
+                <a href={getLoginUrl()}>Sign In</a>
+              </Button>
             </div>
-          </div>
-        )}
+          )}
+          
+          {/* Mobile Dashboard Button for authenticated users */}
+          {isAuthenticated && (
+            <div className="md:hidden">
+              <Link href="/dashboard">
+                <Button variant="default" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Hero Section */}

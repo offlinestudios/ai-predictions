@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
 
 const loadingMessages = [
   "Analyzing your question...",
@@ -33,9 +32,9 @@ export function PredictionLoader() {
           <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent" />
         </div>
         
-        {/* Center sparkle */}
+        {/* Center logo */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <Sparkles className="w-12 h-12 text-white animate-pulse" />
+          <img src="/logo.svg" alt="Predicsure AI" className="w-16 h-16 animate-pulse" />
         </div>
         
         {/* Floating particles */}

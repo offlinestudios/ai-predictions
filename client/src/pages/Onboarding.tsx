@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, Heart, Briefcase, DollarSign, Activity, ArrowRight, Loader2, Trophy, TrendingUp } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -15,6 +15,8 @@ const INTERESTS = [
   { id: "love", label: "Love & Relationships", icon: Heart, color: "text-pink-400" },
   { id: "finance", label: "Money & Wealth", icon: DollarSign, color: "text-green-400" },
   { id: "health", label: "Health & Wellness", icon: Activity, color: "text-purple-400" },
+  { id: "sports", label: "Sports Predictions", icon: Trophy, color: "text-orange-400" },
+  { id: "stocks", label: "Stocks & Markets", icon: TrendingUp, color: "text-cyan-400" },
 ];
 
 const RELATIONSHIP_STATUS = [
@@ -200,8 +202,8 @@ export default function Onboarding() {
         {step === 1 && (
           <Card className="border-2 border-primary/20">
             <CardHeader className="text-center space-y-4 pb-8">
-              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Sparkles className="w-10 h-10 text-white" />
+              <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-20 h-20" />
               </div>
               <div>
                 <CardTitle className="text-3xl mb-3">
@@ -218,9 +220,6 @@ export default function Onboarding() {
               <Button onClick={handleContinue} className="w-full" size="lg">
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button onClick={handleSkip} variant="ghost" className="w-full">
-                Skip for now
               </Button>
             </CardContent>
           </Card>

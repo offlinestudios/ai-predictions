@@ -575,3 +575,13 @@
 - [x] Change grid from 3 columns to 4 columns (lg:grid-cols-4)
 - [x] Test footer layout and alignment
 - [x] Save checkpoint and push to GitHub
+
+### Logo Branding Throughout App (Dec 6, 2024)
+- [x] Replace sparkle icon in onboarding with flower of life logo
+- [x] Remove "Skip for now" option from onboarding
+- [x] Replace PredictionLoader spinner with animated logo
+- [x] Replace crystal ball animation with simple rotating logo
+- [x] Restore stocks and sports categories to onboarding
+- [x] Replace mobile hamburger menu with Sign In button
+- [x] Test all changes across onboarding and prediction flows
+- [x] Save checkpoint and push to GitHub
