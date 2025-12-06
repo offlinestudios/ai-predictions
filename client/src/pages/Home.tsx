@@ -403,16 +403,26 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {/* Quick Links with Logo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Brand Column */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8 transition-opacity duration-500 hover:opacity-70" />
+                <span className="text-lg font-bold">Predicsure AI</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Personalized AI predictions to help you understand what's shifting in your life.
+              </p>
+            </div>
+            {/* Quick Links */}
             <div>
-              <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8 mb-4 transition-opacity duration-500 hover:opacity-70" />
               <h3 className="font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
                 <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
                 <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
+                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Sign In</Link></li>
               </ul>
             </div>
             {/* Legal & Safety */}
