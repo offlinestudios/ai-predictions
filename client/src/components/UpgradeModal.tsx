@@ -11,7 +11,6 @@ interface UpgradeModalProps {
   onOpenChange: (open: boolean) => void;
   reason?: "limit_reached" | "feature_locked" | "approaching_limit";
   remainingPredictions?: number;
-  isAnonymous?: boolean;
 }
 
 const FEATURES = [
@@ -80,7 +79,7 @@ const FEATURES = [
   },
 ];
 
-export default function UpgradeModal({ open, onOpenChange, reason = "limit_reached", remainingPredictions = 0, isAnonymous = false }: UpgradeModalProps) {
+export default function UpgradeModal({ open, onOpenChange, reason = "limit_reached", remainingPredictions = 0 }: UpgradeModalProps) {
   const [isUpgradingPro, setIsUpgradingPro] = useState(false);
   const [isUpgradingPremium, setIsUpgradingPremium] = useState(false);
 
@@ -107,34 +106,28 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
   };
 
   const getTitle = () => {
-    if (isAnonymous && reason === "limit_reached") {
-      return "Sign Up to Continue";
-    }
     switch (reason) {
       case "limit_reached":
         return "You've Used All Your Free Predictions!";
       case "approaching_limit":
         return `Only ${remainingPredictions} Prediction${remainingPredictions === 1 ? "" : "s"} Left! ⚡`;
       case "feature_locked":
-        return "Unlock Premium Features";
+        return "Unlock Premium Features 🌟";
       default:
         return "Upgrade Your Plan";
     }
   };
 
   const getDescription = () => {
-    if (isAnonymous && reason === "limit_reached") {
-      return "Create a free account to get 3 more predictions this week, save your history, and unlock advanced features!";
-    }
     switch (reason) {
       case "limit_reached":
         return "Upgrade now to continue receiving personalized AI predictions and unlock your full potential.";
       case "approaching_limit":
         return "You're almost out of free predictions! Upgrade now to keep the insights flowing without interruption.";
       case "feature_locked":
-        return "Unlock advanced prediction features like Deep Mode, 30-day trajectories, and more with a premium plan.";
+        return "This feature is available for Pro and Premium members. Upgrade to unlock unlimited predictions and advanced features.";
       default:
-        return "Choose a plan that fits your needs and unlock the full power of AI predictions.";
+        return "Choose a plan that fits your needs and unlock unlimited predictions.";
     }
   };
 
@@ -154,27 +147,7 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
           <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-center">
             <p className="text-sm font-medium">
               <Sparkles className="w-4 h-4 inline mr-2" />
-              {isAnonymous 
-                ? "Create a free account now and get 3 more predictions this week!"
-                : "Join thousands of users who've unlocked their future with unlimited predictions!"
-              }
-            </p>
-          </div>
-        )}
-        
-        {/* Sign Up Button for Anonymous Users */}
-        {isAnonymous && reason === "limit_reached" && (
-          <div className="flex flex-col gap-4 my-6">
-            <Button 
-              size="lg" 
-              className="w-full text-lg py-6"
-              onClick={() => window.location.href = "/api/oauth/login"}
-            >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Sign Up Free - Get 3 More Predictions
-            </Button>
-            <p className="text-center text-sm text-muted-foreground">
-              Or upgrade to a paid plan for unlimited predictions
+              Join thousands of users who've unlocked their future with unlimited predictions!
             </p>
           </div>
         )}

@@ -465,241 +465,31 @@
 - [x] Check if logo loads correctly in development vs production - Loads correctly in dev
 - [x] Ensure Vite build process includes public assets - Public folder served correctly
 
-### Add Sports Predictions & Stocks & Markets Categories (Dec 4, 2024)
-- [x] Add "Sports Predictions" and "Stocks & Markets" to onboarding interest selection
-- [x] Add both categories to dashboard dropdown for prediction type selection
-- [x] Implement Sports Predictions onboarding flow with 5 follow-up questions
-- [x] Implement Stocks & Markets onboarding flow with 6 follow-up questions
-- [x] Update prediction generation logic to include context from new category questions
-- [x] Update database schema with sportsProfile and stocksProfile columns
-- [x] Update backend routers to handle new profile types
-- [x] Add sports and stocks to category enum validation in all tRPC procedures
-- [x] Update database schema comments to include new categories
-- [x] Test Sports Predictions onboarding flow locally - all 5 questions working
-- [ ] Test Stocks & Markets onboarding flow on Railway
-- [ ] Verify predictions generate correctly with new category data on Railway
+### Phase 1 Hero Redesign - Remove Gradients & Simplify (Dec 5, 2024)
+- [x] Remove gradient from "Shifting" text (use solid white instead)
+- [x] Remove "Powered by Advanced AI" badge (looks startup-y)
+- [x] Shorten headline (remove ellipsis, make declarative)
+- [x] Remove long problem-solution paragraph above headline
+- [x] Simplify subheadline to one sentence max
+- [x] Move CTA button above the fold (visible without scrolling)
+- [x] Add trust signals below CTA (no signup required, user count, security)
+- [x] Test mobile responsiveness and CTA visibility
+- [x] Commit and push Phase 1 changes
 
-### Add Category-Specific Prediction Templates (Dec 5, 2024)
-- [ ] Create specialized system prompt for Sports Predictions (game outcomes, player performance, betting insights)
-- [ ] Create specialized system prompt for Stocks & Markets (market movements, investment timing, risk analysis)
-- [ ] Update prediction generation logic to select appropriate template based on category
-- [ ] Add category-specific formatting and structure to predictions
-- [ ] Test Sports predictions with new template
-- [ ] Test Stocks predictions with new template
-- [ ] Verify existing categories (Career, Love, Finance, Health) still work correctly
+### Phase 2 - Option A: Electric Blue Color Scheme (Dec 6, 2024)
+- [x] Generate new electric blue logo (#5C7CFF sacred geometry design)
+- [x] Update primary color in index.css from #a855f7 to #5C7CFF
+- [x] Remove gradient from header "Predicsure AI" text (solid white)
+- [x] Update button colors to electric blue
+- [x] Update all icon colors to electric blue accent
+- [ ] Add subtle background glow effects (not text glow)
+- [x] Update favicon with electric blue logo
+- [x] Test color contrast and accessibility
+- [x] Commit and push Phase 2 changes
 
-### Category-Specific Prediction Templates (Dec 4, 2024)
-- [x] Create specialized system prompts for Sports Predictions
-- [x] Create specialized system prompts for Stocks & Markets
-- [x] Update authenticated prediction generation to use category-specific templates
-- [x] Update anonymous prediction generation to use category-specific templates
-- [x] Test Sports Predictions template with sample questions - Working perfectly!
-- [ ] Test Stocks & Markets template with sample questions on Railway
-- [x] Verify templates improve prediction relevance and accuracy - Significant improvement confirmed
-
-### Create Prediction Templates for Remaining Categories (Dec 5, 2024)
-- [x] Design Career & Success template with professional development focus
-- [x] Design Love & Relationships template with emotional intelligence focus
-- [x] Design Finance template with personal finance strategy focus
-- [x] Design Health & Wellness template with holistic wellbeing focus
-- [x] Update authenticated prediction generation to use all category templates
-- [x] Update anonymous prediction generation to use all category templates
-- [ ] Test Career template with sample questions on Railway
-- [ ] Test Love template with sample questions on Railway
-- [ ] Test Finance template with sample questions on Railway
-- [ ] Test Health template with sample questions on Railway
-- [x] Verify all templates maintain consistent quality and structure
-
-### Add Category-Specific Premium Data Collection (Dec 5, 2024)
-- [ ] Design sports-specific premium data fields (betting history, fantasy league performance, favorite teams/players)
-- [ ] Design stocks-specific premium data fields (portfolio size, trading experience, risk tolerance, investment goals)
-- [ ] Update PremiumUnlockModal component to show category-specific fields based on current prediction category
-- [ ] Update database schema to store sports and stocks premium data
-- [ ] Update backend to accept and save category-specific premium data
-- [ ] Update prediction generation to include category-specific premium data in context
-- [ ] Test Sports refinement flow with new premium fields
-- [ ] Test Stocks refinement flow with new premium fields
-- [ ] Verify refined predictions show improved accuracy with premium data
-
-### Category-Specific Premium Data Collection (Dec 5, 2024)
-- [x] Design sports-specific premium data fields (betting history, fantasy performance, favorite teams)
-- [x] Design stocks-specific premium data fields (portfolio size, trading experience, risk tolerance, investment goals)
-- [x] Update PremiumUnlockModal to show category-specific fields based on prediction category
-- [x] Update database schema to store category-specific premium data
-- [x] Update savePremiumData mutation to accept and save category-specific fields
-- [x] Update prediction generation to include category-specific premium data in context
-- [ ] Test refinement flow with Sports category premium data on Railway
-- [ ] Test refinement flow with Stocks category premium data on Railway
-- [ ] Verify predictions improve with category-specific premium data on Railway
-
-### Real-Time Data Integration for Sports & Stocks (Dec 5, 2024)
-- [x] Set up API integration modules (server/integrations/sports.ts and stocks.ts)
-- [x] Add environment variables for API keys (ALPHA_VANTAGE_API_KEY - The Sports DB is free, no key needed)
-- [x] Implement Sports data fetching using The Sports DB API (team stats, recent games, player info)
-- [x] Implement Stocks data fetching using Alpha Vantage API (real-time prices, company info, market data)
-- [x] Add data enrichment to authenticated prediction generation (Sports & Stocks)
-- [x] Add data enrichment to anonymous prediction generation (Sports & Stocks)
-- [x] Implement in-memory caching layer with 4-hour TTL to reduce API calls
-- [x] Add error handling for API failures (graceful degradation)
-- [x] Update ENV_VARIABLES.md with Alpha Vantage API key setup instructions
-- [ ] Test Sports predictions with real-time game data on Railway
-- [ ] Test Stocks predictions with real-time market data on Railway
-- [ ] Verify API rate limits are respected (Alpha Vantage: 25 calls/day free tier)
-- [ ] Deploy to Railway and verify API integrations work in production
-
-### Replace Logo with Purple Geometric Design (Dec 5, 2024)
-- [x] Generate purple version of geometric flower of life logo
-- [x] Replace globe-logo.png with new purple geometric logo
-- [x] Generate new favicons from purple logo (32x32, 192x192, 512x512, favicon.ico)
-- [x] Test logo display on homepage header
-- [x] Test logo display on dashboard header
-- [x] Test favicon display in browser tab
-- [x] Commit and push changes to GitHub
-
-### Fix Logo Background Transparency (Dec 5, 2024)
-- [x] Remove light gray/white background from purple geometric logo
-- [x] Make logo truly transparent so it blends with dark header
-- [x] Regenerate favicons with transparent background
-- [x] Test logo display on dark background
-- [x] Commit and push transparency fix to GitHub
-
-### Aggressive Logo Transparency Fix (Dec 5, 2024)
-- [x] Try more aggressive background removal with higher fuzz tolerance
-- [x] Regenerate logo with pure black background for easier removal
-- [x] Ensure only purple elements remain visible
-- [x] Test logo on dark background
-- [x] Push final transparent logo to GitHub
-
-### Add Logo Animation and Consistency Across Webapp (Dec 5, 2024)
-- [x] Create CSS hover animation for logo (gentle glow pulse)
-- [x] Add purple geometric logo to Dashboard header
-- [x] Add purple geometric logo to predictions output page
-- [x] Apply hover animation to all logo instances (Home, Dashboard, Account, History, prediction output)
-- [x] Test logo display and animation on all pages
-- [x] Commit and push logo updates to GitHub
-
-### Premium Quality Contrast Implementation (Dec 5, 2024)
-- [x] Create separate LLM prompt templates for Standard vs Deep Mode
-- [x] Standard mode: Simple paragraph format with basic insights (150-250 words)
-- [x] Deep Mode: Multi-section format with emojis, timeline breakdown, pattern analysis, recommendations (400-600 words)
-- [x] Add visual styling differences (gradient borders, badges, icons)
-- [x] Create PredictionDisplay component with premium/standard styling
-- [x] Update Dashboard to use new PredictionDisplay component
-- [x] Add "Analyzed X data points | Deep Mode" footer to premium predictions
-- [x] Test both prediction formats on Dashboard
-- [x] Commit and push premium contrast changes
-
-### Reduce Anonymous Prediction Limit (Dec 5, 2024)
-- [x] Change anonymous limit from 3/week to 1 total prediction
-- [x] Update Dashboard to show signup gate after first prediction
-- [x] Remove localStorage-based weekly tracking (simplified to count only)
-- [x] Update UpgradeModal to show "Sign Up" button for anonymous users
-- [x] Add compelling signup CTA: "Sign up to get 3 more predictions this week"
-- [x] Update usage display to show "1 free prediction available"
-- [x] Test anonymous flow: first prediction works, second shows signup gate
-- [x] Commit and push anonymous limit changes
-
-### Scroll-Reveal Paywall Implementation (Dec 5, 2024)
-- [x] Create ScrollRevealPaywall component with narrative teasers
-- [x] Add blurred preview sections for locked content (progressive blur effect)
-- [x] Generate teaser text: "Day 17: A divergence emerges..." style (7 categories)
-- [x] Add gradient overlay and "Upgrade to Pro" CTA with feature comparison
-- [x] Integrate scroll-reveal paywall below free predictions in Dashboard
-- [x] Remove PostPredictionPaywall modal and all triggers
-- [x] Show scroll-reveal for Free tier users after instant (standard) predictions
-- [x] Test scroll-reveal display on Dashboard
-- [x] Commit and push scroll-reveal paywall changes
-
-### Hard Signup Gate After First Prediction (Dec 5, 2024)
-- [x] Create SignupGate modal component with value proposition
-- [x] Show benefits: "Get 3 more predictions this week" + save history + unlock features + personalized insights
-- [x] Add social proof elements (12.4K users, 89% accuracy, 250K+ predictions)
-- [x] Make modal non-dismissible (no X button, no backdrop click close, no ESC key)
-- [x] Show SignupGate automatically 2 seconds after first anonymous prediction completes
-- [x] Redirect to /api/oauth/login on "Create Free Account" button click
-- [x] Add upgrade teaser at bottom (Pro $9.99/mo with Deep Mode)
-- [x] Test SignupGate display on Dashboard
-- [x] Commit and push hard signup gate changes
-
-### Landing Page Improvements - Footer & Hero Trust (Dec 5, 2024)
-- [x] Overhaul footer with 4-column layout (Quick Links, Legal & Safety, Company, Trust Signals)
-- [x] Add Quick Links section (Home, How It Works, Pricing, FAQ, Sign In)
-- [x] Add Legal & Safety section (Privacy Policy, Terms, Data Security, AI Methodology, Disclaimer)
-- [x] Add Company section (About, Contact: support@predicsure.ai, LinkedIn placeholder)
-- [x] Add trust badges (Stripe secure payments, data encryption, Manus + AI powered)
-- [x] Add ethical disclaimer at bottom (guidance only, not professional advice)
-- [x] Add hero trust indicators below CTA (12,400+ users, 89% accuracy, Private & Secure)
-- [x] Add differentiation tagline ("AI-powered forecasts based on behavioral patterns — not horoscopes")
-- [x] Test footer structure and hero trust indicators display
-- [x] Commit and push landing page improvements
-
-### Hero UI Preview - Sample Prediction Card (Dec 5, 2024)
-- [x] Create sample prediction card component with realistic content (Career 30-day trajectory)
-- [x] Add blur effect and "Preview" badge overlay
-- [x] Design card to show prediction structure (3 timeline phases with icons, 92% confidence)
-- [x] Integrate UI preview into hero section below trust indicators
-- [x] Add overlay CTA ("See Your Complete Prediction" + Get Started button)
-- [x] Make preview responsive with backdrop blur and gradient effects
-- [x] Test UI preview display
-- [x] Commit and push hero UI preview
-
-### How It Works - Emotional Language Rewrite (Dec 5, 2024)
-- [x] Replace mechanical step titles with emotional, story-driven language
-- [x] Step 1: "Tell Us What You Want Clarity On" (facing crossroads, sensing shift)
-- [x] Step 2: "We Analyze Your Unique Pattern" (reads between lines, connects dots)
-- [x] Step 3: "Discover What's Shifting in Your Life" (see path ahead, move with confidence)
-- [x] Update section tagline: "Your journey to clarity begins here"
-- [x] Update step descriptions with relatable, human-centered copy
-- [x] Test How It Works section display
-- [x] Commit and push emotional language changes
-
-### Hero Problem-Solution & FAQ Trust Barriers (Dec 5, 2024)
-- [x] Add problem-solution copy above hero headline ("If you're facing uncertainty, stuck between choices, or sensing something's about to change...")
-- [x] Create FAQ entry: "What's your satisfaction guarantee?" with 7-day money-back guarantee
-- [x] Create FAQ entry: "How do predictions actually work?" explaining AI methodology, NLP, pattern recognition, real-time data integration
-- [x] Test hero problem-solution display
-- [x] Test new FAQ entries display
-- [x] Commit and push trust-building improvements
-
-### Remove Career Trajectory Preview Card (Dec 5, 2024)
-- [ ] Remove UI preview card from hero section (creates funnel confusion)
-- [ ] Keep single CTA: "Get Your First Prediction"
-- [ ] Test simplified hero section
-- [ ] Commit and push preview removal
-
-### Footer Links Audit & Missing Pages (Dec 5, 2024)
-- [ ] Audit all footer links (Quick Links, Legal & Safety, Company)
-- [ ] Create Privacy Policy page
-- [ ] Create Terms of Service page
-- [ ] Create Data Security page
-- [ ] Create AI Methodology page
-- [ ] Create Disclaimer page
-- [ ] Create About page
-- [ ] Update footer links to point to new pages
-- [ ] Test all footer links work correctly
-- [ ] Commit and push footer pages
-
-### Remove Career Trajectory Preview Card & Complete Footer Pages (Dec 5, 2024)
-- [x] Remove UI preview card from hero section (creates funnel confusion)
-- [x] Keep single CTA: "Get Your First Prediction"
-- [x] Test simplified hero section
-- [x] Audit all footer links (Quick Links, Legal & Safety, Company)
-- [x] Create Privacy Policy page (comprehensive GDPR/CCPA compliant)
-- [x] Create Terms of Service page (subscription tiers, refund policy, disclaimers)
-- [x] Create Data Security page (encryption, infrastructure, compliance)
-- [x] Create AI Methodology page (NLP, pattern recognition, real-time data)
-- [x] Create Disclaimer page (not professional advice, accuracy limitations)
-- [x] Create About page (mission, values, technology, community)
-- [x] Update footer links to point to new pages (using Link component)
-- [x] Add routes in App.tsx for all new pages
-- [x] Test all footer links work correctly
-- [x] Commit and push all changes
-
-### Fix Quick Links Footer & Create Pricing Page (Dec 5, 2024)
-- [x] Debug Quick Links footer buttons (Home, How It Works, Pricing, FAQ, Sign In)
-- [x] Fix navigation issues by adding ID anchors to sections (#hero, #how-it-works, #faq)
-- [x] Create dedicated Pricing page with 4-tier comparison (Free, Plus, Pro, Premium)
-- [x] Add pricing page route in App.tsx
-- [x] Update footer Pricing link to point to /pricing
-- [x] Test all Quick Links navigation
-- [ ] Commit and push fixes
+### Typography Update - Futuristic Font for Branding (Dec 6, 2024)
+- [x] Add Orbitron font from Google Fonts
+- [x] Apply futuristic font to "Predicsure AI" logo text
+- [x] Apply futuristic font to hero headline
+- [x] Keep Space Grotesk/Inter for body content
+- [x] Test font rendering and readability

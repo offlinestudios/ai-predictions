@@ -85,8 +85,8 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+            <img src="/logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <h1 className="text-2xl font-bold text-white font-orbitron">
               Predicsure AI
             </h1>
           </div>
@@ -153,73 +153,57 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className="relative overflow-hidden pt-20 pb-12">
+      <section className="relative overflow-hidden pt-16 pb-8">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
         <div className="container relative">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <Badge variant="secondary" className="mb-4">
-              Powered by Advanced AI
-            </Badge>
-            <p className="text-lg text-muted-foreground/90 max-w-2xl mx-auto">
-              If you're facing uncertainty, stuck between choices, or sensing something's about to change...
-            </p>
-            <h2 className="text-5xl md:text-6xl font-bold leading-tight">
-              See What's{" "}
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                Shifting
-              </span>
-              {" "}in Your Life Right Now
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <h2 className="text-5xl md:text-6xl font-bold leading-tight text-white font-orbitron">
+              See What's Shifting in Your Life
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Personalized AI predictions about your relationships, career, finances, and internal state. 
-              Understand what's coming, when it matters, and how to navigate the next chapter.
-            </p>
-            <p className="text-base text-muted-foreground/80 max-w-xl mx-auto italic">
-              AI-powered forecasts based on behavioral patterns — not horoscopes.
+              AI-powered predictions for your career, relationships, finances, and health.
             </p>
             
             {/* CTA Button */}
-            <div className="pt-4">
-              <Button asChild size="lg" className="text-lg px-12">
+            <div className="pt-2">
+              <Button asChild size="lg" className="text-lg px-12 shadow-lg shadow-primary/20">
                 <Link href="/onboarding">
                   Get Your First Prediction
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
-              <p className="text-sm text-muted-foreground mt-4">
-                No credit card required • Start exploring in 2 minutes
-              </p>
               
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="w-4 h-4 text-primary" />
-                  <span>Trusted by 12,400+ users</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <TrendingUpIcon className="w-4 h-4 text-primary" />
-                  <span>89% accuracy rate</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Private & Secure</span>
+              {/* Trust Signals */}
+              <div className="mt-6 space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  No credit card required • Free to start
+                </p>
+                <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary" />
+                    <span>12,400+ users</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingUpIcon className="w-4 h-4 text-primary" />
+                    <span>89% accuracy</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">🔒</span>
+                    <span>Private & Secure</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </section>
 
       {/* How It Works - 3-Step Visual Flow */}
-      <section id="how-it-works" className="py-16 bg-card/10">
+      <section className="py-16 bg-card/10">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">How It Works</h3>
-            <p className="text-muted-foreground">Your journey to clarity begins here</p>
+            <p className="text-muted-foreground">Get personalized insights in three simple steps</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -237,9 +221,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
                   Step 1
                 </div>
-                <h4 className="text-lg font-semibold">Tell Us What You Want Clarity On</h4>
+                <h4 className="text-lg font-semibold">Share Your Situation</h4>
                 <p className="text-sm text-muted-foreground">
-                  Whether you're facing a crossroads, sensing a shift, or simply wondering what's next—share what's on your mind
+                  Tell us what area of life you want clarity on—career, love, finances, or personal growth
                 </p>
               </div>
             </div>
@@ -258,9 +242,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-semibold mb-2">
                   Step 2
                 </div>
-                <h4 className="text-lg font-semibold">We Analyze Your Unique Pattern</h4>
+                <h4 className="text-lg font-semibold">AI Analyzes Patterns</h4>
                 <p className="text-sm text-muted-foreground">
-                  Our AI reads between the lines, connecting dots you might not see—uncovering the rhythm of change in your life
+                  Advanced AI processes your context and identifies emerging patterns and timing
                 </p>
               </div>
             </div>
@@ -276,9 +260,9 @@ export default function Home() {
                 <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-semibold mb-2">
                   Step 3
                 </div>
-                <h4 className="text-lg font-semibold">Discover What's Shifting in Your Life</h4>
+                <h4 className="text-lg font-semibold">Get Your Forecast</h4>
                 <p className="text-sm text-muted-foreground">
-                  See the path ahead with clarity—understand the timing, recognize the moments that matter, and move forward with confidence
+                  Receive a detailed timeline showing what's coming, when it matters, and how to navigate it
                 </p>
               </div>
             </div>
@@ -368,7 +352,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20">
+      <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
@@ -429,110 +413,14 @@ export default function Home() {
                 Be specific and provide context in your questions. Instead of "What will happen in my career?", try "I'm considering a job change in the next 3 months—what timing and patterns should I watch for?" The more context you provide, the more personalized and relevant your predictions will be.
               </AccordionContent>
             </AccordionItem>
-
-            <AccordionItem value="item-7" className="bg-card/30 border border-border/50 rounded-lg px-6">
-              <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                What's your satisfaction guarantee?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                We offer a 7-day money-back guarantee on all paid subscriptions. If you're not satisfied with the quality or accuracy of your predictions within the first week, simply contact us at support@predicsure.ai for a full refund—no questions asked. We're confident you'll find value in our insights, but we want you to feel secure in your purchase.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-8" className="bg-card/30 border border-border/50 rounded-lg px-6">
-              <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                How do predictions actually work?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                Our AI uses advanced natural language processing to analyze your situation, identify behavioral patterns, and cross-reference contextual signals. For Sports and Stocks predictions, we integrate real-time data (team stats, market indicators) to enhance accuracy. The system looks for recurring patterns, timing correlations, and trajectory signals—similar to how an experienced advisor might read between the lines of your story. It's not magic or mysticism; it's sophisticated pattern recognition applied to human experiences.
-              </AccordionContent>
-            </AccordionItem>
           </Accordion>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-16 mt-16 bg-card/30">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {/* Brand Column */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <img src="/globe-logo.png" alt="Predicsure AI" className="w-8 h-8" />
-                <span className="text-lg font-bold">Predicsure AI</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Personalized AI predictions to help you understand what's shifting in your life.
-              </p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
-                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
-                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
-                <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
-                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Sign In</Link></li>
-              </ul>
-            </div>
-
-            {/* Legal & Safety */}
-            <div>
-              <h3 className="font-semibold mb-4">Legal & Safety</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms-of-service" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-                <li><Link href="/data-security" className="hover:text-foreground transition-colors">Data Security</Link></li>
-                <li><Link href="/ai-methodology" className="hover:text-foreground transition-colors">AI Methodology</Link></li>
-                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
-                <li><a href="mailto:support@predicsure.ai" className="hover:text-foreground transition-colors">Contact: support@predicsure.ai</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">LinkedIn</a></li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Trust Badges */}
-          <div className="border-t border-border/50 pt-8 mb-8">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span>Secure Payments by Stripe</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span>Data Encrypted – We Never Sell Your Information</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>Powered by Manus + Advanced AI Models</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Copyright & Disclaimer */}
-          <div className="text-center space-y-4">
-            <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
-              Predictions are for guidance only. They are based on pattern analysis and should not replace professional advice. 
-              Predicsure AI does not provide medical, legal, or financial advice.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              © 2025 Predicsure AI. All rights reserved.
-            </p>
-          </div>
+      <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
+        <div className="container text-center text-sm text-muted-foreground">
+          <p>© 2025 Predicsure AI. Powered by advanced artificial intelligence.</p>
         </div>
       </footer>
     </div>

@@ -37,8 +37,6 @@ export const users = pgTable("users", {
   moneyProfile: text("moneyProfile"), // JSON: stage, goal, incomeSource, stability, milestone
   loveProfile: text("loveProfile"), // JSON: goal, patterns, desires
   healthProfile: text("healthProfile"), // JSON: state, focus, consistency, obstacle
-  sportsProfile: text("sportsProfile"), // JSON: sport, predictionType, engagement, favorite, frequency
-  stocksProfile: text("stocksProfile"), // JSON: markets, investingStyle, riskLevel, financialGoal, focusAssets, predictionFrequency
   /** Premium precision data for enhanced predictions */
   ageRange: varchar("ageRange", { length: 20 }), // e.g., "25-34", "35-44"
   location: varchar("location", { length: 100 }), // City or region
@@ -46,15 +44,6 @@ export const users = pgTable("users", {
   industry: varchar("industry", { length: 100 }), // Professional industry/field
   majorTransition: boolean("majorTransition").default(false), // Undergoing major life change
   transitionType: varchar("transitionType", { length: 100 }), // Type of transition if applicable
-  // Sports-specific premium data
-  bettingExperience: varchar("bettingExperience", { length: 50 }), // Betting history level
-  fantasyExperience: varchar("fantasyExperience", { length: 50 }), // Fantasy sports experience
-  favoriteTeams: text("favoriteTeams"), // Comma-separated favorite teams
-  // Stocks-specific premium data
-  portfolioSize: varchar("portfolioSize", { length: 50 }), // Investment portfolio size
-  tradingExperience: varchar("tradingExperience", { length: 50 }), // Trading experience level
-  riskTolerance: varchar("riskTolerance", { length: 50 }), // Investment risk tolerance
-  investmentGoals: text("investmentGoals"), // Investment objectives
   premiumDataCompleted: boolean("premiumDataCompleted").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
@@ -105,7 +94,7 @@ export const predictions = pgTable("predictions", {
   userInput: text("userInput").notNull(),
   /** AI-generated prediction result */
   predictionResult: text("predictionResult").notNull(),
-  /** Category of prediction (career, love, finance, health, sports, stocks, general) */
+  /** Category of prediction (career, love, finance, health, general) */
   category: varchar("category", { length: 50 }),
   /** JSON array of uploaded file URLs for context */
   attachmentUrls: text("attachmentUrls"),

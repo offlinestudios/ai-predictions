@@ -23,8 +23,6 @@ import { nanoid } from "nanoid";
 import { stripe } from "./_core/stripe";
 import { STRIPE_PRODUCTS } from "./products";
 import { sendWelcomeEmail } from "./email";
-import { getSportsContext, formatSportsContext } from "./integrations/sports";
-import { getStocksContext, formatStocksContext } from "./integrations/stocks";
 
 export const appRouter = router({
   system: systemRouter,
@@ -69,21 +67,6 @@ export const appRouter = router({
           consistency: z.string(),
           obstacle: z.string(),
         }).optional(),
-        sportsProfile: z.object({
-          sport: z.string(),
-          predictionType: z.string(),
-          engagement: z.string(),
-          favorite: z.string(),
-          frequency: z.string(),
-        }).optional(),
-        stocksProfile: z.object({
-          markets: z.string(),
-          investingStyle: z.string(),
-          riskLevel: z.string(),
-          financialGoal: z.string(),
-          focusAssets: z.string(),
-          predictionFrequency: z.string(),
-        }).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
@@ -100,8 +83,6 @@ export const appRouter = router({
             moneyProfile: input.moneyProfile ? JSON.stringify(input.moneyProfile) : null,
             loveProfile: input.loveProfile ? JSON.stringify(input.loveProfile) : null,
             healthProfile: input.healthProfile ? JSON.stringify(input.healthProfile) : null,
-            sportsProfile: input.sportsProfile ? JSON.stringify(input.sportsProfile) : null,
-            stocksProfile: input.stocksProfile ? JSON.stringify(input.stocksProfile) : null,
             onboardingCompleted: true,
             updatedAt: new Date(),
           })
@@ -114,8 +95,6 @@ export const appRouter = router({
           love: "What beautiful moments and connections are coming into my love life this month?",
           finance: "What financial opportunities and abundance are heading my way in the next 30 days?",
           health: "What positive changes and vitality can I expect in my health and wellness journey this month?",
-          sports: "What thrilling moments and game-changing predictions await in my sports interests over the next 30 days?",
-          stocks: "What market opportunities and winning moves can I expect in my investments over the next 30 days?",
           general: "What wonderful surprises and opportunities are coming my way in the next 30 days?",
         };
 
@@ -154,25 +133,6 @@ export const appRouter = router({
 - Focus: ${input.healthProfile.focus}
 - Consistency: ${input.healthProfile.consistency}
 - Obstacle: ${input.healthProfile.obstacle}`;
-        }
-        
-        if (input.sportsProfile) {
-          profileContext += `\n\n**Sports Context:**
-- Sport: ${input.sportsProfile.sport}
-- Prediction Type: ${input.sportsProfile.predictionType}
-- Engagement: ${input.sportsProfile.engagement}
-- Favorite: ${input.sportsProfile.favorite}
-- Frequency: ${input.sportsProfile.frequency}`;
-        }
-        
-        if (input.stocksProfile) {
-          profileContext += `\n\n**Investment Context:**
-- Markets: ${input.stocksProfile.markets}
-- Investing Style: ${input.stocksProfile.investingStyle}
-- Risk Level: ${input.stocksProfile.riskLevel}
-- Financial Goal: ${input.stocksProfile.financialGoal}
-- Focus Assets: ${input.stocksProfile.focusAssets}
-- Prediction Frequency: ${input.stocksProfile.predictionFrequency}`;
         }
 
         // Build personalized system prompt for welcome prediction
@@ -214,7 +174,7 @@ export const appRouter = router({
           userId: ctx.user.id,
           userInput: welcomeQuestion,
           predictionResult: predictionString,
-          category: primaryInterest as "career" | "love" | "finance" | "health" | "sports" | "stocks" | "general",
+          category: primaryInterest as "career" | "love" | "finance" | "health" | "general",
           shareToken,
           confidenceScore,
           trajectoryType: "30day",
@@ -262,15 +222,6 @@ export const appRouter = router({
         industry: z.string(),
         majorTransition: z.boolean(),
         transitionType: z.string().nullable(),
-        // Sports-specific fields
-        bettingExperience: z.string().nullable().optional(),
-        fantasyExperience: z.string().nullable().optional(),
-        favoriteTeams: z.string().nullable().optional(),
-        // Stocks-specific fields
-        portfolioSize: z.string().nullable().optional(),
-        tradingExperience: z.string().nullable().optional(),
-        riskTolerance: z.string().nullable().optional(),
-        investmentGoals: z.string().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
@@ -286,15 +237,6 @@ export const appRouter = router({
             industry: input.industry,
             majorTransition: input.majorTransition,
             transitionType: input.transitionType,
-            // Sports-specific fields
-            bettingExperience: input.bettingExperience || null,
-            fantasyExperience: input.fantasyExperience || null,
-            favoriteTeams: input.favoriteTeams || null,
-            // Stocks-specific fields
-            portfolioSize: input.portfolioSize || null,
-            tradingExperience: input.tradingExperience || null,
-            riskTolerance: input.riskTolerance || null,
-            investmentGoals: input.investmentGoals || null,
             premiumDataCompleted: true,
             updatedAt: new Date(),
           })
@@ -446,7 +388,7 @@ export const appRouter = router({
     generate: protectedProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
-        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
         attachmentUrls: z.array(z.string()).optional(),
         deepMode: z.boolean().optional().default(false),
         trajectoryType: z.enum(["instant", "30day", "90day", "yearly"]).optional().default("instant"),
@@ -507,138 +449,28 @@ export const appRouter = router({
         const [userProfile] = await db
           .select({
             nickname: users.nickname,
-            interests: users.interests,
             relationshipStatus: users.relationshipStatus,
+            interests: users.interests,
             careerProfile: users.careerProfile,
             moneyProfile: users.moneyProfile,
             loveProfile: users.loveProfile,
             healthProfile: users.healthProfile,
-            sportsProfile: users.sportsProfile,
-            stocksProfile: users.stocksProfile,
             ageRange: users.ageRange,
             location: users.location,
             incomeRange: users.incomeRange,
             industry: users.industry,
             majorTransition: users.majorTransition,
             transitionType: users.transitionType,
-            // Sports-specific premium data
-            bettingExperience: users.bettingExperience,
-            fantasyExperience: users.fantasyExperience,
-            favoriteTeams: users.favoriteTeams,
-            // Stocks-specific premium data
-            portfolioSize: users.portfolioSize,
-            tradingExperience: users.tradingExperience,
-            riskTolerance: users.riskTolerance,
-            investmentGoals: users.investmentGoals,
             premiumDataCompleted: users.premiumDataCompleted,
           })
           .from(users)
           .where(eq(users.id, ctx.user.id))
           .limit(1);
         
-        // Build personalized system prompt based on category first, then trajectory type
+        // Build personalized system prompt based on trajectory type and mode
         let systemPrompt = "";
         
-        // Category-specific templates for Sports and Stocks
-        if (input.category === "sports") {
-          systemPrompt = `You are an AI sports prediction specialist with deep knowledge of sports analytics, player performance, team dynamics, and betting insights.
-
-**Sports Prediction Requirements:**
-- Provide a detailed sports prediction (300-500 words)
-- Analyze relevant factors: team/player form, head-to-head records, injuries, weather conditions, venue advantages
-- Include specific predictions with probability assessments (e.g., "70% chance of...")
-- Break down key factors influencing the outcome
-- Provide actionable insights for fantasy sports or betting decisions
-- Consider recent performance trends and momentum
-- Reference specific statistics or historical patterns when relevant
-- Structure your response with: Overview, Key Factors, Prediction, Confidence Assessment
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Analytical yet accessible, like a knowledgeable sports analyst sharing insider insights.`;
-        } else if (input.category === "stocks") {
-          systemPrompt = `You are an AI financial markets specialist with expertise in stock analysis, market trends, economic indicators, and investment timing.
-
-**Stocks & Markets Prediction Requirements:**
-- Provide a detailed market prediction (300-500 words)
-- Analyze relevant factors: market sentiment, economic indicators, sector trends, company fundamentals
-- Include specific price targets or movement predictions with timeframes
-- Break down technical and fundamental factors
-- Assess risk levels and provide risk management insights
-- Consider macroeconomic context and market cycles
-- Reference relevant market data, trends, or historical patterns
-- Provide actionable investment insights (entry/exit points, position sizing)
-- Structure your response with: Market Overview, Analysis, Prediction, Risk Assessment
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Professional and data-driven, like a financial advisor providing strategic guidance.
-**Disclaimer:** Always remind users that this is for informational purposes and not financial advice.`;
-        } else if (input.category === "career") {
-          systemPrompt = `You are an AI career development specialist with expertise in professional growth, workplace dynamics, leadership development, and career transitions.
-
-**Career & Success Prediction Requirements:**
-- Provide a detailed career prediction (300-500 words)
-- Analyze relevant factors: current skills, market trends, industry dynamics, professional relationships
-- Include specific career milestones or opportunities with timeframes
-- Break down internal factors (skills, mindset, readiness) and external factors (market conditions, timing)
-- Assess career trajectory and growth potential
-- Provide actionable career development steps (networking, skill-building, positioning)
-- Consider workplace politics, leadership opportunities, and industry shifts
-- Reference professional development patterns and career progression indicators
-- Structure your response with: Career Overview, Key Factors, Prediction, Action Steps
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Professional and empowering, like a career coach providing strategic guidance for advancement.`;
-        } else if (input.category === "love") {
-          systemPrompt = `You are an AI relationship specialist with deep understanding of human connection, emotional dynamics, attachment patterns, and relationship development.
-
-**Love & Relationships Prediction Requirements:**
-- Provide a detailed relationship prediction (300-500 words)
-- Analyze relevant factors: emotional patterns, communication styles, timing, compatibility indicators
-- Include specific relationship milestones or developments with timeframes
-- Break down emotional dynamics, behavioral patterns, and external influences
-- Assess relationship potential and growth opportunities
-- Provide actionable relationship insights (communication strategies, emotional awareness, timing)
-- Consider attachment styles, past patterns, and readiness for connection
-- Reference relationship development stages and emotional intelligence principles
-- Structure your response with: Relationship Overview, Emotional Dynamics, Prediction, Guidance
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Warm and insightful, like a relationship counselor providing compassionate yet honest guidance.`;
-        } else if (input.category === "finance") {
-          systemPrompt = `You are an AI personal finance specialist with expertise in budgeting, wealth building, financial planning, and money mindset.
-
-**Finance Prediction Requirements:**
-- Provide a detailed financial prediction (300-500 words)
-- Analyze relevant factors: spending patterns, income opportunities, financial habits, economic conditions
-- Include specific financial milestones or opportunities with timeframes
-- Break down controllable factors (habits, decisions, planning) and external factors (economy, opportunities)
-- Assess financial trajectory and wealth-building potential
-- Provide actionable financial strategies (budgeting, saving, investing, income generation)
-- Consider money mindset, financial literacy, and opportunity recognition
-- Reference personal finance principles and wealth-building patterns
-- Structure your response with: Financial Overview, Key Factors, Prediction, Action Plan
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Practical and encouraging, like a financial advisor helping someone build sustainable wealth.
-**Disclaimer:** Remind users this is for informational purposes and not professional financial advice.`;
-        } else if (input.category === "health") {
-          systemPrompt = `You are an AI wellness specialist with expertise in holistic health, lifestyle optimization, mind-body connection, and sustainable wellbeing practices.
-
-**Health & Wellness Prediction Requirements:**
-- Provide a detailed health prediction (300-500 words)
-- Analyze relevant factors: current habits, energy patterns, stress levels, lifestyle choices, environmental influences
-- Include specific wellness milestones or improvements with timeframes
-- Break down physical factors (habits, nutrition, movement) and mental/emotional factors (stress, mindset, rest)
-- Assess overall wellbeing trajectory and vitality potential
-- Provide actionable wellness strategies (habit changes, stress management, energy optimization)
-- Consider holistic factors: sleep, nutrition, movement, mental health, social connection
-- Reference wellness principles and sustainable lifestyle patterns
-- Structure your response with: Wellness Overview, Key Factors, Prediction, Wellness Plan
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Supportive and holistic, like a wellness coach guiding someone toward sustainable vitality.
-**Disclaimer:** Remind users this is for informational purposes and not medical advice. Encourage consulting healthcare professionals for medical concerns.`;
-        } else if (input.trajectoryType === "30day") {
+        if (input.trajectoryType === "30day") {
           systemPrompt = `You are an advanced AI oracle specializing in 30-day trajectory forecasts. Generate a detailed month-long prediction path.
 
 **30-Day Trajectory Requirements:**
@@ -677,58 +509,21 @@ export const appRouter = router({
 - Use specific timeframes (e.g., "Q1 (Jan-Mar)", "Mid-Year", "Q4", "Month 6", etc.)
 - Include a confidence score (0-100) at the end: "Confidence: XX%"`;
         } else if (input.deepMode) {
-          systemPrompt = `You are an advanced AI oracle with DEEP MODE capabilities - providing premium-tier predictions with enhanced analytical depth.
+          systemPrompt = `You are an advanced AI oracle and prediction specialist with deep analytical capabilities. Generate comprehensive, highly detailed predictions with multi-layered insights.
 
-**DEEP MODE PREDICTION FORMAT (REQUIRED):**
+**Deep Analysis Requirements:**
+- Provide 400-600 words of detailed analysis
+- Include specific timeframes and milestones
+- Analyze multiple possible outcomes with probability assessments
+- Consider psychological, practical, and external factors
+- Offer actionable steps and warning signs
+- Structure your response with clear sections: Overview, Key Insights, Timeline, Recommendations, and Confidence Assessment
+- Be specific with dates, percentages, and concrete details
+- If files are provided, perform thorough analysis and reference specific details
 
-🔮 **IMMEDIATE OUTLOOK** (Next 7 Days)
-Provide day-by-day or day-range insights for the first week. Be specific about timing.
-
-📊 **PATTERN ANALYSIS**
-Identify 2-3 wave patterns or phases in the prediction timeline:
-- Wave 1 (Days X-Y): [Phase description]
-- Wave 2 (Days X-Y): [Phase description with CRITICAL WINDOW if applicable]
-- Wave 3 (Days X-Y): [Phase description]
-
-⚠️ **KEY INFLECTION POINT**
-Identify the single most important moment/decision point with:
-- Specific day or day range
-- What happens and why it matters
-- Impact percentage (e.g., "shifts trajectory by +23%")
-- Context specific to their situation
-
-🎯 **STRATEGIC RECOMMENDATIONS**
-- Optimal action window: [specific days]
-- Risk factors to monitor: [2-3 specific items]
-- Success probability: [XX% with comparison to baseline]
-
-**Formatting Requirements:**
-- Use emojis for section headers (🔮 📊 ⚠️ 🎯)
-- Include specific percentages and day numbers
-- Total length: 400-600 words
-- End with: "Analyzed: [X] data points | Confidence: XX% | Deep Mode"
-
-**Tone:** Authoritative, precise, data-driven. Like a premium analyst providing insider intelligence.`;
+**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"`;
         } else {
-          systemPrompt = `You are an AI prediction specialist providing STANDARD MODE predictions.
-
-**STANDARD MODE PREDICTION FORMAT:**
-
-Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words total).
-
-**Structure:**
-- Opening: State the overall outlook for the next 1-2 weeks
-- Middle: Identify 1-2 key opportunities or challenges with general timing (e.g., "around day 9-12")
-- Closing: Brief actionable advice
-
-**Formatting:**
-- Simple paragraph format, no emojis or special formatting
-- General timeframes only (no specific day-by-day breakdown)
-- End with: "Confidence: XX%"
-
-**Tone:** Friendly and encouraging, like a helpful advisor providing general guidance.
-
-**Note:** Keep analysis surface-level. Deep insights, pattern analysis, and precise timing are reserved for Deep Mode.`;
+          systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
         }
         
         // Add personalization based on user onboarding data
@@ -805,35 +600,6 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
             systemPrompt += `- **CRITICAL:** This user is in a major transition period. Predictions MUST acknowledge this transition and provide specific guidance for navigating it. Be extra specific about timing, challenges, and opportunities related to this change.\n`;
           }
           
-          // Add Sports-specific premium data for Sports category
-          if (input.category === 'sports') {
-            if (userProfile.bettingExperience) {
-              systemPrompt += `- Betting Experience: ${userProfile.bettingExperience} - Adjust prediction detail level accordingly\n`;
-            }
-            if (userProfile.fantasyExperience) {
-              systemPrompt += `- Fantasy League Experience: ${userProfile.fantasyExperience} - Provide fantasy-relevant insights\n`;
-            }
-            if (userProfile.favoriteTeams) {
-              systemPrompt += `- Favorite Teams: ${userProfile.favoriteTeams} - Consider their team preferences in predictions\n`;
-            }
-          }
-          
-          // Add Stocks-specific premium data for Stocks category
-          if (input.category === 'stocks') {
-            if (userProfile.portfolioSize) {
-              systemPrompt += `- Portfolio Size: ${userProfile.portfolioSize} - Scale advice to their investment capacity\n`;
-            }
-            if (userProfile.tradingExperience) {
-              systemPrompt += `- Trading Experience: ${userProfile.tradingExperience} - Adjust complexity and risk assessment\n`;
-            }
-            if (userProfile.riskTolerance) {
-              systemPrompt += `- Risk Tolerance: ${userProfile.riskTolerance} - Align predictions with their risk profile\n`;
-            }
-            if (userProfile.investmentGoals) {
-              systemPrompt += `- Investment Goals: ${userProfile.investmentGoals} - Focus on relevant opportunities\n`;
-            }
-          }
-          
           systemPrompt += `\n**With this premium data, your predictions should be:**\n`;
           systemPrompt += `- Uncannily specific to their exact life context\n`;
           systemPrompt += `- Aligned with their age, location, income, and industry realities\n`;
@@ -857,23 +623,6 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
           
           if (recentPredictions) {
             systemPrompt += `\n\n**Recent Predictions for Context:**\n${recentPredictions}\n\nBuild on these themes and show progression or new insights related to their journey.`;
-          }
-        }
-        
-        // Fetch real-time data for Sports and Stocks predictions
-        if (input.category === 'sports') {
-          console.log('[Prediction] Fetching real-time sports data...');
-          const sportsContext = await getSportsContext(input.userInput);
-          const sportsData = formatSportsContext(sportsContext);
-          if (sportsData) {
-            systemPrompt += sportsData;
-          }
-        } else if (input.category === 'stocks') {
-          console.log('[Prediction] Fetching real-time stock market data...');
-          const stocksContext = await getStocksContext(input.userInput);
-          const stocksData = formatStocksContext(stocksContext);
-          if (stocksData) {
-            systemPrompt += stocksData;
           }
         }
         
@@ -972,7 +721,7 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
       .input(z.object({
         limit: z.number().min(1).max(100).optional(),
         offset: z.number().min(0).optional(),
-        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general", "all"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "general", "all"]).optional(),
         search: z.string().optional(),
         feedback: z.enum(["like", "dislike", "none", "all"]).optional(),
       }))
@@ -1228,7 +977,7 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
     generateAnonymous: publicProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
-        category: z.enum(["career", "love", "finance", "health", "sports", "stocks", "general"]).optional(),
+        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
         // Optional onboarding data for welcome predictions
         onboardingData: z.object({
           nickname: z.string().optional(),
@@ -1245,87 +994,7 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
         console.log('[generateAnonymous] Input:', { category: input.category, hasOnboardingData: !!input.onboardingData });
         
         // Generate prediction without authentication
-        let systemPrompt = "";
-        
-        // Category-specific templates for Sports and Stocks
-        if (input.category === "sports") {
-          systemPrompt = `You are an AI sports prediction specialist with deep knowledge of sports analytics, player performance, team dynamics, and betting insights.
-
-**Sports Prediction Requirements:**
-- Provide a concise sports prediction (150-250 words)
-- Analyze key factors: team/player form, recent performance, matchup dynamics
-- Include specific predictions with probability assessments
-- Provide actionable insights for fantasy sports or betting decisions
-- Structure your response clearly with: Overview, Key Factors, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Analytical yet accessible, like a sports analyst sharing insights.`;
-        } else if (input.category === "stocks") {
-          systemPrompt = `You are an AI financial markets specialist with expertise in stock analysis, market trends, and investment timing.
-
-**Stocks & Markets Prediction Requirements:**
-- Provide a concise market prediction (150-250 words)
-- Analyze key factors: market sentiment, sector trends, economic indicators
-- Include specific price movement predictions with timeframes
-- Assess risk levels and provide risk management insights
-- Structure your response with: Market Overview, Analysis, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Professional and data-driven, like a financial advisor.
-**Disclaimer:** Remind users this is for informational purposes, not financial advice.`;
-        } else if (input.category === "career") {
-          systemPrompt = `You are an AI career development specialist with expertise in professional growth, workplace dynamics, and career transitions.
-
-**Career & Success Prediction Requirements:**
-- Provide a concise career prediction (150-250 words)
-- Analyze key factors: skills, market trends, professional relationships, timing
-- Include specific career milestones or opportunities with timeframes
-- Provide actionable career development steps
-- Structure your response with: Career Overview, Key Factors, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Professional and empowering, like a career coach providing strategic guidance.`;
-        } else if (input.category === "love") {
-          systemPrompt = `You are an AI relationship specialist with deep understanding of human connection, emotional dynamics, and relationship development.
-
-**Love & Relationships Prediction Requirements:**
-- Provide a concise relationship prediction (150-250 words)
-- Analyze key factors: emotional patterns, communication styles, timing, compatibility
-- Include specific relationship milestones or developments with timeframes
-- Provide actionable relationship insights
-- Structure your response with: Relationship Overview, Emotional Dynamics, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Warm and insightful, like a relationship counselor providing compassionate guidance.`;
-        } else if (input.category === "finance") {
-          systemPrompt = `You are an AI personal finance specialist with expertise in budgeting, wealth building, and financial planning.
-
-**Finance Prediction Requirements:**
-- Provide a concise financial prediction (150-250 words)
-- Analyze key factors: spending patterns, income opportunities, financial habits
-- Include specific financial milestones or opportunities with timeframes
-- Provide actionable financial strategies
-- Structure your response with: Financial Overview, Key Factors, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Practical and encouraging, like a financial advisor helping build sustainable wealth.
-**Disclaimer:** Remind users this is for informational purposes, not professional financial advice.`;
-        } else if (input.category === "health") {
-          systemPrompt = `You are an AI wellness specialist with expertise in holistic health, lifestyle optimization, and sustainable wellbeing practices.
-
-**Health & Wellness Prediction Requirements:**
-- Provide a concise health prediction (150-250 words)
-- Analyze key factors: current habits, energy patterns, stress levels, lifestyle choices
-- Include specific wellness milestones or improvements with timeframes
-- Provide actionable wellness strategies
-- Structure your response with: Wellness Overview, Key Factors, Prediction
-- Include a confidence score (0-100) at the end: "Confidence: XX%"
-
-**Tone:** Supportive and holistic, like a wellness coach guiding toward sustainable vitality.
-**Disclaimer:** Remind users this is for informational purposes, not medical advice. Encourage consulting healthcare professionals for medical concerns.`;
-        } else {
-          systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
-        }
+        let systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-200 words.`;
         
         // If onboarding data is provided, enhance the system prompt
         if (input.onboardingData) {
@@ -1351,23 +1020,6 @@ Provide a focused, straightforward prediction in 2-3 paragraphs (150-250 words t
           }
           
           systemPrompt += `\n\nUse this context to provide a deeply personalized, specific prediction that addresses their current situation, challenges, and timeline.`;
-        }
-        
-        // Fetch real-time data for Sports and Stocks predictions
-        if (input.category === 'sports') {
-          console.log('[generateAnonymous] Fetching real-time sports data...');
-          const sportsContext = await getSportsContext(input.userInput);
-          const sportsData = formatSportsContext(sportsContext);
-          if (sportsData) {
-            systemPrompt += sportsData;
-          }
-        } else if (input.category === 'stocks') {
-          console.log('[generateAnonymous] Fetching real-time stock market data...');
-          const stocksContext = await getStocksContext(input.userInput);
-          const stocksData = formatStocksContext(stocksContext);
-          if (stocksData) {
-            systemPrompt += stocksData;
-          }
         }
         
         const textPrompt = input.category 

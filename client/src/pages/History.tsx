@@ -92,7 +92,7 @@ export default function History() {
               </Button>
             </Link>
             <div className="flex items-center gap-2">
-              <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-6 h-6 object-contain transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
+              <img src="/globe-logo.png" alt="AI Predictions Logo" className="w-6 h-6 object-contain logo-pulse" />
               <h1 className="text-xl font-bold">Prediction History</h1>
             </div>
           </div>

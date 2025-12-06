@@ -9,8 +9,6 @@ import {
   type MoneyProfile,
   type LoveProfile,
   type HealthProfile,
-  type SportsProfile,
-  type StocksProfile,
 } from "@/lib/categoryQuestions";
 
 interface CategoryQuestionsProps {
@@ -24,8 +22,6 @@ export interface CategoryProfiles {
   moneyProfile?: MoneyProfile;
   loveProfile?: LoveProfile;
   healthProfile?: HealthProfile;
-  sportsProfile?: SportsProfile;
-  stocksProfile?: StocksProfile;
 }
 
 export default function CategoryQuestions({ categories, onComplete, onBack }: CategoryQuestionsProps) {
@@ -161,8 +157,6 @@ function getCategoryLabel(categoryId: string): string {
     finance: "Money & Wealth",
     love: "Love & Relationships",
     health: "Health & Wellness",
-    sports: "Sports Predictions",
-    stocks: "Stocks & Markets",
   };
   return labels[categoryId] || categoryId;
 }
@@ -206,27 +200,6 @@ function formatProfiles(
       focus: answers.health.focus || "",
       consistency: answers.health.consistency || "",
       obstacle: answers.health.obstacle || "",
-    };
-  }
-
-  if (categories.includes("sports") && answers.sports) {
-    profiles.sportsProfile = {
-      sport: answers.sports.sport || "",
-      predictionType: answers.sports.predictionType || "",
-      engagement: answers.sports.engagement || "",
-      favorite: answers.sports.favorite || "",
-      frequency: answers.sports.frequency || "",
-    };
-  }
-
-  if (categories.includes("stocks") && answers.stocks) {
-    profiles.stocksProfile = {
-      markets: answers.stocks.markets || "",
-      investingStyle: answers.stocks.investingStyle || "",
-      riskLevel: answers.stocks.riskLevel || "",
-      financialGoal: answers.stocks.financialGoal || "",
-      focusAssets: answers.stocks.focusAssets || "",
-      predictionFrequency: answers.stocks.predictionFrequency || "",
     };
   }
 

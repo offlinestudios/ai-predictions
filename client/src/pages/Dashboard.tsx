@@ -17,16 +17,13 @@ import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
 import PredictionHistory from "@/components/PredictionHistory";
-
+import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
-import PredictionDisplay from "@/components/PredictionDisplay";
-import ScrollRevealPaywall from "@/components/ScrollRevealPaywall";
-import SignupGate from "@/components/SignupGate";
 
 const TIER_ICONS = {
   free: Star,
@@ -52,9 +49,8 @@ export default function Dashboard() {
   const [deepMode, setDeepMode] = useState(false);
   const [confidenceScore, setConfidenceScore] = useState<number | null>(null);
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
-
+  const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
-  const [showSignupGate, setShowSignupGate] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -93,7 +89,12 @@ export default function Dashboard() {
           setShowPremiumUnlock(true);
         }, 3000);
       }
-      // Scroll-reveal paywall will show automatically below prediction for Free tier
+      // Otherwise trigger post-prediction paywall for Free tier users
+      else if (subscription?.tier === "free") {
+        setTimeout(() => {
+          setShowPostPredictionPaywall(true);
+        }, 3000);
+      }
     }
   }, [latestPredictions, prediction, subscription]);
 
@@ -153,17 +154,38 @@ export default function Dashboard() {
         localStorage.setItem('welcomePredictionGenerated', 'true');
       }
       
-      // Track anonymous usage in localStorage (1 prediction total)
-      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0}');
-      anonymousUsage.count = 1;
+      // Track anonymous usage in localStorage
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
+      const now = Date.now();
+      const weekInMs = 7 * 24 * 60 * 60 * 1000;
+      
+      // Reset if more than a week has passed
+      if (now - anonymousUsage.lastReset > weekInMs) {
+        anonymousUsage.count = 1;
+        anonymousUsage.lastReset = now;
+      } else {
+        anonymousUsage.count += 1;
+      }
+      
       localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
       
-      toast.success("Prediction generated!");
+      const remaining = 3 - anonymousUsage.count;
+      toast.success(`Prediction generated! ${remaining} free predictions remaining this week.`);
       
-      // Show hard signup gate after first (and only) prediction
-      setTimeout(() => {
-        setShowSignupGate(true);
-      }, 2000);
+      // Show sign-up prompt after first prediction
+      if (anonymousUsage.count === 1) {
+        setTimeout(() => {
+          toast.info("Sign up to save your predictions and get more features!", { duration: 5000 });
+        }, 3000);
+      }
+      
+      // Show upgrade modal when limit is reached
+      if (anonymousUsage.count >= 3) {
+        setTimeout(() => {
+          setUpgradeReason("limit_reached");
+          setShowUpgradeModal(true);
+        }, 2000);
+      }
     },
     onError: (error) => {
       toast.error(error.message);
@@ -318,11 +340,20 @@ export default function Dashboard() {
     
     // Use anonymous mutation for non-authenticated users
     if (!isAuthenticated) {
-      // Check anonymous usage limit (1 prediction total)
-      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0}');
+      // Check anonymous usage limit
+      const anonymousUsage = JSON.parse(localStorage.getItem('anonymousUsage') || '{"count": 0, "lastReset": 0}');
+      const now = Date.now();
+      const weekInMs = 7 * 24 * 60 * 60 * 1000;
       
-      // Check if limit is reached (1 prediction only)
-      if (anonymousUsage.count >= 1) {
+      // Reset if more than a week has passed
+      if (now - anonymousUsage.lastReset > weekInMs) {
+        anonymousUsage.count = 0;
+        anonymousUsage.lastReset = now;
+        localStorage.setItem('anonymousUsage', JSON.stringify(anonymousUsage));
+      }
+      
+      // Check if limit is reached
+      if (anonymousUsage.count >= 3) {
         setUpgradeReason("limit_reached");
         setShowUpgradeModal(true);
         return;
@@ -440,7 +471,7 @@ export default function Dashboard() {
               </Button>
             </Link>
              <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
+            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -514,11 +545,11 @@ export default function Dashboard() {
                       }
                     </span>
                   </div>
-                  <Progress value={!isAuthenticated ? (anonymousUsage.count / 1) * 100 : usagePercent} className="h-2" />
+                  <Progress value={!isAuthenticated ? (anonymousUsage.count / 3) * 100 : usagePercent} className="h-2" />
                   {(!isAuthenticated || subscription?.tier === "free") && (
                     <p className="text-xs text-muted-foreground mt-2">
                       {!isAuthenticated 
-                        ? anonymousUsage.count >= 1 ? "Sign up to get 3 more predictions this week" : "1 free prediction available"
+                        ? `${3 - anonymousUsage.count} predictions remaining this week`
                         : `${3 - (subscription?.totalUsed || 0)} predictions remaining this week`
                       }
                     </p>
@@ -638,8 +669,6 @@ export default function Dashboard() {
                       <SelectItem value="love">Love & Relationships</SelectItem>
                       <SelectItem value="finance">Finance</SelectItem>
                       <SelectItem value="health">Health & Wellness</SelectItem>
-                      <SelectItem value="sports">Sports Predictions</SelectItem>
-                      <SelectItem value="stocks">Stocks & Markets</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -902,18 +931,20 @@ export default function Dashboard() {
 
                 {/* Prediction Result */}
                 {prediction && !generateMutation.isPending && !generateAnonymousMutation.isPending && (
-                  <div className="mt-6 space-y-4">
-                    <PredictionDisplay 
-                      prediction={prediction}
-                      isPremium={deepMode}
-                      confidenceScore={confidenceScore}
-                      category={category}
-                    />
-                    
-                    {/* Feedback Buttons */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Was this helpful?</span>
+                  <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
+                        <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
+                        <h3 className="font-semibold text-lg">Your Prediction</h3>
+                        {deepMode && (
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                            <Zap className="w-3 h-3" />
+                            Deep Mode
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground mr-2">Was this helpful?</span>
                         <Button
                           variant={userFeedback === "like" ? "default" : "outline"}
                           size="sm"
@@ -944,7 +975,6 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-                    
                     <TrajectoryTimeline 
                       predictionText={prediction}
                       trajectoryType={trajectoryType}
@@ -971,14 +1001,6 @@ export default function Dashboard() {
                         onImproveAccuracy={handleImproveAccuracy}
                       />
                     </div>
-                    
-                    {/* Scroll-Reveal Paywall for Free Tier Users */}
-                    {isAuthenticated && subscription?.tier === "free" && !deepMode && trajectoryType === "instant" && (
-                      <ScrollRevealPaywall 
-                        category={category}
-                        userTier={subscription.tier}
-                      />
-                    )}
                   </div>
                 )}             </CardContent>
             </Card>
@@ -1000,23 +1022,13 @@ export default function Dashboard() {
         onOpenChange={setShowUpgradeModal}
         reason={upgradeReason}
         remainingPredictions={subscription?.tier === "free" ? (3 - (subscription?.totalUsed || 0)) : 0}
-        isAnonymous={!isAuthenticated}
       />
       
-      {/* Signup Gate - Hard gate for anonymous users after first prediction */}
-      {!isAuthenticated && (
-        <SignupGate 
-          open={showSignupGate}
-          predictionCategory={category}
-        />
-      )}
-
       {/* Premium Unlock Modal - Triggers after welcome prediction for users without premium data */}
       {isAuthenticated && (
         <PremiumUnlockModal
           open={showPremiumUnlock}
           onClose={() => setShowPremiumUnlock(false)}
-          category={category}
           onComplete={() => {
             setShowPremiumUnlock(false);
             
@@ -1035,12 +1047,23 @@ export default function Dashboard() {
               });
             }
             
-            // Scroll-reveal paywall will show automatically below prediction for Free tier
+            // Optionally show post-prediction paywall after premium unlock
+            if (subscription?.tier === "free") {
+              setTimeout(() => setShowPostPredictionPaywall(true), 2000);
+            }
           }}
         />
       )}
 
-
+      {/* Post-Prediction Paywall - Triggers after welcome prediction */}
+      {isAuthenticated && subscription && (
+        <PostPredictionPaywall 
+          open={showPostPredictionPaywall}
+          onOpenChange={setShowPostPredictionPaywall}
+          userTier={subscription.tier}
+          predictionCategory={category}
+        />
+      )}
     </div>
   );
 }
