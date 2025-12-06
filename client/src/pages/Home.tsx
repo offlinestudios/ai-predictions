@@ -173,26 +173,9 @@ export default function Home() {
                 </Link>
               </Button>
               
-              {/* Trust Signals */}
-              <div className="mt-6 space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  No credit card required • Free to start
-                </p>
-                <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-primary" />
-                    <span>12,400+ users</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <TrendingUpIcon className="w-4 h-4 text-primary" />
-                    <span>89% accuracy</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary">🔒</span>
-                    <span>Private & Secure</span>
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                No credit card required • Free to start
+              </p>
             </div>
           </div>
         </div>
@@ -418,9 +401,79 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-3 mt-16 bg-card/30">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 Predicsure AI. Powered by advanced artificial intelligence.</p>
+      <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
+                <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+            {/* Legal & Safety */}
+            <div>
+              <h3 className="font-semibold mb-4">Legal & Safety</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                <li><Link href="/data-security" className="hover:text-foreground transition-colors">Data Security</Link></li>
+                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
+              </ul>
+            </div>
+            {/* AI & Methodology */}
+            <div>
+              <h3 className="font-semibold mb-4">AI & Methodology</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/ai-methodology" className="hover:text-foreground transition-colors">How Our AI Works</Link></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Accuracy Reports</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Research Papers</a></li>
+              </ul>
+            </div>
+            {/* Company */}
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
+                <li><a href="mailto:support@predicsure.ai" className="hover:text-foreground transition-colors">Contact: support@predicsure.ai</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">LinkedIn</a></li>
+              </ul>
+            </div>
+          </div>
+          {/* Trust Badges */}
+          <div className="border-t border-border/50 pt-8 mb-8">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Secure Payments by Stripe</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Data Encrypted – We Never Sell Your Information</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Powered by Manus + Advanced AI Models</span>
+              </div>
+            </div>
+          </div>
+          {/* Copyright & Disclaimer */}
+          <div className="text-center space-y-4">
+            <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
+              Predictions are for guidance only. They are based on pattern analysis and should not replace professional advice. 
+              Predicsure AI does not provide medical, legal, or financial advice.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              © 2025 Predicsure AI. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
