@@ -85,7 +85,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain transition-transform duration-1000 hover:rotate-360" />
             <h1 className="text-2xl font-bold text-white">
               Predicsure AI
             </h1>
@@ -407,7 +407,7 @@ export default function Home() {
             {/* Quick Links with Logo */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8" />
+                <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8 transition-transform duration-1000 hover:rotate-360" />
                 <h3 className="font-semibold">Quick Links</h3>
               </div>
               <ul className="space-y-2 text-sm text-muted-foreground">

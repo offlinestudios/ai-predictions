@@ -553,3 +553,10 @@
 - [x] Fix Quick Links scroll anchors (#hero, #how-it-works, #faq)
 - [x] Fix page scroll position - scroll to top when clicking footer links
 - [x] Test all navigation and scroll behavior
+
+### Logo Hover Animation (Dec 6, 2024)
+- [x] Add CSS rotation animation to logo on hover
+- [x] Make animation subtle and smooth (360deg rotation over 1s)
+- [x] Apply to all logo instances (header, footer)
+- [x] Test animation performance and smoothness
+- [x] Save checkpoint and push to GitHub
