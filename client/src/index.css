@@ -129,11 +129,6 @@
     font-weight: 600;
     letter-spacing: -0.02em;
   }
-  .font-orbitron {
-    font-family: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   [type="button"]:not(:disabled),

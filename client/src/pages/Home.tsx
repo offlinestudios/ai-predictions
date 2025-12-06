@@ -86,7 +86,7 @@ export default function Home() {
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src="/logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
-            <h1 className="text-2xl font-bold text-white font-orbitron">
+            <h1 className="text-2xl font-bold text-white">
               Predicsure AI
             </h1>
           </div>
@@ -157,7 +157,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
         <div className="container relative">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h2 className="text-5xl md:text-6xl font-bold leading-tight text-white font-orbitron">
+            <h2 className="text-5xl md:text-6xl font-bold leading-tight text-white">
               See What's Shifting in Your Life
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
