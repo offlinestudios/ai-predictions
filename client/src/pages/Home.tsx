@@ -464,12 +464,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* Copyright & Disclaimer */}
-          <div className="text-center space-y-4">
-            <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
-              Predictions are for guidance only. They are based on pattern analysis and should not replace professional advice. 
-              Predicsure AI does not provide medical, legal, or financial advice.
-            </p>
+          {/* Copyright */}
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
               © 2025 Predicsure AI. All rights reserved.
             </p>

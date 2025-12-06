@@ -534,3 +534,11 @@
 - [x] Restore comprehensive footer from previous checkpoint
 - [x] Ensure footer has all sections (Quick Links, Legal & Safety, Company, Trust Signals)
 - [x] Test footer links and navigation
+
+### Footer and Logo Fixes (Dec 6, 2024)
+- [x] Remove disclaimer text from footer ("Predictions are for guidance only...")
+- [x] Restore all legal pages from git history (Privacy, Terms, About, etc.)
+- [x] Add routes for all legal pages in App.tsx
+- [x] Regenerate logo with true transparent background (no black/gray pixels)
+- [x] Test all footer navigation links
+- [x] Verify logo transparency on dark background
