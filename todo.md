@@ -585,3 +585,10 @@
 - [x] Replace mobile hamburger menu with Sign In button
 - [x] Test all changes across onboarding and prediction flows
 - [x] Save checkpoint and push to GitHub
+
+### Restore Sports and Stocks Category Questions (Dec 6, 2024)
+- [x] Find Sports and Stocks questions from git history
+- [x] Update CategoryQuestions component with Sports flow
+- [x] Update CategoryQuestions component with Stocks flow
+- [x] Test Sports and Stocks onboarding flows
+- [ ] Save checkpoint and push to GitHub
