@@ -1,0 +1,38 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Flower of Life Pattern - 6 overlapping circles -->
+  <g filter="url(#glow)" stroke="#a855f7" stroke-width="3" fill="none">
+    <!-- Center circle -->
+    <circle cx="100" cy="100" r="30"/>
+    
+    <!-- Top circle -->
+    <circle cx="100" cy="70" r="30"/>
+    
+    <!-- Top-right circle -->
+    <circle cx="126" cy="85" r="30"/>
+    
+    <!-- Bottom-right circle -->
+    <circle cx="126" cy="115" r="30"/>
+    
+    <!-- Bottom circle -->
+    <circle cx="100" cy="130" r="30"/>
+    
+    <!-- Bottom-left circle -->
+    <circle cx="74" cy="115" r="30"/>
+    
+    <!-- Top-left circle -->
+    <circle cx="74" cy="85" r="30"/>
+    
+    <!-- Outer circle -->
+    <circle cx="100" cy="100" r="60" stroke-width="4"/>
+  </g>
+</svg>

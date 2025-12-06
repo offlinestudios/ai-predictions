@@ -90,7 +90,7 @@ export default function Account() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <img src="/globe-logo.png" alt="AI Predictions" className="w-8 h-8 object-contain" />
+                <img src="/logo.svg" alt="AI Predictions" className="w-8 h-8 object-contain" />
                 <h1 className="text-xl font-bold">Account Settings</h1>
               </div>
             </div>

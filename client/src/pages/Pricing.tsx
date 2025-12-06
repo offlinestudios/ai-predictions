@@ -11,7 +11,7 @@ export default function Pricing() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <img src="/globe-logo.png" alt="Predicsure AI" className="w-8 h-8" />
+              <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8" />
               <span className="text-lg font-bold">Predicsure AI</span>
             </div>
           </Link>

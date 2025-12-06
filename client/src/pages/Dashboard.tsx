@@ -471,7 +471,7 @@ export default function Dashboard() {
               </Button>
             </Link>
              <div className="flex items-center gap-2">
-            <img src="/globe-logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
               <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
           </div>
@@ -934,7 +934,7 @@ export default function Dashboard() {
                   <div className="mt-6 p-6 bg-card/50 rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <img src="/globe-logo.png" alt="" className="w-6 h-6 object-contain" />
+                        <img src="/logo.svg" alt="" className="w-6 h-6 object-contain" />
                         <h3 className="font-semibold text-lg">Your Prediction</h3>
                         {deepMode && (
                           <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">

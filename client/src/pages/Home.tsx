@@ -85,7 +85,7 @@ export default function Home() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
+            <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
             <h1 className="text-2xl font-bold text-white">
               Predicsure AI
             </h1>
@@ -153,7 +153,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-8">
+      <section id="hero" className="relative overflow-hidden pt-16 pb-8">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
         <div className="container relative">
           <div className="max-w-3xl mx-auto text-center space-y-6">
@@ -182,7 +182,7 @@ export default function Home() {
       </section>
 
       {/* How It Works - 3-Step Visual Flow */}
-      <section className="py-16 bg-card/10">
+      <section id="how-it-works" className="py-16 bg-card/10">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">How It Works</h3>
@@ -335,7 +335,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20">
+      <section id="faq" className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
@@ -403,10 +403,13 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* Quick Links */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Quick Links with Logo */}
             <div>
-              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-8 h-8" />
+                <h3 className="font-semibold">Quick Links</h3>
+              </div>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#hero" className="hover:text-foreground transition-colors">Home</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
@@ -421,16 +424,8 @@ export default function Home() {
                 <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
                 <li><Link href="/data-security" className="hover:text-foreground transition-colors">Data Security</Link></li>
-                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
-              </ul>
-            </div>
-            {/* AI & Methodology */}
-            <div>
-              <h3 className="font-semibold mb-4">AI & Methodology</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/ai-methodology" className="hover:text-foreground transition-colors">How Our AI Works</Link></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Accuracy Reports</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Research Papers</a></li>
+                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
               </ul>
             </div>
             {/* Company */}
