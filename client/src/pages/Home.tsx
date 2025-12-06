@@ -230,16 +230,16 @@ export default function Home() {
 
             {/* Step 2 */}
             <div className="text-center space-y-4 relative">
-              <div className="w-20 h-20 mx-auto rounded-full bg-blue-500/20 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-blue-500/30 flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-blue-500" />
+              <div className="w-20 h-20 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-primary" />
                 </div>
               </div>
               <div className="absolute top-10 left-[60%] hidden md:block">
                 <ArrowRight className="w-6 h-6 text-primary/40" />
               </div>
               <div className="space-y-2">
-                <div className="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-semibold mb-2">
+                <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
                   Step 2
                 </div>
                 <h4 className="text-lg font-semibold">AI Analyzes Patterns</h4>
@@ -251,13 +251,13 @@ export default function Home() {
 
             {/* Step 3 */}
             <div className="text-center space-y-4">
-              <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-green-500/30 flex items-center justify-center">
-                  <Star className="w-8 h-8 text-green-500" />
+              <div className="w-20 h-20 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center">
+                  <Star className="w-8 h-8 text-primary" />
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-semibold mb-2">
+                <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
                   Step 3
                 </div>
                 <h4 className="text-lg font-semibold">Get Your Forecast</h4>
@@ -315,7 +315,7 @@ export default function Home() {
                 "I was skeptical at first, but the career timing prediction was eerily accurate. Got the job offer exactly when it said I would. This isn't your typical horoscope."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-sm font-semibold">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-semibold">
                   JC
                 </div>
                 <div>
@@ -338,7 +338,7 @@ export default function Home() {
                 "The relationship trajectory helped me understand patterns I couldn't see on my own. Knowing what was coming gave me the clarity to make better choices."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-sm font-semibold">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-semibold">
                   ER
                 </div>
                 <div>
