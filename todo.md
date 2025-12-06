@@ -591,4 +591,4 @@
 - [x] Update CategoryQuestions component with Sports flow
 - [x] Update CategoryQuestions component with Stocks flow
 - [x] Test Sports and Stocks onboarding flows
-- [ ] Save checkpoint and push to GitHub
+- [x] Save checkpoint and push to GitHub
