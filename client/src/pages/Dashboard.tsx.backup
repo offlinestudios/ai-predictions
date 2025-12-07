@@ -26,6 +26,8 @@ import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 const TIER_ICONS = {
   free: Star,
@@ -471,7 +473,7 @@ export default function Dashboard() {
       />
       
       {/* Desktop Header */}
-      <header className="hidden lg:block border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
+      <header className="hidden md:block border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/">
@@ -525,10 +527,29 @@ export default function Dashboard() {
       </header>
 
       <div className="container py-4 md:py-8 max-w-6xl">
-        <div className="flex flex-col md:grid md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Subscription Status - Show first on mobile (for quick glance), sidebar on desktop */}
-          <div className="order-1 md:order-1 lg:order-1 lg:col-span-1">
-            <Card>
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Subscription Status - Collapsible on mobile */}
+          <div className="md:col-span-1 lg:col-span-1">
+            <Collapsible defaultOpen={false} className="md:hidden">
+              <Card>
+                <CollapsibleTrigger className="w-full">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {TierIcon && <TierIcon className="w-5 h-5 text-primary" />}
+                        <CardTitle className="capitalize text-base">
+                          {isAuthenticated ? `${subscription?.tier} Plan` : "Free Trial"}
+                        </CardTitle>
+                      </div>
+                      <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    </div>
+                    <CardDescription className="text-left">
+                      {isAuthenticated ? "Your current subscription" : "Try before you sign up"}
+                    </CardDescription>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="space-y-4 pt-0">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   {TierIcon && <TierIcon className="w-5 h-5 text-primary" />}
@@ -653,12 +674,16 @@ export default function Dashboard() {
                     </Link>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+            
+            {/* Desktop: Always visible */}
+            <Card className="hidden md:block">
 
-          {/* Prediction Generator - Main content, show second on mobile */}
-          <div className="order-2 md:order-2 lg:order-2 lg:col-span-2">
+          {/* Prediction Generator */}
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle>Generate Prediction</CardTitle>
