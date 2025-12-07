@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import ChatComposer from "@/components/ChatComposer";
 import PredictionThread from "@/components/PredictionThread";
 import MobileHeader from "@/components/MobileHeader";
-import BottomNavigation from "@/components/BottomNavigation";
+
 import PredictionHistorySidebar from "@/components/PredictionHistorySidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -129,9 +129,20 @@ export default function DashboardChat() {
     // TODO: Handle file uploads if needed
     // For now, just generate prediction with question
 
+    // Map frontend categories to backend schema
+    const categoryMap: Record<string, "career" | "love" | "finance" | "health" | "general"> = {
+      "general": "general",
+      "career": "career",
+      "relationships": "love",
+      "finance": "finance",
+      "health": "health",
+      "sports": "general", // Map sports to general
+      "stocks": "finance" // Map stocks to finance
+    };
+
     generateMutation.mutate({
       userInput: question,
-      category: category as any,
+      category: categoryMap[category] || "general",
       trajectoryType: "instant"
     });
   };
@@ -199,6 +210,7 @@ export default function DashboardChat() {
         userName={user?.name}
         userEmail={user?.email}
         tier={subscription?.tier}
+        onHistoryClick={() => setShowHistorySidebar(!showHistorySidebar)}
       />
       
       {/* Desktop Header */}
@@ -286,11 +298,7 @@ export default function DashboardChat() {
         disabled={isComposerDisabled}
       />
 
-      {/* Bottom Navigation - Mobile Only */}
-      <BottomNavigation 
-        isAuthenticated={isAuthenticated}
-        tier={subscription?.tier}
-      />
+
 
       {/* Modals */}
       {isAuthenticated && subscription && (

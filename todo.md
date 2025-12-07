@@ -657,3 +657,17 @@
 - [x] Replace category emoji with Lucide icons in accent color
 - [x] Test icon changes on mobile
 - [x] Save checkpoint and push to GitHub
+
+### Mobile Dashboard Redesign - ChatGPT Style (Dec 7, 2024)
+- [x] Remove paragraph below "Start a Prediction"
+- [x] Change empty state icon to Predicsure logo
+- [x] Change composer placeholder to "What do you want to predict?"
+- [x] Remove bottom navigation (Home/Predict/History/Account)
+- [x] Add hamburger menu icon in top-right (replace settings gear)
+- [x] Create sliding sidebar with history, settings, account options
+- [x] Make composer more rounded like ChatGPT mobile
+- [x] Fix prediction generation (not working when user asks question)
+- [x] Redesign prediction bubble styling (less bright, more professional)
+- [x] Change default category from General to Relationships
+- [ ] Test all changes on mobile viewport
+- [ ] Save checkpoint and push to GitHub

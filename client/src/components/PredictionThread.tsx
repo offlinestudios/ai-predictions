@@ -31,14 +31,10 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <Sparkles className="w-8 h-8 text-primary" />
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <img src="/logo.svg" alt="Predicsure AI" className="w-12 h-12 object-contain" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">Start a Prediction</h3>
-        <p className="text-muted-foreground max-w-md">
-          Ask a question about your career, relationships, finances, health, or any life decision.
-          The AI will provide personalized predictions based on your input.
-        </p>
+        <h3 className="text-xl font-semibold">Start a Prediction</h3>
       </div>
     );
   }
@@ -50,7 +46,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
           return (
             <div key={message.id} className="flex justify-end">
               <div className="max-w-[85%] md:max-w-[70%]">
-                <Card className="bg-primary text-primary-foreground p-3 md:p-4">
+                <Card className="bg-accent/30 border-accent/50 p-3 md:p-4">
                   <p className="text-sm md:text-base whitespace-pre-wrap">{message.content}</p>
                   {message.category && (
                     <Badge variant="secondary" className="mt-2 text-xs">

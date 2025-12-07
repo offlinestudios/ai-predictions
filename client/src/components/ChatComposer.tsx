@@ -12,7 +12,7 @@ interface ChatComposerProps {
 
 export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("relationships");
   const [files, setFiles] = useState<File[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,7 +55,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
   };
 
   return (
-    <div className="fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-16 lg:bottom-0">
+    <div className="fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-0">
       {/* On mobile (<lg), positioned 64px from bottom to sit above bottom nav */}
       <div className="container max-w-4xl py-3 md:py-4">
         {/* Category Selector - Mobile Optimized */}
@@ -151,9 +151,9 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question or describe what you'd like to know..."
+              placeholder="What do you want to predict?"
               disabled={isLoading || disabled}
-              className="min-h-[44px] max-h-[120px] resize-none pl-3 pr-24 py-3 w-full"
+              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-24 py-3 w-full rounded-2xl border-2"
               rows={1}
             />
             
