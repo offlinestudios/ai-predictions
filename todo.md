@@ -614,4 +614,4 @@
 - [x] Show accuracy score inline in chat thread
 - [x] Add "Refine Prediction" flow where AI asks specific questions (age, location, income, etc.)
 - [x] Test chat interface on mobile viewport
-- [ ] Save checkpoint and push to GitHub
+- [x] Save checkpoint and push to GitHub
