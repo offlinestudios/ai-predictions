@@ -615,3 +615,13 @@
 - [x] Add "Refine Prediction" flow where AI asks specific questions (age, location, income, etc.)
 - [x] Test chat interface on mobile viewport
 - [x] Save checkpoint and push to GitHub
+
+### Prediction History Sidebar (Dec 6, 2024)
+- [x] Create PredictionHistorySidebar component with scrollable list
+- [x] Fetch recent predictions from backend API
+- [x] Display prediction preview cards (question, category, date, accuracy)
+- [x] Implement tap-to-load functionality to restore prediction in chat thread
+- [x] Add toggle button to show/hide sidebar on mobile
+- [x] Style sidebar with proper spacing and mobile responsiveness
+- [x] Test history sidebar on desktop and mobile viewports
+- [ ] Save checkpoint and push to GitHub

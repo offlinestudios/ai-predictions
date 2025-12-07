@@ -8,6 +8,7 @@ import ChatComposer from "@/components/ChatComposer";
 import PredictionThread from "@/components/PredictionThread";
 import MobileHeader from "@/components/MobileHeader";
 import BottomNavigation from "@/components/BottomNavigation";
+import PredictionHistorySidebar from "@/components/PredictionHistorySidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowLeft, Settings, LogOut, History } from "lucide-react";
@@ -38,6 +39,7 @@ export default function DashboardChat() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
+  const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch subscription data
@@ -134,6 +136,41 @@ export default function DashboardChat() {
     });
   };
 
+  // Handle selecting a prediction from history
+  const handleSelectPrediction = (prediction: any) => {
+    // Clear current messages and load the selected prediction
+    const userMessage: Message = {
+      id: `msg-${Date.now()}-user`,
+      type: "user",
+      content: prediction.userInput,
+      category: prediction.category || "general",
+      timestamp: new Date(prediction.createdAt)
+    };
+
+    const assistantMessage: Message = {
+      id: `msg-${Date.now()}-assistant`,
+      type: "assistant",
+      content: prediction.predictionResult,
+      category: prediction.category || "general",
+      timestamp: new Date(prediction.createdAt),
+      accuracy: {
+        score: prediction.confidenceScore || 65,
+        label: prediction.confidenceScore && prediction.confidenceScore >= 80 ? "High" : prediction.confidenceScore && prediction.confidenceScore >= 60 ? "Moderate" : "Low",
+        potentialScore: 95,
+        suggestedDetails: [
+          "Age Range",
+          "Location",
+          "Income Range",
+          "Relationship Status",
+          "Current Life Stage"
+        ]
+      }
+    };
+
+    setMessages([userMessage, assistantMessage]);
+    toast.success("Prediction loaded from history");
+  };
+
   // Handle refine request
   const handleRefineRequest = (messageId: string) => {
     toast.info("Refinement feature coming soon! This will ask you specific questions to improve accuracy.");
@@ -182,14 +219,14 @@ export default function DashboardChat() {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
-                {subscription?.tier !== "free" && (
-                  <Link href="/history">
-                    <Button variant="ghost" size="sm">
-                      <History className="w-4 h-4 mr-2" />
-                      History
-                    </Button>
-                  </Link>
-                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowHistorySidebar(!showHistorySidebar)}
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  History
+                </Button>
                 <Link href="/account">
                   <Button variant="ghost" size="sm">
                     <Settings className="w-4 h-4 mr-2" />
@@ -218,17 +255,29 @@ export default function DashboardChat() {
         </div>
       </header>
 
-      {/* Main Chat Area */}
-      <main className="flex-1 overflow-y-auto pb-32 md:pb-40">
-        <div className="container max-w-4xl pt-4 md:pt-8">
-          <PredictionThread 
-            messages={messages}
-            onRefineRequest={handleRefineRequest}
-            onFeedback={handleFeedback}
+      {/* Main Content Area with Sidebar */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main Chat Area */}
+        <main className="flex-1 overflow-y-auto pb-32 md:pb-40">
+          <div className="container max-w-4xl pt-4 md:pt-8">
+            <PredictionThread 
+              messages={messages}
+              onRefineRequest={handleRefineRequest}
+              onFeedback={handleFeedback}
+            />
+            <div ref={messagesEndRef} />
+          </div>
+        </main>
+
+        {/* History Sidebar */}
+        {isAuthenticated && (
+          <PredictionHistorySidebar
+            isOpen={showHistorySidebar}
+            onClose={() => setShowHistorySidebar(false)}
+            onSelectPrediction={handleSelectPrediction}
           />
-          <div ref={messagesEndRef} />
-        </div>
-      </main>
+        )}
+      </div>
 
       {/* Chat Composer - Fixed at bottom */}
       <ChatComposer 
