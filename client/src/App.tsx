@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/DashboardChat";
 import History from "./pages/History";
 import Account from "./pages/Account";
 import Analytics from "./pages/Analytics";
@@ -42,6 +42,8 @@ function Router() {
       <Route path={"/sign-up"} component={SignUp} />
       <Route path={"/onboarding"} component={Onboarding} />
       <Route path={"/dashboard"} component={Dashboard} />
+      {/* Old dashboard available at /dashboard-old for reference */}
+      {/* <Route path={"/dashboard-old"} component={DashboardOld} /> */}
       <Route path={"/history"} component={History} />
       <Route path={"/account"} component={Account} />
       <Route path={"/analytics"} component={Analytics} />

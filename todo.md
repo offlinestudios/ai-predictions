@@ -603,3 +603,15 @@
 - [ ] Add smooth transitions and modern mobile interactions
 - [ ] Test across different mobile screen sizes
 - [ ] Save checkpoint with mobile improvements
+
+### Chat-Style Dashboard Redesign (Dec 6, 2024)
+- [x] Remove Free Trial card from dashboard to declutter mobile view
+- [x] Create bottom composer component (ChatGPT/Manus style) with textarea and file upload
+- [x] Implement conversational prediction thread (messages flow like chat)
+- [x] Add AI follow-up question system after prediction (suggests details to improve accuracy)
+- [x] Make category selector mobile-friendly (compact chip/pill design)
+- [x] Integrate file upload button into composer bar
+- [x] Show accuracy score inline in chat thread
+- [x] Add "Refine Prediction" flow where AI asks specific questions (age, location, income, etc.)
+- [x] Test chat interface on mobile viewport
+- [ ] Save checkpoint and push to GitHub
