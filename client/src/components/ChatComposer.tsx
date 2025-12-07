@@ -98,18 +98,8 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
           </div>
         )}
 
-        {/* Composer Bar */}
-        <div className="flex items-end gap-2">
-          {/* File Upload Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="shrink-0 h-10 w-10"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isLoading || disabled}
-          >
-            <Paperclip className="w-5 h-5" />
-          </Button>
+        {/* Composer Bar - Full Width with Inline Buttons */}
+        <div className="relative w-full">
           <input
             ref={fileInputRef}
             type="file"
@@ -118,9 +108,9 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
             onChange={handleFileSelect}
             className="hidden"
           />
-
-          {/* Textarea */}
-          <div className="flex-1 relative">
+          
+          {/* Textarea with inline buttons */}
+          <div className="relative">
             <Textarea
               ref={textareaRef}
               value={question}
@@ -128,27 +118,43 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
               onKeyDown={handleKeyDown}
               placeholder="Ask a question or describe what you'd like to know..."
               disabled={isLoading || disabled}
-              className="min-h-[44px] max-h-[120px] resize-none pr-12 py-3"
+              className="min-h-[44px] max-h-[120px] resize-none pl-3 pr-24 py-3 w-full"
               rows={1}
             />
-            <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
-              {question.length}/1000
+            
+            {/* Inline buttons (right side) */}
+            <div className="absolute right-2 bottom-2 flex items-center gap-1">
+              {/* Character counter */}
+              <span className="text-xs text-muted-foreground mr-1">
+                {question.length}/1000
+              </span>
+              
+              {/* File Upload Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-accent"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading || disabled}
+              >
+                <Paperclip className="w-4 h-4" />
+              </Button>
+              
+              {/* Send Button */}
+              <Button
+                onClick={handleSubmit}
+                disabled={!question.trim() || isLoading || disabled}
+                size="icon"
+                className="h-8 w-8"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                    )}
+              </Button>
             </div>
           </div>
-
-          {/* Send Button */}
-          <Button
-            onClick={handleSubmit}
-            disabled={!question.trim() || isLoading || disabled}
-            size="icon"
-            className="shrink-0 h-10 w-10"
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Sparkles className="w-5 h-5" />
-            )}
-          </Button>
         </div>
 
         {/* Hint Text */}
