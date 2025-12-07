@@ -634,3 +634,11 @@
 - [x] Ensure Account is prominently accessible on all screen sizes
 - [x] Test Account page access on both desktop and mobile
 - [x] Save checkpoint and push to GitHub
+
+### Critical Mobile UI Fixes (Dec 6, 2024)
+- [x] Fix bottom navigation overlapping composer input area
+- [x] Add bottom padding to composer so it sits above bottom nav
+- [x] Fix authentication state detection in MobileHeader (showing Sign In despite being authenticated)
+- [x] Ensure Account tab appears in bottom navigation for authenticated users
+- [x] Test mobile UI with real authentication
+- [ ] Save checkpoint and push to GitHub

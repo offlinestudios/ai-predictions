@@ -1,4 +1,4 @@
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { useUser, useClerk, useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { useCallback, useEffect, useMemo } from "react";
@@ -12,6 +12,7 @@ export function useAuth(options?: UseAuthOptions) {
   const { redirectOnUnauthenticated = false, redirectPath = getLoginUrl() } =
     options ?? {};
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+  const { isSignedIn } = useClerkAuth();
   const { signOut } = useClerk();
   const utils = trpc.useUtils();
 
@@ -46,7 +47,8 @@ export function useAuth(options?: UseAuthOptions) {
       user: meQuery.data ?? null,
       loading: !clerkLoaded || meQuery.isLoading,
       error: meQuery.error ?? null,
-      isAuthenticated: Boolean(clerkUser && meQuery.data),
+      // Fallback to Clerk's isSignedIn if meQuery fails
+      isAuthenticated: Boolean(clerkUser && meQuery.data) || Boolean(isSignedIn && clerkUser),
     };
   }, [
     clerkUser,

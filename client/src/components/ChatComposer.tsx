@@ -55,7 +55,8 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe">
+    <div className="fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-16 lg:bottom-0">
+      {/* On mobile (<lg), positioned 64px from bottom to sit above bottom nav */}
       <div className="container max-w-4xl py-3 md:py-4">
         {/* Category Selector - Mobile Optimized */}
         <div className="mb-2 md:mb-3">
