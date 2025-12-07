@@ -633,4 +633,4 @@
 - [x] Add Account icon button to mobile header for authenticated users
 - [x] Ensure Account is prominently accessible on all screen sizes
 - [x] Test Account page access on both desktop and mobile
-- [ ] Save checkpoint and push to GitHub
+- [x] Save checkpoint and push to GitHub
