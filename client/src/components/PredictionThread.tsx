@@ -70,7 +70,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                   {/* Prediction Content - Full Width */}
                   <div className="mb-6">
                     <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary" />
+                      <img src="/logo.svg" alt="Predicsure" className="w-6 h-6 object-contain" />
                       Your Prediction
                     </h4>
                     <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none">

@@ -21,6 +21,7 @@ import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
 import BottomNavigation from "@/components/BottomNavigation";
 import MobileHeader from "@/components/MobileHeader";
+import DesktopSidebar from "@/components/DesktopSidebar";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -470,61 +471,14 @@ export default function Dashboard() {
         tier={subscription?.tier}
       />
       
-      {/* Desktop Header */}
-      <header className="hidden lg:block border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Home
-              </Button>
-            </Link>
-             <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
-              <h1 className="text-xl font-bold">Dashboard</h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                {subscription?.tier !== "free" && (
-                  <Link href="/history">
-                    <Button variant="ghost" size="sm">
-                      <History className="w-4 h-4 mr-2" />
-                      History
-                    </Button>
-                  </Link>
-                )}
-                <Link href="/account">
-                  <Button variant="ghost" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Account
-                  </Button>
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{user?.name || user?.email}</span>
-                  {subscription && <TierBadge tier={subscription.tier} size="sm" />}
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => signOut(() => navigate("/"))}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <Button asChild variant="default" size="sm">
-                <a href={getLoginUrl()}>Sign In</a>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Desktop Sidebar */}
+      <DesktopSidebar
+        user={user}
+        subscription={subscription}
+        isAuthenticated={isAuthenticated}
+      />
 
-      <div className="container py-4 md:py-8 max-w-6xl">
+      <div className="container py-4 md:py-8 max-w-6xl lg:ml-64">
         <div className="flex flex-col md:grid md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Subscription Status - Show first on mobile (for quick glance), sidebar on desktop */}
           <div className="order-1 md:order-1 lg:order-1 lg:col-span-1">
