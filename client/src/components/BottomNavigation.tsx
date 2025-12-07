@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Sparkles, History, Settings, User } from "lucide-react";
+import { Home, History, Settings, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BottomNavigationProps {
@@ -19,7 +19,7 @@ export default function BottomNavigation({ isAuthenticated, tier }: BottomNaviga
     },
     {
       href: "/dashboard",
-      icon: Sparkles,
+      icon: null, // Will use logo image instead
       label: "Predict",
       show: true,
     },
@@ -57,7 +57,15 @@ export default function BottomNavigation({ isAuthenticated, tier }: BottomNaviga
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 )}
               >
-                <Icon className={cn("w-5 h-5", isActive && "scale-110")} />
+                {Icon ? (
+                  <Icon className={cn("w-5 h-5", isActive && "scale-110")} />
+                ) : (
+                  <img 
+                    src="/logo.svg" 
+                    alt="Predict" 
+                    className={cn("w-5 h-5 object-contain", isActive && "scale-110")} 
+                  />
+                )}
                 <span className="text-xs font-medium">{item.label}</span>
               </button>
             </Link>

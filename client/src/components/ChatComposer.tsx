@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Paperclip, Sparkles, X } from "lucide-react";
+import { Loader2, Paperclip, Send, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ChatComposerProps {
@@ -65,13 +65,48 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="general">💬 General</SelectItem>
-              <SelectItem value="career">💼 Career</SelectItem>
-              <SelectItem value="relationships">❤️ Relationships</SelectItem>
-              <SelectItem value="finance">💰 Finance</SelectItem>
-              <SelectItem value="health">🏥 Health</SelectItem>
-              <SelectItem value="sports">⚽ Sports</SelectItem>
-              <SelectItem value="stocks">📈 Stocks & Markets</SelectItem>
+              <SelectItem value="general">
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-primary" />
+                  <span>General</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="career">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-primary" />
+                  <span>Career</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="relationships">
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-primary" />
+                  <span>Relationships</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="finance">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  <span>Finance</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="health">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-primary" />
+                  <span>Health</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="sports">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-primary" />
+                  <span>Sports</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="stocks">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-primary" />
+                  <span>Stocks & Markets</span>
+                </div>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -150,7 +185,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Sparkles className="w-4 h-4" />
+                  <Send className="w-4 h-4" />
                     )}
               </Button>
             </div>
