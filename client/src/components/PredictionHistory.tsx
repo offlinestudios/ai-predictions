@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,16 @@ const trajectoryLabels = {
 };
 
 export default function PredictionHistory({ onSelectPrediction, currentPredictionId }: PredictionHistoryProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  // Initialize from localStorage, default to true (collapsed)
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('predictionHistoryCollapsed');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  // Persist collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem('predictionHistoryCollapsed', String(isCollapsed));
+  }, [isCollapsed]);
 
   const { data: historyData, isLoading } = trpc.prediction.getHistory.useQuery(
     { limit: 10 },
