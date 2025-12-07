@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, History, Settings, LogOut, User } from "lucide-react";
+import { Menu, History, Settings, LogOut } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -38,7 +38,7 @@ export default function MobileSidebar({ user, subscription, onHistoryClick, isAu
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="lg:hidden">
-          <Menu className="w-5 h-5" />
+          <Menu className="w-6 h-6" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] sm:w-[350px]">
@@ -73,19 +73,8 @@ export default function MobileSidebar({ user, subscription, onHistoryClick, isAu
                   className="w-full justify-start"
                   onClick={() => setOpen(false)}
                 >
-                  <User className="w-4 h-4 mr-3" />
-                  Account
-                </Button>
-              </Link>
-
-              <Link href="/account">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => setOpen(false)}
-                >
                   <Settings className="w-4 h-4 mr-3" />
-                  Settings
+                  Account Settings
                 </Button>
               </Link>
 

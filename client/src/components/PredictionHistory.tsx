@@ -43,7 +43,7 @@ const trajectoryLabels = {
 };
 
 export default function PredictionHistory({ onSelectPrediction, currentPredictionId }: PredictionHistoryProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const { data: historyData, isLoading } = trpc.prediction.getHistory.useQuery(
     { limit: 10 },

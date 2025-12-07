@@ -429,8 +429,8 @@ export const appRouter = router({
             });
           }
         } else {
-          // For paid tiers, check daily limit
-          if (subscription.usedToday >= subscription.dailyLimit) {
+          // For paid tiers, check daily limit (only if not unlimited)
+          if (subscription.dailyLimit !== -1 && subscription.usedToday >= subscription.dailyLimit) {
             throw new TRPCError({
               code: "FORBIDDEN",
               message: `Daily prediction limit reached (${subscription.dailyLimit}). Try again tomorrow or upgrade for higher limits.`,
