@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, History, Settings, LogOut, Home, User } from "lucide-react";
+import { Menu, History, Settings, LogOut, User } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -56,17 +56,6 @@ export default function MobileSidebar({ user, subscription, onHistoryClick, isAu
         </SheetHeader>
 
         <div className="flex flex-col gap-2">
-          <Link href="/">
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => setOpen(false)}
-            >
-              <Home className="w-4 h-4 mr-3" />
-              Home
-            </Button>
-          </Link>
-
           {isAuthenticated && (
             <>
               <Button

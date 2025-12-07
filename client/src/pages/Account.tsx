@@ -33,7 +33,7 @@ const TIER_INFO = {
   },
   premium: {
     icon: Crown,
-    name: "Premium Plan - Professional Insights",
+    name: "Premium Plan",
     color: "text-purple-400",
     bgColor: "bg-purple-500/10",
     limit: "Unlimited predictions",
@@ -81,25 +81,14 @@ export default function Account() {
       {/* Header */}
       <header className="border-b border-border/40 bg-card/30 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-              </Link>
-              <div className="flex items-center gap-2">
-                <img src="/logo.svg" alt="AI Predictions" className="w-8 h-8 object-contain" />
-                <h1 className="text-xl font-bold">Account Settings</h1>
-              </div>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm">
-                <Home className="w-4 h-4 mr-2" />
-                Dashboard
+          <div className="flex items-center gap-3">
+            <Link href="/">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
+            <img src="/logo.svg" alt="AI Predictions" className="w-7 h-7 object-contain" />
+            <h1 className="text-lg font-semibold">Account Settings</h1>
           </div>
         </div>
       </header>
