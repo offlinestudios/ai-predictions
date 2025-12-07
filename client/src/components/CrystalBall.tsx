@@ -13,9 +13,6 @@ const sizeClasses = {
 export function CrystalBall({ size = "md", className = "" }: CrystalBallProps) {
   return (
     <div className={`relative ${sizeClasses[size]} ${className}`}>
-      {/* Outer glow */}
-      <div className="absolute inset-0 bg-primary/15 blur-md rounded-full" />
-      
       <svg 
         viewBox="0 0 100 140" 
         className="absolute inset-0 w-full h-full"

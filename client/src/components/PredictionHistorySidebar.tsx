@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, History, ChevronRight, TrendingUp } from "lucide-react";
+import { X, History, ChevronRight, TrendingUp, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp as StocksIcon } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { formatDistanceToNow } from "date-fns";
 
@@ -15,16 +15,16 @@ interface PredictionHistorySidebarProps {
 }
 
 const getCategoryIcon = (category: string) => {
-  const icons: Record<string, string> = {
-    general: "💬",
-    career: "💼",
-    relationships: "❤️",
-    finance: "💰",
-    health: "🏥",
-    sports: "⚽",
-    stocks: "📈"
+  const icons: Record<string, React.ReactNode> = {
+    general: <MessageCircle className="w-3 h-3" />,
+    career: <Briefcase className="w-3 h-3" />,
+    relationships: <Heart className="w-3 h-3" />,
+    finance: <DollarSign className="w-3 h-3" />,
+    health: <Activity className="w-3 h-3" />,
+    sports: <Trophy className="w-3 h-3" />,
+    stocks: <StocksIcon className="w-3 h-3" />
   };
-  return icons[category] || "💬";
+  return icons[category] || <MessageCircle className="w-3 h-3" />;
 };
 
 const getCategoryLabel = (category: string) => {
@@ -141,8 +141,9 @@ export default function PredictionHistorySidebar({
                 >
                   {/* Category Badge */}
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {getCategoryIcon(prediction.category || "general")} {getCategoryLabel(prediction.category || "general")}
+                    <Badge variant="secondary" className="text-xs flex items-center gap-1.5">
+                      {getCategoryIcon(prediction.category || "general")}
+                      <span>{getCategoryLabel(prediction.category || "general")}</span>
                     </Badge>
                     <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                   </div>

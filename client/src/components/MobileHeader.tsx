@@ -23,16 +23,8 @@ export default function MobileHeader({ isAuthenticated, userName, userEmail, tie
           </div>
         </Link>
 
-        {/* User Info & Hamburger Menu */}
+        {/* Hamburger Menu */}
         <div className="flex items-center gap-2">
-          {isAuthenticated && tier && (
-            <>
-              <span className="text-xs text-muted-foreground max-w-[100px] truncate">
-                {userName || userEmail}
-              </span>
-              <TierBadge tier={tier} size="sm" />
-            </>
-          )}
           <MobileSidebar
             user={{ name: userName, email: userEmail }}
             subscription={tier ? { tier } : undefined}

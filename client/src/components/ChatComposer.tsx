@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Paperclip, Send, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface ChatComposerProps {
   onSubmit: (question: string, category: string, files: File[]) => void;
@@ -27,6 +28,12 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
 
   const handleSubmit = () => {
     if (!question.trim() || isLoading || disabled) return;
+    
+    // Check character limit
+    if (question.length > 1000) {
+      toast.error("Your prediction question is too long. Please keep it under 1000 characters.");
+      return;
+    }
     
     onSubmit(question, category, files);
     setQuestion("");
@@ -153,17 +160,12 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
               onKeyDown={handleKeyDown}
               placeholder="What do you want to predict?"
               disabled={isLoading || disabled}
-              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-24 py-3 w-full rounded-2xl border-2"
+              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-24 py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
               rows={1}
             />
             
             {/* Inline buttons (right side) */}
             <div className="absolute right-2 bottom-2 flex items-center gap-1">
-              {/* Character counter */}
-              <span className="text-xs text-muted-foreground mr-1">
-                {question.length}/1000
-              </span>
-              
               {/* File Upload Button */}
               <Button
                 variant="ghost"
