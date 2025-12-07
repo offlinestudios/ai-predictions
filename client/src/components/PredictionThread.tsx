@@ -65,25 +65,22 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
 
         if (message.type === "assistant") {
           return (
-            <div key={message.id} className="flex justify-start">
-              <div className="max-w-[85%] md:max-w-[70%] w-full">
-                <Card className="bg-accent/50 p-3 md:p-4">
-                  {/* Prediction Content */}
-                  <div className="flex items-start gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-sm mb-1">Your Prediction</h4>
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <Streamdown>{message.content}</Streamdown>
-                      </div>
+            <div key={message.id} className="w-full">
+              <div className="w-full px-4 md:px-6 py-6">
+                  {/* Prediction Content - Full Width */}
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      Your Prediction
+                    </h4>
+                    <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none">
+                      <Streamdown>{message.content}</Streamdown>
                     </div>
                   </div>
 
                   {/* Accuracy Score */}
                   {message.accuracy && (
-                    <div className="mt-4 pt-4 border-t border-border/50">
+                    <div className="mt-6 pt-6 border-t border-border/30">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <TrendingUp className="w-4 h-4 text-primary" />
@@ -100,48 +97,12 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                       </div>
                       <Progress value={message.accuracy.score} className="h-2 mb-2" />
                       
-                      {/* Improvement Suggestion */}
-                      {message.accuracy.potentialScore && message.accuracy.suggestedDetails && (
-                        <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                          <div className="flex items-start gap-2 mb-2">
-                            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium mb-1">
-                                Improve Your Prediction Accuracy by {message.accuracy.potentialScore - message.accuracy.score}%
-                              </p>
-                              <p className="text-xs text-muted-foreground mb-2">
-                                Providing these details will help generate a more precise, personalized prediction:
-                              </p>
-                              <ul className="text-xs space-y-1 mb-3">
-                                {message.accuracy.suggestedDetails.map((detail, idx) => (
-                                  <li key={idx} className="flex items-center gap-2">
-                                    <span className="w-1 h-1 rounded-full bg-primary" />
-                                    {detail}
-                                  </li>
-                                ))}
-                              </ul>
-                              <p className="text-xs text-muted-foreground">
-                                Potential accuracy: <span className="font-semibold text-primary">{message.accuracy.potentialScore}%</span> with more details
-                              </p>
-                            </div>
-                          </div>
-                          {onRefineRequest && (
-                            <Button
-                              onClick={() => onRefineRequest(message.id)}
-                              size="sm"
-                              className="w-full mt-2"
-                            >
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              Refine My Prediction
-                            </Button>
-                          )}
-                        </div>
-                      )}
+                      {/* Dynamic Follow-up Questions - Removed generic improvement section */}
                     </div>
                   )}
 
                   {/* Feedback & Share */}
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/30">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Was this helpful?</span>
                       {onFeedback && (
@@ -167,8 +128,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                     </div>
                     {/* ShareButtons requires shareToken - will be added when implementing share functionality */}
                   </div>
-                </Card>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>

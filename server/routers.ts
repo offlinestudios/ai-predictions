@@ -151,7 +151,16 @@ export const appRouter = router({
 - Be encouraging yet realistic - acknowledge constraints
 - Use psychological triggers: identity, desire, momentum, timeline
 - End with an inspiring call-to-action
-- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+- Include a confidence score (0-100) at the end: "Confidence: XX%"
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
 
         // Generate the welcome prediction
         const llmResponse = await invokeLLM({
@@ -481,7 +490,16 @@ export const appRouter = router({
 - Provide actionable steps for each week
 - End with a "30-Day Outlook Summary" highlighting the overall trajectory
 - Use specific dates relative to today (e.g., "Week 1 (Days 1-7)", "Around Day 15", etc.)
-- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+- Include a confidence score (0-100) at the end: "Confidence: XX%"
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
         } else if (input.trajectoryType === "90day") {
           systemPrompt = `You are an advanced AI oracle specializing in 90-day trajectory forecasts. Generate a detailed quarterly prediction path.
 
@@ -494,7 +512,16 @@ export const appRouter = router({
 - Provide monthly action plans
 - End with a "90-Day Trajectory Summary" and "Alternate Paths" section
 - Use specific timeframes (e.g., "Month 1 (Days 1-30)", "Around Day 45", "Month 3", etc.)
-- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+- Include a confidence score (0-100) at the end: "Confidence: XX%"
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
         } else if (input.trajectoryType === "yearly") {
           systemPrompt = `You are an advanced AI oracle specializing in yearly trajectory forecasts. Generate a detailed annual prediction path.
 
@@ -507,7 +534,16 @@ export const appRouter = router({
 - Provide quarterly strategic guidance
 - Include a "Year-End Vision" section describing where they'll be in 12 months
 - Use specific timeframes (e.g., "Q1 (Jan-Mar)", "Mid-Year", "Q4", "Month 6", etc.)
-- Include a confidence score (0-100) at the end: "Confidence: XX%"`;
+- Include a confidence score (0-100) at the end: "Confidence: XX%"
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
         } else if (input.deepMode) {
           systemPrompt = `You are an advanced AI oracle and prediction specialist with deep analytical capabilities. Generate comprehensive, highly detailed predictions with multi-layered insights.
 
@@ -521,9 +557,27 @@ export const appRouter = router({
 - Be specific with dates, percentages, and concrete details
 - If files are provided, perform thorough analysis and reference specific details
 
-**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"`;
+**Confidence Score:** At the end, provide a confidence score (0-100) based on the clarity of the question, available context, and prediction complexity. Format: "Confidence: XX%"
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
         } else {
-          systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.`;
+          systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.
+
+**Follow-Up Questions:**
+After your prediction, generate 2-3 deeply personalized follow-up questions that:
+- Are specifically tailored to the user's current life situation and psyche
+- Build upon the prediction you just gave
+- Help deepen their self-understanding
+- Are NOT generic (avoid basic questions like "What's your age?" or "Where do you live?")
+- Feel like they come from someone who truly understands their journey
+Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]\n3. [Question 3]"`;
         }
         
         // Add personalization based on user onboarding data
