@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 import { TierBadge } from "@/components/Badge";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 interface MobileHeaderProps {
   isAuthenticated: boolean;
@@ -20,14 +22,29 @@ export default function MobileHeader({ isAuthenticated, userName, userEmail, tie
           </div>
         </Link>
 
-        {/* User Badge (if authenticated) */}
-        {isAuthenticated && tier && (
+        {/* User Info & Account Button (if authenticated) */}
+        {isAuthenticated ? (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground max-w-[100px] truncate">
-              {userName || userEmail}
-            </span>
-            <TierBadge tier={tier} size="sm" />
+            {tier && (
+              <>
+                <span className="text-xs text-muted-foreground max-w-[100px] truncate">
+                  {userName || userEmail}
+                </span>
+                <TierBadge tier={tier} size="sm" />
+              </>
+            )}
+            <Link href="/account">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
+        ) : (
+          <Link href="/sign-in">
+            <Button variant="default" size="sm">
+              Sign In
+            </Button>
+          </Link>
         )}
       </div>
     </header>
