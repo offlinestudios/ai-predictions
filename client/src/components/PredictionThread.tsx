@@ -6,6 +6,7 @@ import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Streamdown } from "streamdown";
 import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
+import TypingIndicator from "@/components/TypingIndicator";
 
 interface Message {
   id: string;
@@ -177,12 +178,8 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
 
         // System messages (e.g., "Analyzing your question...")
         return (
-          <div key={message.id} className="flex justify-center">
-            <div className="max-w-md">
-              <p className="text-xs text-center text-muted-foreground bg-accent/30 px-3 py-1.5 rounded-full">
-                {message.content}
-              </p>
-            </div>
+          <div key={message.id} className="flex justify-start">
+            <TypingIndicator />
           </div>
         );
       })}

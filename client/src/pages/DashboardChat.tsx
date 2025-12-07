@@ -39,7 +39,7 @@ export default function DashboardChat() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
-  const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+  const [showHistorySidebar, setShowHistorySidebar] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch subscription data

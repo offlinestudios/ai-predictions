@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSwipeable } from "react-swipeable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +65,15 @@ export default function PredictionHistorySidebar({
     { enabled: isOpen }
   );
 
+  // Swipe gesture handlers
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (isOpen) onClose();
+    },
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+  });
+
   return (
     <>
       {/* Backdrop */}
@@ -76,14 +86,15 @@ export default function PredictionHistorySidebar({
 
       {/* Sidebar */}
       <aside
+        {...swipeHandlers}
         className={`
           fixed top-0 right-0 h-full w-80 bg-background border-l border-border z-50
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-          lg:relative lg:translate-x-0 lg:w-72 xl:w-80
+          lg:sticky lg:top-0 lg:h-screen ${isOpen ? 'lg:w-72 xl:w-80' : 'lg:w-0 lg:border-0'}
         `}
       >
-        <div className="flex flex-col h-full">
+        <div className={`flex flex-col h-full ${!isOpen ? 'lg:hidden' : ''}`}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-2">
@@ -93,7 +104,6 @@ export default function PredictionHistorySidebar({
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
               onClick={onClose}
             >
               <X className="w-4 h-4" />

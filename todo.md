@@ -669,5 +669,12 @@
 - [x] Fix prediction generation (not working when user asks question)
 - [x] Redesign prediction bubble styling (less bright, more professional)
 - [x] Change default category from General to Relationships
-- [ ] Test all changes on mobile viewport
-- [ ] Save checkpoint and push to GitHub
+- [x] Test all changes on mobile viewport
+- [x] Save checkpoint and push to GitHub
+
+### Dashboard UX Enhancements (Dec 7, 2024)
+- [x] Add desktop prediction history sidebar (collapsible panel on right side)
+- [x] Implement typing indicator animation ("AI is thinking..." with animated dots)
+- [x] Add swipe gestures for mobile (swipe-to-dismiss sidebar)
+- [x] Test all enhancements on desktop and mobile
+- [x] Save checkpoint with all UX improvements
