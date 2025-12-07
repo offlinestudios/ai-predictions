@@ -649,4 +649,4 @@
 - [x] Redesign composer to match dropdown width (full container width)
 - [x] Move attach and send buttons inside composer input area (inline)
 - [x] Test composer layout on mobile
-- [ ] Save checkpoint and push to GitHub
+- [x] Save checkpoint and push to GitHub
