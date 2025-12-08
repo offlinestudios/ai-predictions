@@ -1,17 +1,18 @@
 import { Link } from "wouter";
 import { TierBadge } from "@/components/Badge";
 import { Button } from "@/components/ui/button";
-import MobileSidebar from "@/components/MobileSidebar";
+import MobileUnifiedSidebar from "@/components/MobileUnifiedSidebar";
 
 interface MobileHeaderProps {
   isAuthenticated: boolean;
   userName?: string | null;
   userEmail?: string | null;
   tier?: "free" | "plus" | "pro" | "premium";
-  onHistoryClick?: () => void;
+  onSelectPrediction?: (prediction: any) => void;
+  currentPredictionId?: number | null;
 }
 
-export default function MobileHeader({ isAuthenticated, userName, userEmail, tier, onHistoryClick }: MobileHeaderProps) {
+export default function MobileHeader({ isAuthenticated, userName, userEmail, tier, onSelectPrediction, currentPredictionId }: MobileHeaderProps) {
   return (
     <header className="lg:hidden border-b border-border/50 backdrop-blur-sm sticky top-0 z-40 bg-background/95">
       <div className="container py-3 flex items-center justify-between">
@@ -25,10 +26,11 @@ export default function MobileHeader({ isAuthenticated, userName, userEmail, tie
 
         {/* Hamburger Menu */}
         <div className="flex items-center gap-2">
-          <MobileSidebar
+          <MobileUnifiedSidebar
             user={{ name: userName, email: userEmail }}
             subscription={tier ? { tier } : undefined}
-            onHistoryClick={onHistoryClick}
+            onSelectPrediction={onSelectPrediction}
+            currentPredictionId={currentPredictionId}
             isAuthenticated={isAuthenticated}
           />
         </div>

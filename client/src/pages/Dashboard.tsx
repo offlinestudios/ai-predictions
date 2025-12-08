@@ -16,12 +16,12 @@ import PredictionAccuracy from "@/components/PredictionAccuracy";
 import { TierBadge } from "@/components/Badge";
 import { PredictionLoader } from "@/components/PredictionLoader";
 import { TrajectoryTimeline } from "@/components/TrajectoryTimeline";
-import PredictionHistory from "@/components/PredictionHistory";
+
 import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
 import BottomNavigation from "@/components/BottomNavigation";
 import MobileHeader from "@/components/MobileHeader";
-import DesktopSidebar from "@/components/DesktopSidebar";
+import UnifiedSidebar from "@/components/UnifiedSidebar";
 
 import { useState, useEffect } from "react";
 import { useClerk } from "@clerk/clerk-react";
@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
+
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -470,18 +470,23 @@ export default function Dashboard() {
         userName={user?.name}
         userEmail={user?.email}
         tier={subscription?.tier}
-        onHistoryClick={() => setHistoryOpen(!historyOpen)}
+        onSelectPrediction={handleSelectPrediction}
+        currentPredictionId={currentPredictionId}
       />
       
-      {/* Desktop Sidebar */}
-      <DesktopSidebar
-        user={user}
-        subscription={subscription}
-        onHistoryClick={() => setHistoryOpen(!historyOpen)}
-        isAuthenticated={isAuthenticated}
-      />
+      {/* Desktop Unified Sidebar */}
+      {isAuthenticated && (
+        <UnifiedSidebar
+          user={user}
+          subscription={subscription}
+          onSelectPrediction={handleSelectPrediction}
+          currentPredictionId={currentPredictionId}
+          isAuthenticated={isAuthenticated}
+          className="hidden lg:flex fixed left-0 top-0 h-screen w-80 z-40"
+        />
+      )}
 
-      <div className="container py-4 md:py-8 max-w-6xl lg:ml-64">
+      <div className="container py-4 md:py-8 max-w-6xl lg:ml-80">
         <div className="flex flex-col md:grid md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Subscription Status - Show first on mobile (for quick glance), sidebar on desktop */}
           <div className="order-1 md:order-1 lg:order-1 lg:col-span-1">
@@ -975,15 +980,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Prediction History Panel - Only show for authenticated users */}
-      {isAuthenticated && (
-        <PredictionHistory 
-          onSelectPrediction={handleSelectPrediction}
-          currentPredictionId={currentPredictionId}
-          isOpen={historyOpen}
-          onToggle={() => setHistoryOpen(!historyOpen)}
-        />
-      )}
+
       
       {/* Upgrade Modal */}
       <UpgradeModal 
