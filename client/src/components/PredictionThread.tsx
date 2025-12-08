@@ -49,11 +49,6 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
               <div className="max-w-[85%] md:max-w-[70%]">
                 <Card className="bg-accent/30 border-accent/50 p-3 md:p-4">
                   <p className="text-sm md:text-base whitespace-pre-wrap">{message.content}</p>
-                  {message.category && (
-                    <Badge variant="secondary" className="mt-2 text-xs">
-                      {message.category}
-                    </Badge>
-                  )}
                 </Card>
                 <p className="text-xs text-muted-foreground mt-1 text-right">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

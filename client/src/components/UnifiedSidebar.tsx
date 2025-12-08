@@ -188,9 +188,8 @@ export default function UnifiedSidebar({
                   >
                     {/* Category Badge */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/30">
-                        <Icon className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] font-medium capitalize text-muted-foreground">{category}</span>
+                      <div className="flex items-center justify-center w-6 h-6">
+                        <Icon className="w-4 h-4 text-muted-foreground" />
                       </div>
                       <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
