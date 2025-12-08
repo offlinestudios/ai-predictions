@@ -43,6 +43,7 @@ export default function DashboardChat() {
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -222,7 +223,7 @@ export default function DashboardChat() {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Desktop: Fixed Left Sidebar */}
-      <div className="hidden lg:block w-80 h-screen sticky top-0">
+      <div className={`hidden lg:block h-screen sticky top-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-80'}`}>
         {isAuthenticated && (
           <UnifiedSidebar
             user={user}
@@ -231,6 +232,8 @@ export default function DashboardChat() {
             currentPredictionId={null}
             isAuthenticated={isAuthenticated}
             onNewPrediction={handleNewPrediction}
+            isCollapsed={sidebarCollapsed}
+            onCollapsedChange={setSidebarCollapsed}
           />
         )}
       </div>
@@ -272,6 +275,7 @@ export default function DashboardChat() {
           onSubmit={handleSubmit}
           isLoading={isGenerating}
           disabled={isComposerDisabled}
+          sidebarCollapsed={sidebarCollapsed}
         />
 
         {/* Modals */}

@@ -9,9 +9,10 @@ interface ChatComposerProps {
   onSubmit: (question: string, category: string, files: File[]) => void;
   isLoading: boolean;
   disabled?: boolean;
+  sidebarCollapsed?: boolean;
 }
 
-export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComposerProps) {
+export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCollapsed = false }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [category, setCategory] = useState("relationships");
   const [files, setFiles] = useState<File[]>([]);
@@ -62,7 +63,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled }: ChatComp
   };
 
   return (
-    <div className="fixed left-0 lg:left-80 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-0">
+    <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       {/* On mobile (<lg), positioned 64px from bottom to sit above bottom nav */}
       <div className="container max-w-4xl py-3 md:py-4">
         {/* Category Selector - Mobile Optimized */}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, Clock, ChevronRight, Plus, X } from "lucide-react";
+import { Settings, LogOut, Clock, ChevronRight, Plus, X, ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -36,6 +36,8 @@ interface UnifiedSidebarProps {
   isAuthenticated: boolean;
   className?: string;
   onNewPrediction?: () => void;
+  isCollapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 const categoryIcons = {
@@ -60,11 +62,18 @@ export default function UnifiedSidebar({
   currentPredictionId,
   isAuthenticated,
   className = "",
-  onNewPrediction
+  onNewPrediction,
+  isCollapsed = false,
+  onCollapsedChange
 }: UnifiedSidebarProps) {
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  const handleCollapsedChange = (collapsed: boolean) => {
+    if (onCollapsedChange) {
+      onCollapsedChange(collapsed);
+    }
+  };
 
   const handleSignOut = () => {
     signOut(() => navigate("/"));
@@ -100,7 +109,7 @@ export default function UnifiedSidebar({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsCollapsed(false)}
+            onClick={() => handleCollapsedChange(false)}
             className="w-8 h-8"
           >
             <ChevronRight className="w-4 h-4" />
@@ -114,12 +123,22 @@ export default function UnifiedSidebar({
     <aside className={`flex flex-col h-full bg-card/50 backdrop-blur-sm border-r border-border/50 ${className}`}>
       {/* Logo and Title */}
       <div className="p-6 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
-          <div>
-            <h1 className="text-lg font-bold">Predicsure AI</h1>
-            <p className="text-xs text-muted-foreground">AI Predictions</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
+            <div>
+              <h1 className="text-lg font-bold">Predicsure AI</h1>
+              <p className="text-xs text-muted-foreground">AI Predictions</p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleCollapsedChange(true)}
+            className="h-8 w-8 flex-shrink-0"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
