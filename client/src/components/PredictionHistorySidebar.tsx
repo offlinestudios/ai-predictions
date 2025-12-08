@@ -141,10 +141,10 @@ export default function PredictionHistorySidebar({
                 >
                   {/* Category Badge */}
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="text-xs flex items-center gap-1.5">
-                      {getCategoryIcon(prediction.category || "general")}
-                      <span>{getCategoryLabel(prediction.category || "general")}</span>
-                    </Badge>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/30">
+                      <span className="text-muted-foreground text-xs">{getCategoryIcon(prediction.category || "general")}</span>
+                      <span className="text-xs font-medium text-muted-foreground">{getCategoryLabel(prediction.category || "general")}</span>
+                    </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                   </div>
 
