@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useIsMobile } from "@/hooks/useMobile";
 import { trpc } from "@/lib/trpc";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -39,8 +40,16 @@ export default function DashboardChat() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
-  const [showHistorySidebar, setShowHistorySidebar] = useState(true);
+  const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+
+  // Set initial sidebar state based on device type
+  useEffect(() => {
+    if (isMobile !== undefined) {
+      setShowHistorySidebar(!isMobile); // open on desktop, closed on mobile
+    }
+  }, [isMobile]);
 
   // Fetch subscription data
   const { data: subscription } = trpc.subscription.getCurrent.useQuery(undefined, {
