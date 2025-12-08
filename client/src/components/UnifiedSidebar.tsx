@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, Clock, ChevronRight } from "lucide-react";
+import { Settings, LogOut, Clock, ChevronRight, Plus, X } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -35,13 +35,14 @@ interface UnifiedSidebarProps {
   currentPredictionId?: number | null;
   isAuthenticated: boolean;
   className?: string;
+  onNewPrediction?: () => void;
 }
 
 const categoryIcons = {
-  career: { icon: Briefcase, color: "text-blue-500", bg: "bg-blue-500/10" },
-  love: { icon: Heart, color: "text-pink-500", bg: "bg-pink-500/10" },
-  finance: { icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
-  health: { icon: Activity, color: "text-orange-500", bg: "bg-orange-500/10" },
+  career: { icon: Briefcase, color: "text-purple-500", bg: "bg-purple-500/10" },
+  love: { icon: Heart, color: "text-purple-500", bg: "bg-purple-500/10" },
+  finance: { icon: DollarSign, color: "text-purple-500", bg: "bg-purple-500/10" },
+  health: { icon: Activity, color: "text-purple-500", bg: "bg-purple-500/10" },
   general: { icon: Sparkles, color: "text-purple-500", bg: "bg-purple-500/10" },
 };
 
@@ -58,13 +59,24 @@ export default function UnifiedSidebar({
   onSelectPrediction,
   currentPredictionId,
   isAuthenticated,
-  className = ""
+  className = "",
+  onNewPrediction
 }: UnifiedSidebarProps) {
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleSignOut = () => {
     signOut(() => navigate("/"));
+  };
+
+  const handleNewPrediction = () => {
+    if (onNewPrediction) {
+      onNewPrediction();
+    } else {
+      // Reload the page to start fresh
+      window.location.reload();
+    }
   };
 
   const { data: historyData, isLoading } = trpc.prediction.getHistory.useQuery(
@@ -81,23 +93,42 @@ export default function UnifiedSidebar({
     return null;
   }
 
+  if (isCollapsed) {
+    return (
+      <aside className={`flex flex-col h-full bg-card/50 backdrop-blur-sm border-r border-border/50 w-16 ${className}`}>
+        <div className="p-4 border-b border-border/50 flex justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(false)}
+            className="w-8 h-8"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside className={`flex flex-col h-full bg-card/50 backdrop-blur-sm border-r border-border/50 ${className}`}>
       {/* Logo and Title */}
       <div className="p-6 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
-          <div>
-            <h1 className="text-lg font-bold">Predicsure AI</h1>
-            <p className="text-xs text-muted-foreground">AI Predictions</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
+            <div>
+              <h1 className="text-lg font-bold">Predicsure AI</h1>
+              <p className="text-xs text-muted-foreground">AI Predictions</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* User Info */}
       <div className="p-4 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-semibold text-primary">
               {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
             </span>
@@ -105,13 +136,25 @@ export default function UnifiedSidebar({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            {subscription && (
+              <div className="mt-2">
+                <TierBadge tier={subscription.tier} size="sm" />
+              </div>
+            )}
           </div>
         </div>
-        {subscription && (
-          <div className="mt-3">
-            <TierBadge tier={subscription.tier} size="md" />
-          </div>
-        )}
+      </div>
+
+      {/* New Prediction Button */}
+      <div className="p-4 border-b border-border/50">
+        <Button 
+          onClick={handleNewPrediction}
+          className="w-full justify-start"
+          variant="default"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Prediction
+        </Button>
       </div>
 
       {/* Prediction History Section */}
@@ -147,7 +190,7 @@ export default function UnifiedSidebar({
                     }`}
                   >
                     <div className="flex items-start gap-2 mb-2">
-                      <div className={`p-1.5 rounded ${bg}`}>
+                      <div className={`p-1.5 rounded ${bg} flex-shrink-0`}>
                         <Icon className={`w-3 h-3 ${color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -158,10 +201,10 @@ export default function UnifiedSidebar({
                       </div>
                       <ChevronRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
                       {pred.userQuery}
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">
+                    <p className="text-[10px] text-muted-foreground">
                       {formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}
                     </p>
                   </button>

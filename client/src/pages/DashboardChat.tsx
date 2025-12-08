@@ -193,6 +193,12 @@ export default function DashboardChat() {
     toast.success("Prediction loaded from history");
   };
 
+  // Handle new prediction
+  const handleNewPrediction = () => {
+    setMessages([]);
+    toast.success("Starting a new prediction");
+  };
+
   // Handle refine request
   const handleRefineRequest = (messageId: string) => {
     toast.info("Refinement feature coming soon! This will ask you specific questions to improve accuracy.");
@@ -224,6 +230,7 @@ export default function DashboardChat() {
             onSelectPrediction={handleSelectPrediction}
             currentPredictionId={null}
             isAuthenticated={isAuthenticated}
+            onNewPrediction={handleNewPrediction}
           />
         )}
       </div>
