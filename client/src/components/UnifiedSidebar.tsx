@@ -180,33 +180,28 @@ export default function UnifiedSidebar({
                   <button
                     key={pred.id}
                     onClick={() => onSelectPrediction?.(pred)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all ${
+                    className={`w-full text-left p-3 rounded-lg border transition-all group ${
                       isActive
                         ? "border-primary bg-primary/5"
                         : "border-border/50 hover:border-primary/50 hover:bg-accent/50"
                     }`}
                   >
-                    <div className="flex items-start gap-2 mb-2">
-                      <div className={`p-1.5 rounded ${bg} flex-shrink-0`}>
+                    {/* Category Badge */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/50">
                         <Icon className={`w-3 h-3 ${color}`} />
+                        <span className="text-[10px] font-medium capitalize">{category}</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium line-clamp-2 mb-1">
-                          {pred.userQuery}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-[10px] text-muted-foreground capitalize">
-                            {category}
-                          </p>
-                          <span className="text-[10px] text-muted-foreground">•</span>
-                          <p className="text-[10px] text-muted-foreground">
-                            {trajectoryLabels[trajectory]}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-1" />
+                      <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
-                    <p className="text-[10px] text-muted-foreground">
+
+                    {/* Question Text - Prominent */}
+                    <p className="text-sm font-medium line-clamp-2 mb-2">
+                      {pred.userInput}
+                    </p>
+
+                    {/* Timestamp */}
+                    <p className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}
                     </p>
                   </button>
