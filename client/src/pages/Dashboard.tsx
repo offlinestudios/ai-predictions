@@ -54,6 +54,7 @@ export default function Dashboard() {
   const [trajectoryType, setTrajectoryType] = useState<"instant" | "30day" | "90day" | "yearly">("instant");
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const { data: subscription, isLoading: subLoading, refetch: refetchSub } = trpc.subscription.getCurrent.useQuery(
     undefined,
@@ -469,12 +470,14 @@ export default function Dashboard() {
         userName={user?.name}
         userEmail={user?.email}
         tier={subscription?.tier}
+        onHistoryClick={() => setHistoryOpen(!historyOpen)}
       />
       
       {/* Desktop Sidebar */}
       <DesktopSidebar
         user={user}
         subscription={subscription}
+        onHistoryClick={() => setHistoryOpen(!historyOpen)}
         isAuthenticated={isAuthenticated}
       />
 
@@ -977,6 +980,8 @@ export default function Dashboard() {
         <PredictionHistory 
           onSelectPrediction={handleSelectPrediction}
           currentPredictionId={currentPredictionId}
+          isOpen={historyOpen}
+          onToggle={() => setHistoryOpen(!historyOpen)}
         />
       )}
       

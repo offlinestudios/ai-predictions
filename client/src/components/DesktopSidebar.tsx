@@ -13,10 +13,11 @@ interface DesktopSidebarProps {
   subscription?: {
     tier: "free" | "plus" | "pro" | "premium";
   };
+  onHistoryClick?: () => void;
   isAuthenticated: boolean;
 }
 
-export default function DesktopSidebar({ user, subscription, isAuthenticated }: DesktopSidebarProps) {
+export default function DesktopSidebar({ user, subscription, onHistoryClick, isAuthenticated }: DesktopSidebarProps) {
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
 
@@ -63,12 +64,14 @@ export default function DesktopSidebar({ user, subscription, isAuthenticated }: 
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
-        <Link href="/history">
-          <Button variant="ghost" className="w-full justify-start">
-            <History className="w-4 h-4 mr-3" />
-            Prediction History
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={onHistoryClick}
+        >
+          <History className="w-4 h-4 mr-3" />
+          Prediction History
+        </Button>
 
         <Link href="/account">
           <Button variant="ghost" className="w-full justify-start">

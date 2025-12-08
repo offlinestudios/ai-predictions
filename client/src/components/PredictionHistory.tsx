@@ -25,6 +25,8 @@ interface PredictionHistoryProps {
     trajectoryType: string | null;
   }) => void;
   currentPredictionId: number | null;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
 const categoryIcons = {
@@ -42,17 +44,11 @@ const trajectoryLabels = {
   yearly: "Yearly",
 };
 
-export default function PredictionHistory({ onSelectPrediction, currentPredictionId }: PredictionHistoryProps) {
-  // Initialize from localStorage, default to true (collapsed)
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    const saved = localStorage.getItem('predictionHistoryCollapsed');
-    return saved !== null ? saved === 'true' : true;
-  });
-
-  // Persist collapsed state to localStorage
-  useEffect(() => {
-    localStorage.setItem('predictionHistoryCollapsed', String(isCollapsed));
-  }, [isCollapsed]);
+export default function PredictionHistory({ onSelectPrediction, currentPredictionId, isOpen, onToggle }: PredictionHistoryProps) {
+  // Use external state if provided, otherwise use internal state
+  const [internalCollapsed, setInternalCollapsed] = useState(true);
+  const isCollapsed = isOpen !== undefined ? !isOpen : internalCollapsed;
+  const toggleCollapsed = onToggle || (() => setInternalCollapsed(!internalCollapsed));
 
   const { data: historyData, isLoading } = trpc.prediction.getHistory.useQuery(
     { limit: 10 },
@@ -67,7 +63,7 @@ export default function PredictionHistory({ onSelectPrediction, currentPredictio
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setIsCollapsed(false)}
+          onClick={toggleCollapsed}
           className="rounded-l-lg rounded-r-none border-r-0 shadow-lg"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -86,7 +82,7 @@ export default function PredictionHistory({ onSelectPrediction, currentPredictio
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsCollapsed(true)}
+          onClick={toggleCollapsed}
           className="h-8 w-8"
         >
           <ChevronRight className="h-4 w-4" />
