@@ -114,33 +114,11 @@ export default function UnifiedSidebar({
     <aside className={`flex flex-col h-full bg-card/50 backdrop-blur-sm border-r border-border/50 ${className}`}>
       {/* Logo and Title */}
       <div className="p-6 border-b border-border/50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
-            <div>
-              <h1 className="text-lg font-bold">Predicsure AI</h1>
-              <p className="text-xs text-muted-foreground">AI Predictions</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* User Info */}
-      <div className="p-4 border-b border-border/50">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-sm font-semibold text-primary">
-              {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            {subscription && (
-              <div className="mt-2">
-                <TierBadge tier={subscription.tier} size="sm" />
-              </div>
-            )}
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="Predicsure AI" className="w-10 h-10 object-contain" />
+          <div>
+            <h1 className="text-lg font-bold">Predicsure AI</h1>
+            <p className="text-xs text-muted-foreground">AI Predictions</p>
           </div>
         </div>
       </div>
@@ -159,7 +137,7 @@ export default function UnifiedSidebar({
 
       {/* Prediction History Section */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-border/50">
+        <div className="px-4 py-3 border-b border-border/50">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold">Recent Predictions</h2>
@@ -194,16 +172,21 @@ export default function UnifiedSidebar({
                         <Icon className={`w-3 h-3 ${color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium capitalize">{category}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {trajectoryLabels[trajectory]}
+                        <p className="text-xs font-medium line-clamp-2 mb-1">
+                          {pred.userQuery}
                         </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10px] text-muted-foreground capitalize">
+                            {category}
+                          </p>
+                          <span className="text-[10px] text-muted-foreground">•</span>
+                          <p className="text-[10px] text-muted-foreground">
+                            {trajectoryLabels[trajectory]}
+                          </p>
+                        </div>
                       </div>
-                      <ChevronRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      <ChevronRight className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-1" />
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
-                      {pred.userQuery}
-                    </p>
                     <p className="text-[10px] text-muted-foreground">
                       {formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}
                     </p>
@@ -215,23 +198,46 @@ export default function UnifiedSidebar({
         </ScrollArea>
       </div>
 
-      {/* Navigation */}
-      <div className="p-4 space-y-2 border-t border-border/50">
-        <Link href="/account">
-          <Button variant="ghost" className="w-full justify-start">
-            <Settings className="w-4 h-4 mr-3" />
-            Account Settings
-          </Button>
-        </Link>
+      {/* User Info + Navigation */}
+      <div className="border-t border-border/50">
+        {/* User Info Section */}
+        <div className="p-4 border-b border-border/50">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-primary">
+                {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              {subscription && (
+                <div className="mt-2">
+                  <TierBadge tier={subscription.tier} size="sm" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={handleSignOut}
-        >
-          <LogOut className="w-4 h-4 mr-3" />
-          Logout
-        </Button>
+        {/* Navigation Buttons */}
+        <div className="p-4 space-y-2">
+          <Link href="/account">
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="w-4 h-4 mr-3" />
+              Account Settings
+            </Button>
+          </Link>
+
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleSignOut}
+          >
+            <LogOut className="w-4 h-4 mr-3" />
+            Logout
+          </Button>
+        </div>
       </div>
     </aside>
   );
