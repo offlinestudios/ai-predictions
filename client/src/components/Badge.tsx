@@ -33,9 +33,9 @@ export function TierBadge({ tier, size = "md", showLabel = true }: TierBadgeProp
     premium: {
       icon: Crown,
       label: "Premium",
-      bgColor: "bg-amber-500/10",
-      textColor: "text-amber-400",
-      borderColor: "border-amber-500/20",
+      bgColor: "bg-purple-500/10",
+      textColor: "text-purple-400",
+      borderColor: "border-purple-500/20",
     },
   };
 

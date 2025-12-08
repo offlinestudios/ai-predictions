@@ -188,9 +188,9 @@ export default function UnifiedSidebar({
                   >
                     {/* Category Badge */}
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/50">
-                        <Icon className={`w-3 h-3 ${color}`} />
-                        <span className="text-[10px] font-medium capitalize">{category}</span>
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary/30">
+                        <Icon className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-[10px] font-medium capitalize text-muted-foreground">{category}</span>
                       </div>
                       <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
@@ -243,14 +243,14 @@ export default function UnifiedSidebar({
             </Button>
           </Link>
 
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={handleSignOut}
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Logout
-          </Button>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={handleSignOut}
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Logout
+        </Button>
         </div>
       </div>
     </aside>
