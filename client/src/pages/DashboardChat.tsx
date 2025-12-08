@@ -10,6 +10,8 @@ import PredictionThread from "@/components/PredictionThread";
 import MobileHeader from "@/components/MobileHeader";
 
 import PredictionHistorySidebar from "@/components/PredictionHistorySidebar";
+import UnifiedSidebar from "@/components/UnifiedSidebar";
+import MobileUnifiedSidebar from "@/components/MobileUnifiedSidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowLeft, Settings, LogOut, History } from "lucide-react";
@@ -44,10 +46,10 @@ export default function DashboardChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  // Set initial sidebar state based on device type
+  // Set initial sidebar state - closed by default on mobile
   useEffect(() => {
     if (isMobile !== undefined) {
-      setShowHistorySidebar(!isMobile); // open on desktop, closed on mobile
+      setShowHistorySidebar(false); // always closed on mobile by default
     }
   }, [isMobile]);
 
@@ -212,73 +214,32 @@ export default function DashboardChat() {
   const isComposerDisabled = !isAuthenticated && messages.length >= 3;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Mobile Header */}
-      <MobileHeader 
-        isAuthenticated={isAuthenticated}
-        userName={user?.name}
-        userEmail={user?.email}
-        tier={subscription?.tier}
-        onHistoryClick={() => setShowHistorySidebar(!showHistorySidebar)}
-      />
-      
-      {/* Desktop Header */}
-      <header className="hidden lg:block border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Home
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <img src="/logo.svg" alt="Predicsure AI Logo" className="w-8 h-8 object-contain" />
-              <h1 className="text-xl font-bold">Dashboard</h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowHistorySidebar(!showHistorySidebar)}
-                >
-                  <History className="w-4 h-4 mr-2" />
-                  History
-                </Button>
-                <Link href="/account">
-                  <Button variant="ghost" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Account
-                  </Button>
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{user?.name || user?.email}</span>
-                  {subscription && <TierBadge tier={subscription.tier} size="sm" />}
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => signOut(() => navigate("/"))}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <Button asChild variant="default" size="sm">
-                <a href={getLoginUrl()}>Sign In</a>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background text-foreground flex">
+      {/* Desktop: Fixed Left Sidebar */}
+      <div className="hidden lg:block w-80 h-screen sticky top-0">
+        {isAuthenticated && (
+          <UnifiedSidebar
+            user={user}
+            subscription={subscription}
+            onSelectPrediction={handleSelectPrediction}
+            currentPredictionId={null}
+            isAuthenticated={isAuthenticated}
+          />
+        )}
+      </div>
 
-      {/* Main Content Area with Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Main Chat Area */}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Mobile Header with Hamburger */}
+        <MobileHeader 
+          isAuthenticated={isAuthenticated}
+          userName={user?.name}
+          userEmail={user?.email}
+          tier={subscription?.tier}
+          onHistoryClick={() => setShowHistorySidebar(!showHistorySidebar)}
+        />
+
+        {/* Chat Area */}
         <main className="flex-1 overflow-y-auto pb-32 md:pb-40">
           <div className="container max-w-4xl pt-4 md:pt-8">
             <PredictionThread 
@@ -290,42 +251,40 @@ export default function DashboardChat() {
           </div>
         </main>
 
-        {/* History Sidebar */}
-        {isAuthenticated && (
+        {/* Mobile: Sidebar Sheet (toggleable from right) */}
+        {isMobile && isAuthenticated && (
           <PredictionHistorySidebar
             isOpen={showHistorySidebar}
             onClose={() => setShowHistorySidebar(false)}
             onSelectPrediction={handleSelectPrediction}
           />
         )}
+
+        {/* Chat Composer - Fixed at bottom */}
+        <ChatComposer 
+          onSubmit={handleSubmit}
+          isLoading={isGenerating}
+          disabled={isComposerDisabled}
+        />
+
+        {/* Modals */}
+        {isAuthenticated && subscription && (
+          <PostPredictionPaywall 
+            open={showPostPredictionPaywall}
+            onOpenChange={setShowPostPredictionPaywall}
+            userTier={subscription.tier}
+            predictionCategory="general"
+          />
+        )}
+
+        {showPremiumUnlock && (
+          <PremiumUnlockModal
+            open={showPremiumUnlock}
+            onClose={() => setShowPremiumUnlock(false)}
+            onComplete={() => setShowPremiumUnlock(false)}
+          />
+        )}
       </div>
-
-      {/* Chat Composer - Fixed at bottom */}
-      <ChatComposer 
-        onSubmit={handleSubmit}
-        isLoading={isGenerating}
-        disabled={isComposerDisabled}
-      />
-
-
-
-      {/* Modals */}
-      {isAuthenticated && subscription && (
-        <PostPredictionPaywall 
-          open={showPostPredictionPaywall}
-          onOpenChange={setShowPostPredictionPaywall}
-          userTier={subscription.tier}
-          predictionCategory="general"
-        />
-      )}
-
-      {showPremiumUnlock && (
-        <PremiumUnlockModal
-          open={showPremiumUnlock}
-          onClose={() => setShowPremiumUnlock(false)}
-          onComplete={() => setShowPremiumUnlock(false)}
-        />
-      )}
     </div>
   );
 }
