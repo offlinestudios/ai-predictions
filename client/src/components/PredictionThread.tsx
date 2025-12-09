@@ -56,14 +56,12 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
             <div key={message.id} className="flex justify-end">
               <div className="max-w-[85%] md:max-w-[70%]">
                 <Card className="bg-accent/30 border-accent/50 p-3 md:p-4">
-                  <div className="flex items-start gap-2">
-                    {message.category && (
-                      <div className="flex-shrink-0 mt-0.5">
-                        <CategoryIcon className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                    )}
-                    <p className="text-sm md:text-base whitespace-pre-wrap flex-1">{message.content}</p>
-                  </div>
+                  <p className="text-sm md:text-base whitespace-pre-wrap mb-2">{message.content}</p>
+                  {message.category && (
+                    <div className="flex items-center justify-end">
+                      <CategoryIcon className="w-3.5 h-3.5 text-muted-foreground/60" />
+                    </div>
+                  )}
                 </Card>
                 <p className="text-xs text-muted-foreground mt-1 text-right">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
