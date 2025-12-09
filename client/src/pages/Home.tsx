@@ -150,7 +150,7 @@ export default function Home() {
             {/* CTA Button */}
             <div className="pt-2">
               <Button asChild size="lg" className="text-lg px-12 shadow-lg shadow-primary/20">
-                <Link href="/onboarding">
+                <Link href="/sign-up">
                   Get Your First Prediction
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>

@@ -66,7 +66,7 @@ export default function Pricing() {
             </ul>
 
             <Button asChild variant="outline" size="lg" className="w-full">
-              <Link href="/onboarding">Get Started Free</Link>
+              <Link href="/sign-up">Get Started Free</Link>
             </Button>
           </div>
 
@@ -244,7 +244,7 @@ export default function Pricing() {
             Start with a free prediction today. No credit card required.
           </p>
           <Button asChild size="lg" className="text-lg px-12">
-            <Link href="/onboarding">
+            <Link href="/sign-up">
               Get Your First Prediction Free
             </Link>
           </Button>
