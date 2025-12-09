@@ -14,6 +14,14 @@ import {
   getUserFeedbackStats,
   getDb,
 } from "./db";
+import {
+  calculatePsycheType,
+  savePsycheProfile,
+  getUserPsycheProfile,
+  saveOnboardingResponse,
+  PSYCHE_TYPES,
+  QUESTION_MAPPINGS,
+} from "./psyche";
 import { predictions, users } from "../drizzle/schema";
 import { eq, desc, like, or, isNull, sql, and, gte } from "drizzle-orm";
 import { invokeLLM } from "./_core/llm";
@@ -1120,6 +1128,80 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         await updatePredictionFeedback(input.predictionId, ctx.user.id, input.feedback);
         
         return { success: true };
+      }),
+  }),
+
+  psyche: router({
+    // Submit onboarding responses and calculate psyche profile
+    submitOnboarding: protectedProcedure
+      .input(z.object({
+        responses: z.array(z.object({
+          questionId: z.number(),
+          questionText: z.string(),
+          selectedOption: z.string(),
+          answerText: z.string(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          // Save each response
+          for (const response of input.responses) {
+            const mapping = QUESTION_MAPPINGS[response.questionId as keyof typeof QUESTION_MAPPINGS];
+            const mappedTypes = mapping?.[response.selectedOption as keyof typeof mapping] || [];
+            
+            await saveOnboardingResponse(
+              ctx.user.id,
+              response.questionId,
+              response.questionText,
+              response.selectedOption,
+              response.answerText,
+              mappedTypes
+            );
+          }
+          
+          // Calculate psyche type
+          const psycheType = calculatePsycheType(input.responses);
+          
+          // Save psyche profile
+          const profile = await savePsycheProfile(ctx.user.id, psycheType);
+          
+          return {
+            success: true,
+            psycheType,
+            profile: {
+              displayName: profile.displayName,
+              description: profile.description,
+              coreTraits: profile.coreTraits,
+              decisionMakingStyle: profile.decisionMakingStyle,
+              growthEdge: profile.growthEdge,
+            },
+          };
+        } catch (error) {
+          console.error('[submitOnboarding] Error:', error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to process onboarding: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        }
+      }),
+    
+    // Get user's psyche profile
+    getProfile: protectedProcedure
+      .query(async ({ ctx }) => {
+        const profile = await getUserPsycheProfile(ctx.user.id);
+        if (!profile) {
+          return null;
+        }
+        
+        return {
+          psycheType: profile.psycheType,
+          displayName: profile.displayName,
+          description: profile.description,
+          coreTraits: JSON.parse(profile.coreTraits),
+          decisionMakingStyle: profile.decisionMakingStyle,
+          growthEdge: profile.growthEdge,
+          parameters: JSON.parse(profile.psycheParameters),
+        };
       }),
   }),
 });

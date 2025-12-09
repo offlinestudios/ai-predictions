@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Loader2, Home, ArrowLeft, Star, Zap, Crown, ExternalLink, CreditCard, Calendar, TrendingUp } from "lucide-react";
+import { Loader2, Home, ArrowLeft, Star, Zap, Crown, ExternalLink, CreditCard, Calendar, TrendingUp, Sparkles, Brain } from "lucide-react";
 import { useEffect } from "react";
+import PsycheProfileCard from "@/components/PsycheProfileCard";
 import { toast } from "sonner";
 
 const TIER_INFO = {
@@ -115,6 +116,9 @@ export default function Account() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Psyche Profile Card */}
+          <PsycheProfileCard />
 
           {/* Current Subscription Card */}
           <Card>

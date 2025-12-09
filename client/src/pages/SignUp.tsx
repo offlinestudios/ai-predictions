@@ -6,7 +6,7 @@ export default function SignUp() {
       <ClerkSignUp 
         routing="hash"
         signInUrl="/sign-in"
-        afterSignUpUrl="/dashboard"
+        afterSignUpUrl="/psyche-onboarding"
       />
     </div>
   );

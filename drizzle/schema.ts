@@ -6,6 +6,20 @@ export const tierEnum = pgEnum("tier", ["free", "plus", "pro", "premium"]);
 export const badgeEnum = pgEnum("badge", ["none", "plus", "pro", "premium"]);
 export const predictionModeEnum = pgEnum("predictionMode", ["standard", "deep"]);
 export const trajectoryTypeEnum = pgEnum("trajectoryType", ["instant", "30day", "90day", "yearly"]);
+export const psycheTypeEnum = pgEnum("psycheType", [
+  "quiet_strategist",
+  "intuitive_empath",
+  "ambitious_builder",
+  "escapist_romantic",
+  "stabilizer",
+  "momentum_chaser",
+  "emotional_fan",
+  "pattern_analyst",
+  "revenge_bettor",
+  "long_term_builder",
+  "fear_based_seller",
+  "risk_addict"
+]);
 
 /**
  * Core user table backing auth flow.
@@ -117,3 +131,52 @@ export const predictions = pgTable("predictions", {
 
 export type Prediction = typeof predictions.$inferSelect;
 export type InsertPrediction = typeof predictions.$inferInsert;
+
+/**
+ * User psyche profiles - the core of personalized predictions
+ */
+export const psycheProfiles = pgTable("psycheProfiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull().unique(),
+  /** One of the 12 psyche types */
+  psycheType: psycheTypeEnum("psycheType").notNull(),
+  /** Display name for the psyche type */
+  displayName: varchar("displayName", { length: 100 }).notNull(),
+  /** Short description of the psyche type */
+  description: text("description").notNull(),
+  /** Core traits as JSON array */
+  coreTraits: text("coreTraits").notNull(),
+  /** Decision-making style description */
+  decisionMakingStyle: text("decisionMakingStyle").notNull(),
+  /** Growth edge / areas for improvement */
+  growthEdge: text("growthEdge").notNull(),
+  /** Numeric parameters for prediction engine (JSON) */
+  psycheParameters: text("psycheParameters").notNull(), // risk_appetite, emotional_reactivity, etc.
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type PsycheProfile = typeof psycheProfiles.$inferSelect;
+export type InsertPsycheProfile = typeof psycheProfiles.$inferInsert;
+
+/**
+ * Onboarding responses - stores user answers to psyche questions
+ */
+export const onboardingResponses = pgTable("onboardingResponses", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  /** Question ID (1-16) */
+  questionId: integer("questionId").notNull(),
+  /** Question text */
+  questionText: text("questionText").notNull(),
+  /** Selected answer option (A, B, C, D, E) */
+  selectedOption: varchar("selectedOption", { length: 1 }).notNull(),
+  /** Answer text */
+  answerText: text("answerText").notNull(),
+  /** Psyche types this answer maps to (JSON array) */
+  mappedPsycheTypes: text("mappedPsycheTypes").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OnboardingResponse = typeof onboardingResponses.$inferSelect;
+export type InsertOnboardingResponse = typeof onboardingResponses.$inferInsert;
