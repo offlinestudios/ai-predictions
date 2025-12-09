@@ -386,9 +386,46 @@ export default function PsycheOnboarding() {
 
   // Calculate overall progress
   const calculateProgress = () => {
-    const steps = ["welcome", "name", "interests", "category-questions", "relationship", "psyche-questions"];
-    const currentIndex = steps.indexOf(currentStep);
-    return ((currentIndex + 1) / steps.length) * 100;
+    // Total weight distribution:
+    // welcome: 5%
+    // name: 5%
+    // interests: 5%
+    // category-questions: 30% (divided by number of category questions)
+    // relationship: 5%
+    // psyche-questions: 50% (divided by 16 questions)
+    
+    if (currentStep === "welcome") return 5;
+    if (currentStep === "name") return 10;
+    if (currentStep === "interests") return 15;
+    
+    if (currentStep === "category-questions") {
+      // Calculate total category questions
+      const totalCategoryQuestions = selectedInterests.reduce((total, interest) => {
+        const questions = CATEGORY_QUESTION_MAP[interest as keyof typeof CATEGORY_QUESTION_MAP];
+        return total + (questions?.length || 0);
+      }, 0);
+      
+      // Calculate how many questions answered so far
+      let answeredQuestions = 0;
+      for (let i = 0; i < currentCategoryIndex; i++) {
+        const interest = selectedInterests[i];
+        const questions = CATEGORY_QUESTION_MAP[interest as keyof typeof CATEGORY_QUESTION_MAP];
+        answeredQuestions += questions?.length || 0;
+      }
+      answeredQuestions += currentCategoryQuestionIndex;
+      
+      const categoryProgress = totalCategoryQuestions > 0 ? (answeredQuestions / totalCategoryQuestions) * 30 : 30;
+      return 15 + categoryProgress;
+    }
+    
+    if (currentStep === "relationship") return 50;
+    
+    if (currentStep === "psyche-questions") {
+      const psycheProgress = (currentPsycheQuestionIndex / ONBOARDING_QUESTIONS.length) * 50;
+      return 50 + psycheProgress;
+    }
+    
+    return 100;
   };
 
   return (
@@ -397,10 +434,7 @@ export default function PsycheOnboarding() {
         {/* Progress Bar */}
         {currentStep !== "welcome" && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-medium text-muted-foreground">
-                {currentStep === "psyche-questions" && `Question ${currentPsycheQuestionIndex + 1} of ${ONBOARDING_QUESTIONS.length}`}
-              </h2>
+            <div className="flex items-center justify-end mb-2">
               <span className="text-sm font-medium text-primary">
                 {Math.round(calculateProgress())}%
               </span>
