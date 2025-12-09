@@ -135,7 +135,7 @@ export default function About() {
               Ready to see what's shifting in your life?
             </p>
             <Button asChild size="lg" className="mt-4">
-              <Link href="/sign-up">
+              <Link href="/psyche-onboarding">
                 Get Your First Prediction Free
               </Link>
             </Button>

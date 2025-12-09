@@ -18,27 +18,43 @@ export default function PsycheOnboarding() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Record<number, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [psycheProfile, setPsycheProfile] = useState<any>(null);
 
-  // Check if user is authenticated and already completed onboarding
+  // Check if user already completed onboarding
   useEffect(() => {
-    if (!authLoading) {
-      if (!isAuthenticated) {
-        // Redirect to sign up
-        toast.error("Please sign up to discover your psyche profile");
-        navigate("/");
-      } else if (user?.onboardingCompleted) {
-        // User already completed onboarding, redirect to dashboard
-        navigate("/dashboard");
-      }
+    if (!authLoading && isAuthenticated && user?.onboardingCompleted) {
+      // User already completed onboarding, redirect to dashboard
+      navigate("/dashboard");
     }
   }, [authLoading, isAuthenticated, user, navigate]);
+
+  // Check if user just signed up and has stored responses
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && !user?.onboardingCompleted) {
+      const savedResponses = localStorage.getItem("psycheOnboardingResponses");
+      if (savedResponses) {
+        try {
+          const parsedResponses = JSON.parse(savedResponses);
+          // Submit the responses now that user is authenticated
+          setIsSubmitting(true);
+          submitOnboardingMutation.mutate({
+            responses: parsedResponses,
+          });
+          localStorage.removeItem("psycheOnboardingResponses");
+        } catch (e) {
+          console.error("Failed to parse saved responses", e);
+        }
+      }
+    }
+  }, [authLoading, isAuthenticated, user]);
 
   const submitOnboardingMutation = trpc.psyche.submitOnboarding.useMutation({
     onSuccess: (data) => {
       setPsycheProfile(data.profile);
       setShowProfile(true);
+      setShowSignUpPrompt(false);
       setIsSubmitting(false);
       toast.success("Your psyche profile has been revealed!");
     },
@@ -61,8 +77,8 @@ export default function PsycheOnboarding() {
     if (currentQuestion < ONBOARDING_QUESTIONS.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Submit all responses
-      handleSubmit();
+      // All questions answered
+      handleComplete();
     }
   };
 
@@ -72,9 +88,8 @@ export default function PsycheOnboarding() {
     }
   };
 
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    
+  const handleComplete = () => {
+    // Format responses
     const formattedResponses = ONBOARDING_QUESTIONS.map(q => {
       const selectedOption = responses[q.id];
       const option = q.options.find(opt => opt.value === selectedOption);
@@ -87,9 +102,21 @@ export default function PsycheOnboarding() {
       };
     });
 
-    submitOnboardingMutation.mutate({
-      responses: formattedResponses,
-    });
+    if (isAuthenticated) {
+      // User is already signed in, submit directly
+      setIsSubmitting(true);
+      submitOnboardingMutation.mutate({
+        responses: formattedResponses,
+      });
+    } else {
+      // User is anonymous, save responses and prompt for sign up
+      localStorage.setItem("psycheOnboardingResponses", JSON.stringify(formattedResponses));
+      setShowSignUpPrompt(true);
+    }
+  };
+
+  const handleSignUp = () => {
+    navigate("/sign-up");
   };
 
   const handleContinueToDashboard = () => {
@@ -104,6 +131,47 @@ export default function PsycheOnboarding() {
     );
   }
 
+  // Show sign-up prompt after completing questions
+  if (showSignUpPrompt) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background via-background to-primary/5 p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md"
+        >
+          <Card className="border-primary/20 shadow-2xl">
+            <CardHeader className="text-center space-y-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                <Sparkles className="h-10 w-10 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">
+                Your Psyche Profile is Ready!
+              </CardTitle>
+              <CardDescription className="text-base">
+                Sign up now to reveal your personalized psyche profile and start making predictions tailored to how you think and decide.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button
+                onClick={handleSignUp}
+                className="w-full"
+                size="lg"
+              >
+                Sign Up to See Your Profile
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Your responses have been saved. Complete sign-up to unlock your profile.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Show profile after successful submission
   if (showProfile && psycheProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background via-background to-primary/5 p-4">
@@ -167,6 +235,7 @@ export default function PsycheOnboarding() {
     );
   }
 
+  // Show questions
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background via-background to-primary/5 p-4">
       <div className="w-full max-w-2xl">
@@ -251,7 +320,7 @@ export default function PsycheOnboarding() {
                       </>
                     ) : currentQuestion === ONBOARDING_QUESTIONS.length - 1 ? (
                       <>
-                        Reveal My Profile
+                        Complete Assessment
                         <Sparkles className="ml-2 h-4 w-4" />
                       </>
                     ) : (
