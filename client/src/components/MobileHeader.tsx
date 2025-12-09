@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { TierBadge } from "@/components/Badge";
 import { Button } from "@/components/ui/button";
 import MobileUnifiedSidebar from "@/components/MobileUnifiedSidebar";
-import { History } from "lucide-react";
+import { SquarePen } from "lucide-react";
 
 interface MobileHeaderProps {
   isAuthenticated: boolean;
@@ -11,10 +11,10 @@ interface MobileHeaderProps {
   tier?: "free" | "plus" | "pro" | "premium";
   onSelectPrediction?: (prediction: any) => void;
   currentPredictionId?: number | null;
-  onHistoryClick?: () => void;
+  onNewPrediction?: () => void;
 }
 
-export default function MobileHeader({ isAuthenticated, userName, userEmail, tier, onSelectPrediction, currentPredictionId, onHistoryClick }: MobileHeaderProps) {
+export default function MobileHeader({ isAuthenticated, userName, userEmail, tier, onSelectPrediction, currentPredictionId, onNewPrediction }: MobileHeaderProps) {
   return (
     <header className="lg:hidden border-b border-border/50 backdrop-blur-sm sticky top-0 z-40 bg-background/95">
       <div className="container py-3 flex items-center justify-between">
@@ -28,14 +28,14 @@ export default function MobileHeader({ isAuthenticated, userName, userEmail, tie
 
         {/* Right-side controls */}
         <div className="flex items-center gap-2">
-          {isAuthenticated && onHistoryClick && (
+          {isAuthenticated && onNewPrediction && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={onHistoryClick}
-              aria-label="Toggle history"
+              onClick={onNewPrediction}
+              aria-label="New prediction"
             >
-              <History className="w-5 h-5" />
+              <SquarePen className="w-5 h-5" />
             </Button>
           )}
           <MobileUnifiedSidebar

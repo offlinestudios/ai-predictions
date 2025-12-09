@@ -246,7 +246,7 @@ export default function DashboardChat() {
           userName={user?.name}
           userEmail={user?.email}
           tier={subscription?.tier}
-          onHistoryClick={() => setShowHistorySidebar(!showHistorySidebar)}
+          onNewPrediction={handleNewPrediction}
         />
 
         {/* Chat Area */}
