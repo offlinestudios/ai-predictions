@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown, Briefcase, Heart, DollarSign, Activity, MessageCircle } from "lucide-react";
 import { Streamdown } from "streamdown";
 import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
@@ -42,10 +42,25 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
     <div className="space-y-4 pb-4">
       {messages.map((message) => {
         if (message.type === "user") {
+          const categoryIcons: Record<string, React.ElementType> = {
+            career: Briefcase,
+            love: Heart,
+            finance: DollarSign,
+            health: Activity,
+            general: MessageCircle,
+            relationships: Heart,
+          };
+          const CategoryIcon = message.category ? categoryIcons[message.category] || MessageCircle : MessageCircle;
+          
           return (
             <div key={message.id} className="flex justify-end">
               <div className="max-w-[85%] md:max-w-[70%]">
-                <Card className="bg-accent/30 border-accent/50 p-3 md:p-4">
+                <Card className="bg-accent/30 border-accent/50 p-3 md:p-4 relative">
+                  {message.category && (
+                    <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                      <CategoryIcon className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                  )}
                   <p className="text-sm md:text-base whitespace-pre-wrap">{message.content}</p>
                 </Card>
                 <p className="text-xs text-muted-foreground mt-1 text-right">
