@@ -1135,7 +1135,11 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
     // Submit onboarding responses and calculate psyche profile
     submitOnboarding: protectedProcedure
       .input(z.object({
-        responses: z.array(z.object({
+        nickname: z.string(),
+        interests: z.array(z.string()),
+        relationshipStatus: z.string(),
+        categoryAnswers: z.record(z.record(z.string())),
+        psycheResponses: z.array(z.object({
           questionId: z.number(),
           questionText: z.string(),
           selectedOption: z.string(),
@@ -1144,8 +1148,22 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
       }))
       .mutation(async ({ ctx, input }) => {
         try {
-          // Save each response
-          for (const response of input.responses) {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+          // Save practical info to user record
+          await db.update(users)
+            .set({
+              nickname: input.nickname,
+              relationshipStatus: input.relationshipStatus,
+              interests: JSON.stringify(input.interests),
+              onboardingCompleted: true,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, ctx.user.id));
+
+          // Save each psyche response
+          for (const response of input.psycheResponses) {
             const mapping = QUESTION_MAPPINGS[response.questionId as keyof typeof QUESTION_MAPPINGS];
             const mappedTypes = mapping?.[response.selectedOption as keyof typeof mapping] || [];
             
@@ -1160,7 +1178,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           }
           
           // Calculate psyche type
-          const psycheType = calculatePsycheType(input.responses);
+          const psycheType = calculatePsycheType(input.psycheResponses);
           
           // Save psyche profile
           const profile = await savePsycheProfile(ctx.user.id, psycheType);
@@ -1175,6 +1193,9 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
               decisionMakingStyle: profile.decisionMakingStyle,
               growthEdge: profile.growthEdge,
             },
+            nickname: input.nickname,
+            interests: input.interests,
+            relationshipStatus: input.relationshipStatus,
           };
         } catch (error) {
           console.error('[submitOnboarding] Error:', error);
