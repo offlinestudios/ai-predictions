@@ -44,6 +44,7 @@ export default function DashboardChat() {
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [currentPredictionId, setCurrentPredictionId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -191,12 +192,14 @@ export default function DashboardChat() {
     };
 
     setMessages([userMessage, assistantMessage]);
+    setCurrentPredictionId(prediction.id);
     toast.success("Prediction loaded from history");
   };
 
   // Handle new prediction
   const handleNewPrediction = () => {
     setMessages([]);
+    setCurrentPredictionId(null);
     toast.success("Starting a new prediction");
   };
 
