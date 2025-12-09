@@ -8,7 +8,7 @@ import {
   Heart, 
   DollarSign, 
   Activity, 
-  Sparkles,
+  MessageCircle,
   ChevronLeft,
   ChevronRight,
   Clock
@@ -34,7 +34,7 @@ const categoryIcons = {
   love: { icon: Heart, color: "text-pink-500", bg: "bg-pink-500/10" },
   finance: { icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
   health: { icon: Activity, color: "text-orange-500", bg: "bg-orange-500/10" },
-  general: { icon: Sparkles, color: "text-purple-500", bg: "bg-purple-500/10" },
+  general: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" },
 };
 
 const trajectoryLabels = {

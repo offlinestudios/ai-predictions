@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, Clock, ChevronRight, Plus, X, ChevronLeft } from "lucide-react";
+import { Settings, LogOut, Clock, ChevronRight, Plus, X, ChevronLeft, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -12,7 +12,7 @@ import {
   Heart, 
   DollarSign, 
   Activity, 
-  Sparkles
+  MessageCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -45,7 +45,7 @@ const categoryIcons = {
   love: { icon: Heart, color: "text-purple-500", bg: "bg-purple-500/10" },
   finance: { icon: DollarSign, color: "text-purple-500", bg: "bg-purple-500/10" },
   health: { icon: Activity, color: "text-purple-500", bg: "bg-purple-500/10" },
-  general: { icon: Sparkles, color: "text-purple-500", bg: "bg-purple-500/10" },
+  general: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" },
 };
 
 const trajectoryLabels = {
@@ -156,9 +156,9 @@ export default function UnifiedSidebar({
 
       {/* Prediction History Section */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-4 py-3 border-b border-border/50">
+        <div className="px-4 py-4 border-b border-border/50">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-primary" />
+            <Clock className="w-4 h-4 text-muted-foreground" />
             <h2 className="text-sm font-semibold">Recent Predictions</h2>
           </div>
         </div>
@@ -211,30 +211,18 @@ export default function UnifiedSidebar({
         </ScrollArea>
       </div>
 
-      {/* User Info + Navigation */}
+      {/* Navigation Buttons */}
       <div className="border-t border-border/50">
-        {/* User Info Section */}
-        <div className="p-4 border-b border-border/50">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-semibold text-primary">
-                {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-              {subscription && (
-                <div className="mt-2">
-                  <TierBadge tier={subscription.tier} size="sm" />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Buttons */}
         <div className="p-4 space-y-2">
+          {subscription && ['pro', 'premium'].includes(subscription.tier) && (
+            <Link href="/analytics">
+              <Button variant="ghost" className="w-full justify-start">
+                <BarChart3 className="w-4 h-4 mr-3" />
+                Analytics
+              </Button>
+            </Link>
+          )}
+          
           <Link href="/account">
             <Button variant="ghost" className="w-full justify-start">
               <Settings className="w-4 h-4 mr-3" />
@@ -242,14 +230,14 @@ export default function UnifiedSidebar({
             </Button>
           </Link>
 
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={handleSignOut}
-        >
-          <LogOut className="w-4 h-4 mr-3" />
-          Logout
-        </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={handleSignOut}
+          >
+            <LogOut className="w-4 h-4 mr-3" />
+            Logout
+          </Button>
         </div>
       </div>
     </aside>

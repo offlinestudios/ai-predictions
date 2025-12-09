@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, History, Settings, User } from "lucide-react";
+import { Home, SquarePen, Settings, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BottomNavigationProps {
@@ -24,10 +24,11 @@ export default function BottomNavigation({ isAuthenticated, tier }: BottomNaviga
       show: true,
     },
     {
-      href: "/history",
-      icon: History,
-      label: "History",
-      show: isAuthenticated && tier !== "free",
+      href: "/dashboard?new=true",
+      icon: SquarePen,
+      label: "New",
+      show: isAuthenticated,
+      isAction: true,
     },
     {
       href: "/account",

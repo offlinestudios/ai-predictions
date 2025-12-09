@@ -32,9 +32,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
-        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-          <img src="/logo.svg" alt="Predicsure AI" className="w-12 h-12 object-contain" />
-        </div>
+        <img src="/logo.svg" alt="Predicsure AI" className="w-16 h-16 object-contain mb-6" />
         <h3 className="text-xl font-semibold">Start a Prediction</h3>
       </div>
     );
