@@ -247,6 +247,8 @@ export default function DashboardChat() {
           userEmail={user?.email}
           tier={subscription?.tier}
           onNewPrediction={handleNewPrediction}
+          onSelectPrediction={handleSelectPrediction}
+          currentPredictionId={currentPredictionId}
         />
 
         {/* Chat Area */}

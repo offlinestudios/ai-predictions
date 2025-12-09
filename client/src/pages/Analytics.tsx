@@ -162,33 +162,35 @@ export default function Analytics() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Dashboard
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-6 h-6 text-primary" />
-              <h1 className="text-xl font-bold">Prediction Analytics</h1>
+        <div className="container py-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-2 lg:gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 lg:w-auto lg:px-3">
+                  <ArrowLeft className="w-4 h-4 lg:mr-2" />
+                  <span className="hidden lg:inline">Dashboard</span>
+                </Button>
+              </Link>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
+                <h1 className="text-lg lg:text-xl font-bold">Prediction Analytics</h1>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Period:</span>
-            <Select value={dateRange} onValueChange={(val) => setDateRange(val as any)}>
-              <SelectTrigger className="w-[140px]">
-                <Calendar className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 90 days</SelectItem>
-                <SelectItem value="all">All time</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground hidden sm:inline">Period:</span>
+              <Select value={dateRange} onValueChange={(val) => setDateRange(val as any)}>
+                <SelectTrigger className="w-full sm:w-[140px]">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7d">Last 7 days</SelectItem>
+                  <SelectItem value="30d">Last 30 days</SelectItem>
+                  <SelectItem value="90d">Last 90 days</SelectItem>
+                  <SelectItem value="all">All time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </header>

@@ -131,14 +131,16 @@ export default function UnifiedSidebar({
               <p className="text-xs text-muted-foreground">AI Predictions</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleCollapsedChange(true)}
-            className="h-8 w-8 flex-shrink-0"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+          {onCollapsedChange && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleCollapsedChange(true)}
+              className="h-8 w-8 flex-shrink-0 hidden lg:flex"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
 
