@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Loader2, Home, ArrowLeft, Star, Zap, Crown, ExternalLink, CreditCard, Calendar, TrendingUp, Sparkles, Brain } from "lucide-react";
+import { Loader2, Home, ArrowLeft, Star, Zap, Crown, ExternalLink, CreditCard, Calendar, TrendingUp, Sparkles, Brain, Settings } from "lucide-react";
 import { useEffect } from "react";
 import PsycheProfileCard from "@/components/PsycheProfileCard";
 import { toast } from "sonner";
@@ -88,7 +88,7 @@ export default function Account() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
-            <img src="/logo.svg" alt="AI Predictions" className="w-7 h-7 object-contain" />
+            <Settings className="w-6 h-6 text-primary" />
             <h1 className="text-lg font-semibold">Account Settings</h1>
           </div>
         </div>

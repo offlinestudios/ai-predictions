@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { FolderOpen } from "lucide-react";
 import UnifiedSidebar from "@/components/UnifiedSidebar";
 
 interface MobileUnifiedSidebarProps {
@@ -42,7 +42,7 @@ export default function MobileUnifiedSidebar({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="lg:hidden">
-          <Menu className="w-6 h-6" />
+          <FolderOpen className="w-6 h-6" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[320px] sm:w-[380px] p-0">

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Paperclip, Send, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp } from "lucide-react";
+import { Loader2, Paperclip, ArrowUp, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
@@ -166,7 +166,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
             />
             
             {/* Inline buttons (right side) */}
-            <div className="absolute right-2 bottom-2 flex items-center gap-1">
+            <div className="absolute right-2 bottom-2 flex items-center gap-2">
               {/* File Upload Button */}
               <Button
                 variant="ghost"
@@ -183,12 +183,12 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
                 onClick={handleSubmit}
                 disabled={!question.trim() || isLoading || disabled}
                 size="icon"
-                className="h-8 w-8"
+                className="h-9 w-9"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <ArrowUp className="w-4 h-4" />
                     )}
               </Button>
             </div>
