@@ -384,7 +384,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-12 mt-16 bg-card/30">
+      <footer className="border-t border-border/50 py-8 mt-8 bg-card/30">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {/* Brand Column */}
