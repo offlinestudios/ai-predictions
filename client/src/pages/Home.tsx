@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp, Users, TrendingUp as TrendingUpIcon, Menu, X } from "lucide-react";
+import { Zap, Crown, History, ArrowRight, Star, Sparkles, TrendingUp, Users, TrendingUp as TrendingUpIcon, Menu, X, Cpu } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 
@@ -237,7 +237,7 @@ export default function Home() {
       </section>
 
       {/* Social Proof - Testimonials */}
-      <section className="py-20 bg-card/20">
+      <section className="py-12 bg-card/20">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">What People Are Discovering</h3>
@@ -318,7 +318,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20">
+      <section id="faq" className="py-12">
         <div className="container">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-3">Frequently Asked Questions</h3>
@@ -445,8 +445,8 @@ export default function Home() {
                 <span>Data Encrypted – We Never Sell Your Information</span>
               </div>
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>Powered by Manus + Advanced AI Models</span>
+                <Cpu className="w-4 h-4" />
+                <span>Powered by Advanced AI Models</span>
               </div>
             </div>
           </div>
