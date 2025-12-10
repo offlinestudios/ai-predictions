@@ -161,17 +161,17 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
               onKeyDown={handleKeyDown}
               placeholder="What do you want to predict?"
               disabled={isLoading || disabled}
-              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-24 py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
+              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-[88px] py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
               rows={1}
             />
             
             {/* Inline buttons (right side) */}
-            <div className="absolute right-2 bottom-2 flex items-center gap-2">
+            <div className="absolute right-2 bottom-2.5 flex items-center gap-1.5">
               {/* File Upload Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-accent"
+                className="h-7 w-7 hover:bg-accent rounded-lg"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || disabled}
               >
@@ -183,7 +183,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
                 onClick={handleSubmit}
                 disabled={!question.trim() || isLoading || disabled}
                 size="icon"
-                className="h-9 w-9"
+                className="h-8 w-8 rounded-lg"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
