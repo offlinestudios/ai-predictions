@@ -159,7 +159,7 @@ export default function UnifiedSidebar({
       {/* Prediction History Section */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="py-4 border-b border-border/50">
-          <h2 className="text-sm font-semibold px-4">Recent Predictions</h2>
+          <h2 className="text-sm font-semibold pl-[52px] pr-4">Recent Predictions</h2>
         </div>
 
         <ScrollArea className="flex-1">
