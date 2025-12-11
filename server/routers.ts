@@ -1132,6 +1132,79 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
   }),
 
   psyche: router({
+    // Submit hybrid onboarding responses (12 questions)
+    submitHybridOnboarding: protectedProcedure
+      .input(z.object({
+        nickname: z.string(),
+        primaryInterest: z.string(),
+        coreResponses: z.array(z.object({
+          questionId: z.string(),
+          selectedOptionIndex: z.number(),
+          scores: z.object({
+            risk: z.number(),
+            emotional: z.number(),
+            timeHorizon: z.number(),
+            decisionStyle: z.number(),
+          }),
+        })),
+        adaptiveResponses: z.array(z.object({
+          questionId: z.string(),
+          selectedOptionIndex: z.number(),
+          scores: z.object({
+            risk: z.number(),
+            emotional: z.number(),
+            timeHorizon: z.number(),
+            decisionStyle: z.number(),
+          }),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+          // Import hybrid calculation function
+          const { calculateHybridPsycheType, generateCategoryInsights } = await import("./lib/psycheHybrid");
+
+          // Combine all responses
+          const allResponses = [...input.coreResponses, ...input.adaptiveResponses];
+
+          // Calculate psyche type from hybrid responses
+          const { psycheType, scores } = calculateHybridPsycheType(allResponses, input.primaryInterest);
+
+          // Generate category-specific insights
+          const insights = generateCategoryInsights(psycheType, input.primaryInterest, scores);
+
+          // Save to user record
+          await db.update(users)
+            .set({
+              nickname: input.nickname,
+              interests: JSON.stringify([input.primaryInterest]),
+              onboardingCompleted: true,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, ctx.user.id));
+
+          // Save psyche profile using existing function
+          await savePsycheProfile(ctx.user.id, psycheType.type);
+
+          return {
+            success: true,
+            psycheType,
+            scores,
+            insights,
+            nickname: input.nickname,
+            primaryInterest: input.primaryInterest,
+          };
+        } catch (error) {
+          console.error('[submitHybridOnboarding] Error:', error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to process hybrid onboarding: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        }
+      }),
+
     // Submit onboarding responses and calculate psyche profile
     submitOnboarding: protectedProcedure
       .input(z.object({
