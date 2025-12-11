@@ -1205,6 +1205,111 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           });
         }
       }),
+
+    // Submit hybrid onboarding (12 questions: 8 core + 4 adaptive)
+    submitHybridOnboarding: protectedProcedure
+      .input(z.object({
+        nickname: z.string(),
+        primaryInterest: z.string(),
+        coreResponses: z.array(z.object({
+          questionId: z.string(),
+          questionText: z.string(),
+          selectedOption: z.string(),
+          answerText: z.string(),
+          trait: z.string(),
+          indicators: z.array(z.string()),
+          parameters: z.record(z.number()),
+        })),
+        adaptiveResponses: z.array(z.object({
+          questionId: z.string(),
+          questionText: z.string(),
+          selectedOption: z.string(),
+          answerText: z.string(),
+          domainTrait: z.string(),
+          indicators: z.array(z.string()),
+          domainInsight: z.string(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+          // Import hybrid calculation functions
+          const { calculateHybridPsycheType, validateHybridOnboardingData } = await import("./psycheHybrid");
+
+          // Validate input
+          if (!validateHybridOnboardingData(input)) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid onboarding data" });
+          }
+
+          // Calculate personality type from hybrid responses
+          const result = calculateHybridPsycheType(input);
+
+          // Save user info
+          await db.update(users)
+            .set({
+              nickname: input.nickname,
+              interests: JSON.stringify([input.primaryInterest]),
+              onboardingCompleted: true,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, ctx.user.id));
+
+          // Save personality profile with custom parameters
+          const { savePsycheProfile, PSYCHE_TYPES } = await import("./psyche");
+          const profile = await savePsycheProfile(ctx.user.id, result.psycheType);
+
+          // Store onboarding responses (for future analysis)
+          const { onboardingResponses } = await import("../drizzle/schema");
+          
+          // Save core responses
+          for (const response of input.coreResponses) {
+            await db.insert(onboardingResponses).values({
+              userId: ctx.user.id,
+              questionId: parseInt(response.questionId.replace('core_', '')) || 0,
+              questionText: response.questionText,
+              selectedOption: response.selectedOption,
+              answerText: response.answerText,
+              mappedPsycheTypes: JSON.stringify(response.indicators),
+            });
+          }
+
+          // Save adaptive responses
+          for (const response of input.adaptiveResponses) {
+            await db.insert(onboardingResponses).values({
+              userId: ctx.user.id,
+              questionId: 1000 + parseInt(response.questionId.split('_')[1]) || 0, // Offset to avoid collision
+              questionText: response.questionText,
+              selectedOption: response.selectedOption,
+              answerText: response.answerText,
+              mappedPsycheTypes: JSON.stringify(response.indicators),
+            });
+          }
+
+          return {
+            success: true,
+            psycheType: result.psycheType,
+            confidence: result.confidence,
+            profile: {
+              displayName: profile.displayName,
+              description: profile.description,
+              coreTraits: profile.coreTraits,
+              decisionMakingStyle: profile.decisionMakingStyle,
+              growthEdge: profile.growthEdge,
+            },
+            nickname: input.nickname,
+            primaryInterest: input.primaryInterest,
+            domainInsights: result.domainInsights,
+          };
+        } catch (error) {
+          console.error('[submitHybridOnboarding] Error:', error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to process hybrid onboarding: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        }
+      }),
     
     // Get user's psyche profile
     getProfile: protectedProcedure
