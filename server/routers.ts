@@ -759,6 +759,10 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         // Increment usage counter
         await incrementPredictionUsage(ctx.user.id);
         
+        // Increment prediction count for progressive deepening
+        const { incrementPredictionCount } = await import("./progressiveDeepening");
+        await incrementPredictionCount(ctx.user.id);
+        
         // Send welcome email on first prediction
         if (subscription.totalUsed === 0) {
           const userName = ctx.user.name || "there";
@@ -1309,6 +1313,48 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
             message: `Failed to process hybrid onboarding: ${error instanceof Error ? error.message : 'Unknown error'}`,
           });
         }
+      }),
+    
+    // Check if user should see deepening prompt
+    shouldShowDeepeningPrompt: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { shouldShowDeepeningPrompt } = await import("./progressiveDeepening");
+        return await shouldShowDeepeningPrompt(ctx.user.id);
+      }),
+
+    // Get available categories for user to add
+    getAvailableCategories: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { getAvailableCategories } = await import("./progressiveDeepening");
+        return await getAvailableCategories(ctx.user.id);
+      }),
+
+    // Add interest categories (progressive deepening)
+    addInterestCategories: protectedProcedure
+      .input(z.object({
+        categories: z.array(z.string()),
+        responses: z.array(z.object({
+          questionId: z.string(),
+          questionText: z.string(),
+          selectedOption: z.string(),
+          answerText: z.string(),
+          category: z.string(),
+          indicators: z.array(z.string()),
+          domainInsight: z.string(),
+          parameters: z.record(z.number()).optional(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { addInterestCategories } = await import("./progressiveDeepening");
+        return await addInterestCategories(ctx.user.id, input.categories, input.responses);
+      }),
+
+    // Dismiss deepening prompt
+    dismissDeepeningPrompt: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const { dismissDeepeningPrompt } = await import("./progressiveDeepening");
+        await dismissDeepeningPrompt(ctx.user.id);
+        return { success: true };
       }),
     
     // Get user's psyche profile

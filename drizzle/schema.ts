@@ -59,6 +59,10 @@ export const users = pgTable("users", {
   majorTransition: boolean("majorTransition").default(false), // Undergoing major life change
   transitionType: varchar("transitionType", { length: 100 }), // Type of transition if applicable
   premiumDataCompleted: boolean("premiumDataCompleted").default(false).notNull(),
+  /** Progressive deepening tracking */
+  predictionCount: integer("predictionCount").default(0).notNull(),
+  deepeningPromptedAt: timestamp("deepeningPromptedAt"),
+  deepeningDismissedCount: integer("deepeningDismissedCount").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -152,6 +156,10 @@ export const psycheProfiles = pgTable("psycheProfiles", {
   growthEdge: text("growthEdge").notNull(),
   /** Numeric parameters for prediction engine (JSON) */
   psycheParameters: text("psycheParameters").notNull(), // risk_appetite, emotional_reactivity, etc.
+  /** Progressive deepening data */
+  secondaryInterests: text("secondaryInterests"), // JSON array of added categories
+  crossDomainInsights: text("crossDomainInsights"), // JSON array of cross-domain patterns
+  profileCompleteness: integer("profileCompleteness").default(16).notNull(), // Percentage 0-100
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
