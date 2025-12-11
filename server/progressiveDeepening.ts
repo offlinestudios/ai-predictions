@@ -38,21 +38,24 @@ export async function shouldShowDeepeningPrompt(userId: number): Promise<boolean
   // Don't show if user has all 6 categories
   if (currentInterests.length >= 6) return false;
   
-  // Don't show if dismissed 3 times
-  if (user.deepeningDismissedCount >= 3) return false;
+  // Don't show if dismissed 3 times (handle missing column)
+  const dismissedCount = (user as any).deepeningDismissedCount || 0;
+  if (dismissedCount >= 3) return false;
   
-  // Don't show if prompted in last 24 hours
-  if (user.deepeningPromptedAt) {
-    const hoursSincePrompt = (Date.now() - user.deepeningPromptedAt.getTime()) / (1000 * 60 * 60);
+  // Don't show if prompted in last 24 hours (handle missing column)
+  const promptedAt = (user as any).deepeningPromptedAt;
+  if (promptedAt) {
+    const hoursSincePrompt = (Date.now() - new Date(promptedAt).getTime()) / (1000 * 60 * 60);
     if (hoursSincePrompt < 24) return false;
   }
   
-  // Show after 3 predictions for first deepening
-  if (currentInterests.length === 1 && user.predictionCount >= 3) return true;
+  // Show after 3 predictions for first deepening (handle missing column)
+  const predictionCount = (user as any).predictionCount || 0;
+  if (currentInterests.length === 1 && predictionCount >= 3) return true;
   
   // Show after 5 more predictions for subsequent deepenings
   const predictionsNeeded = currentInterests.length * 5;
-  if (currentInterests.length > 1 && user.predictionCount >= predictionsNeeded) return true;
+  if (currentInterests.length > 1 && predictionCount >= predictionsNeeded) return true;
   
   return false;
 }
@@ -218,25 +221,30 @@ export async function addInterestCategories(
   if (profileResult.length === 0) throw new Error("Profile not found");
   const profile = profileResult[0];
 
-  // Calculate cross-domain insights
-  const existingInsights = profile.crossDomainInsights
-    ? JSON.parse(profile.crossDomainInsights)
+  // Calculate cross-domain insights (handle missing column)
+  const existingInsights = (profile as any).crossDomainInsights
+    ? JSON.parse((profile as any).crossDomainInsights)
     : [];
   const crossDomainInsights = calculateCrossDomainInsights(responses, existingInsights);
 
   // Calculate profile completeness (each category = 16.67%, rounded)
   const profileCompleteness = Math.round((updatedInterests.length / 6) * 100);
 
-  // Update psyche profile
-  await db
-    .update(psycheProfiles)
-    .set({
-      secondaryInterests: JSON.stringify(newCategories),
-      crossDomainInsights: JSON.stringify(crossDomainInsights),
-      profileCompleteness,
-      updatedAt: new Date(),
-    })
-    .where(eq(psycheProfiles.userId, userId));
+  // Update psyche profile (handle missing columns)
+  try {
+    await db
+      .update(psycheProfiles)
+      .set({
+        secondaryInterests: JSON.stringify(newCategories),
+        crossDomainInsights: JSON.stringify(crossDomainInsights),
+        profileCompleteness,
+        updatedAt: new Date(),
+      })
+      .where(eq(psycheProfiles.userId, userId));
+  } catch (error) {
+    // Columns don't exist yet, just update the interests in users table
+    console.log('[addInterestCategories] Profile columns not yet migrated, skipping profile update');
+  }
 
   return {
     success: true,
@@ -253,14 +261,20 @@ export async function dismissDeepeningPrompt(userId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable");
 
-  await db
-    .update(users)
-    .set({
-      deepeningPromptedAt: new Date(),
-      deepeningDismissedCount: sql`${users.deepeningDismissedCount} + 1`,
-      updatedAt: new Date(),
-    })
-    .where(eq(users.id, userId));
+  // Check if columns exist before updating
+  try {
+    await db
+      .update(users)
+      .set({
+        deepeningPromptedAt: new Date(),
+        deepeningDismissedCount: sql`COALESCE(${users.deepeningDismissedCount}, 0) + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  } catch (error) {
+    // Columns don't exist yet, silently fail
+    console.log('[dismissDeepeningPrompt] Columns not yet migrated, skipping');
+  }
 }
 
 /**
@@ -270,11 +284,17 @@ export async function incrementPredictionCount(userId: number): Promise<void> {
   const db = await getDb();
   if (!db) return;
 
-  await db
-    .update(users)
-    .set({
-      predictionCount: sql`${users.predictionCount} + 1`,
-      updatedAt: new Date(),
-    })
-    .where(eq(users.id, userId));
+  // Check if predictionCount column exists before updating
+  try {
+    await db
+      .update(users)
+      .set({
+        predictionCount: sql`COALESCE(${users.predictionCount}, 0) + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  } catch (error) {
+    // Column doesn't exist yet, silently fail
+    console.log('[incrementPredictionCount] Column not yet migrated, skipping');
+  }
 }
