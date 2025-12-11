@@ -760,8 +760,13 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         await incrementPredictionUsage(ctx.user.id);
         
         // Increment prediction count for progressive deepening
-        const { incrementPredictionCount } = await import("./progressiveDeepening");
-        await incrementPredictionCount(ctx.user.id);
+        try {
+          const { incrementPredictionCount } = await import("./progressiveDeepening");
+          await incrementPredictionCount(ctx.user.id);
+        } catch (error) {
+          console.error('[makePrediction] Failed to increment prediction count:', error);
+          // Continue anyway - this is not critical
+        }
         
         // Send welcome email on first prediction
         if (subscription.totalUsed === 0) {
@@ -1318,15 +1323,25 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
     // Check if user should see deepening prompt
     shouldShowDeepeningPrompt: protectedProcedure
       .query(async ({ ctx }) => {
-        const { shouldShowDeepeningPrompt } = await import("./progressiveDeepening");
-        return await shouldShowDeepeningPrompt(ctx.user.id);
+        try {
+          const { shouldShowDeepeningPrompt } = await import("./progressiveDeepening");
+          return await shouldShowDeepeningPrompt(ctx.user.id);
+        } catch (error) {
+          console.error('[shouldShowDeepeningPrompt] Error:', error);
+          return false; // Safe default
+        }
       }),
 
     // Get available categories for user to add
     getAvailableCategories: protectedProcedure
       .query(async ({ ctx }) => {
-        const { getAvailableCategories } = await import("./progressiveDeepening");
-        return await getAvailableCategories(ctx.user.id);
+        try {
+          const { getAvailableCategories } = await import("./progressiveDeepening");
+          return await getAvailableCategories(ctx.user.id);
+        } catch (error) {
+          console.error('[getAvailableCategories] Error:', error);
+          return []; // Safe default
+        }
       }),
 
     // Add interest categories (progressive deepening)
