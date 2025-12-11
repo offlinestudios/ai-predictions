@@ -18,9 +18,6 @@ import { ArrowLeft, Settings, LogOut, History } from "lucide-react";
 import { TierBadge } from "@/components/Badge";
 import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
-import DeepeningPromptCard from "@/components/DeepeningPromptCard";
-import CategorySelectionModal from "@/components/CategorySelectionModal";
-import AdaptiveQuestionsFlow from "@/components/AdaptiveQuestionsFlow";
 import { getLoginUrl } from "@/const";
 
 interface Message {
@@ -48,10 +45,6 @@ export default function DashboardChat() {
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState<number | null>(null);
-  const [showDeepeningPrompt, setShowDeepeningPrompt] = useState(false);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [showQuestionsFlow, setShowQuestionsFlow] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -66,35 +59,6 @@ export default function DashboardChat() {
   const { data: subscription } = trpc.subscription.getCurrent.useQuery(undefined, {
     enabled: isAuthenticated,
   });
-
-  // Check if should show deepening prompt
-  const { data: shouldShowDeepening } = trpc.psyche.shouldShowDeepeningPrompt.useQuery(undefined, {
-    enabled: isAuthenticated,
-  });
-
-  // Get available categories
-  const { data: availableCategories = [] } = trpc.psyche.getAvailableCategories.useQuery(undefined, {
-    enabled: isAuthenticated,
-  });
-
-  // Dismiss deepening prompt mutation
-  const dismissDeepeningMutation = trpc.psyche.dismissDeepeningPrompt.useMutation();
-
-  // Add categories mutation
-  const addCategoriesMutation = trpc.psyche.addInterestCategories.useMutation({
-    onSuccess: () => {
-      setShowQuestionsFlow(false);
-      setSelectedCategories([]);
-      toast.success("Profile enhanced! Your predictions are now even more personalized.");
-    },
-  });
-
-  // Show deepening prompt when conditions are met
-  useEffect(() => {
-    if (shouldShowDeepening && !showDeepeningPrompt) {
-      setShowDeepeningPrompt(true);
-    }
-  }, [shouldShowDeepening]);
 
   // Generate prediction mutation
   const generateMutation = trpc.prediction.generate.useMutation({
@@ -293,21 +257,7 @@ export default function DashboardChat() {
         {/* Chat Area */}
         <main className="flex-1 overflow-y-auto pb-32 md:pb-40">
           <div className="container max-w-4xl pt-4 md:pt-8">
-            {/* Deepening Prompt */}
-            {showDeepeningPrompt && (
-              <div className="mb-6">
-                <DeepeningPromptCard
-                  onEnhance={() => {
-                    setShowDeepeningPrompt(false);
-                    setShowCategoryModal(true);
-                  }}
-                  onDismiss={async () => {
-                    setShowDeepeningPrompt(false);
-                    await dismissDeepeningMutation.mutateAsync();
-                  }}
-                />
-              </div>
-            )}
+
             <PredictionThread 
               messages={messages}
               onRefineRequest={handleRefineRequest}
@@ -344,29 +294,7 @@ export default function DashboardChat() {
           />
         )}
 
-        {/* Progressive Deepening Modals */}
-        <CategorySelectionModal
-          open={showCategoryModal}
-          onOpenChange={setShowCategoryModal}
-          availableCategories={availableCategories}
-          onContinue={(categories) => {
-            setSelectedCategories(categories);
-            setShowCategoryModal(false);
-            setShowQuestionsFlow(true);
-          }}
-        />
 
-        <AdaptiveQuestionsFlow
-          open={showQuestionsFlow}
-          onOpenChange={setShowQuestionsFlow}
-          categories={selectedCategories}
-          onComplete={async (responses) => {
-            await addCategoriesMutation.mutateAsync({
-              categories: selectedCategories,
-              responses,
-            });
-          }}
-        />
 
         {showPremiumUnlock && (
           <PremiumUnlockModal
