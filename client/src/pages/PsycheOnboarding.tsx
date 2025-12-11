@@ -278,7 +278,7 @@ export default function PsycheOnboarding() {
                 Your Complete Profile is Ready!
               </CardTitle>
               <CardDescription className="text-base">
-                Sign up now to reveal your personalized profile combining your interests, situation, and psyche type.
+                Sign up now to reveal your personalized profile combining your interests, situation, and personality type.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

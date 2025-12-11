@@ -428,7 +428,7 @@ export async function savePsycheProfile(userId: number, psycheType: string) {
   if (!db) throw new Error("Database unavailable");
   
   const psycheData = PSYCHE_TYPES[psycheType as keyof typeof PSYCHE_TYPES];
-  if (!psycheData) throw new Error("Invalid psyche type");
+  if (!psycheData) throw new Error("Invalid personality type");
   
   // Check if profile already exists
   const existing = await db
