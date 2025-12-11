@@ -117,7 +117,7 @@ export default function Account() {
             </CardContent>
           </Card>
 
-          {/* Personality Type Card */}
+          {/* Psyche Profile Card */}
           <PsycheProfileCard />
 
           {/* Current Subscription Card */}

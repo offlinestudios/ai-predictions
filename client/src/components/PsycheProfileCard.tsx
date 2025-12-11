@@ -14,7 +14,7 @@ export default function PsycheProfileCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5" />
-            Your Personality Type
+            Your Psyche Profile
           </CardTitle>
           <CardDescription>Understanding your decision-making patterns</CardDescription>
         </CardHeader>
@@ -33,16 +33,16 @@ export default function PsycheProfileCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5" />
-            Discover Your Personality Type
+            Discover Your Psyche Profile
           </CardTitle>
           <CardDescription>
-            Complete our personality assessment to unlock personalized predictions
+            Complete our psyche assessment to unlock personalized predictions
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Your personality type reveals your unique decision-making patterns, emotional tendencies, and risk tolerance. 
+              Your psyche profile reveals your unique decision-making patterns, emotional tendencies, and risk tolerance. 
               This allows us to tailor predictions specifically to how you think and act.
             </p>
             <Button
@@ -51,7 +51,7 @@ export default function PsycheProfileCard() {
               size="lg"
             >
               <Sparkles className="mr-2 h-5 w-5" />
-              Take the Personality Assessment
+              Take the Psyche Assessment
             </Button>
           </div>
         </CardContent>
@@ -99,7 +99,7 @@ export default function PsycheProfileCard() {
         </div>
 
         <div className="pt-2 text-xs text-muted-foreground text-center">
-          All predictions are tailored to your unique personality type
+          All predictions are tailored to your unique psyche profile
         </div>
       </CardContent>
     </Card>

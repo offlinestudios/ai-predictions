@@ -14,7 +14,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import SharedPrediction from "./pages/SharedPrediction";
 import Onboarding from "./pages/Onboarding";
-import PsycheOnboarding from "./pages/PsycheOnboardingNew";
+import PsycheOnboarding from "./pages/PsycheOnboarding";
 import Pricing from "./pages/Pricing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -43,7 +43,6 @@ function Router() {
       <Route path={"/sign-up"} component={SignUp} />
       <Route path={"/onboarding"} component={Onboarding} />
       <Route path={"/psyche-onboarding"} component={PsycheOnboarding} />
-      {/* Old onboarding available at /psyche-onboarding-old for reference */}
       <Route path={"/dashboard"} component={Dashboard} />
       {/* Old dashboard available at /dashboard-old for reference */}
       {/* <Route path={"/dashboard-old"} component={DashboardOld} /> */}

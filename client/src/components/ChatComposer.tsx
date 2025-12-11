@@ -161,21 +161,21 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
               onKeyDown={handleKeyDown}
               placeholder="What do you want to predict?"
               disabled={isLoading || disabled}
-              className="min-h-[52px] max-h-[120px] resize-none pl-4 pr-[76px] py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
+              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-[88px] py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
               rows={1}
             />
             
             {/* Inline buttons (right side) */}
-            <div className="absolute right-3 bottom-3 flex items-center gap-1">
+            <div className="absolute right-2 bottom-2.5 flex items-center gap-1.5">
               {/* File Upload Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 hover:bg-accent rounded-md"
+                className="h-7 w-7 hover:bg-accent rounded-lg"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || disabled}
               >
-                <Paperclip className="w-3.5 h-3.5" />
+                <Paperclip className="w-4 h-4" />
               </Button>
               
               {/* Send Button */}
@@ -183,12 +183,12 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
                 onClick={handleSubmit}
                 disabled={!question.trim() || isLoading || disabled}
                 size="icon"
-                className="h-7 w-7 rounded-md"
+                className="h-8 w-8 rounded-lg"
               >
                 {isLoading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <ArrowUp className="w-3.5 h-3.5" />
+                  <ArrowUp className="w-4 h-4" />
                     )}
               </Button>
             </div>

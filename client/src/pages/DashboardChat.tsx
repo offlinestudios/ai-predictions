@@ -257,7 +257,6 @@ export default function DashboardChat() {
         {/* Chat Area */}
         <main className="flex-1 overflow-y-auto pb-32 md:pb-40">
           <div className="container max-w-4xl pt-4 md:pt-8">
-
             <PredictionThread 
               messages={messages}
               onRefineRequest={handleRefineRequest}
@@ -293,8 +292,6 @@ export default function DashboardChat() {
             predictionCategory="general"
           />
         )}
-
-
 
         {showPremiumUnlock && (
           <PremiumUnlockModal
