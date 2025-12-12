@@ -6,6 +6,25 @@
  * - 4 adaptive questions (category-specific)
  */
 
+/**
+ * Map new psyche type names to database-compatible values
+ * Database expects: quiet_strategist, intuitive_empath, ambitious_builder, etc.
+ */
+function mapPsycheTypeToDatabase(displayType: string): string {
+  const mapping: Record<string, string> = {
+    "The Maverick": "risk_addict",
+    "The Strategist": "quiet_strategist",
+    "The Visionary": "ambitious_builder",
+    "The Guardian": "stabilizer",
+    "The Pioneer": "long_term_builder",
+    "The Pragmatist": "pattern_analyst",
+    "The Catalyst": "momentum_chaser",
+    "The Adapter": "intuitive_empath"
+  };
+  
+  return mapping[displayType] || "intuitive_empath";
+}
+
 export interface HybridResponse {
   questionId: string;
   selectedOptionIndex: number;
@@ -26,6 +45,7 @@ export interface PsycheScores {
 
 export interface PsycheType {
   type: string;
+  dbType?: string;
   description: string;
   traits: string[];
   strengths: string[];
@@ -60,8 +80,14 @@ export function calculateHybridPsycheType(
 
   // Determine psyche type based on dominant traits
   const psycheType = determinePsycheType(normalizedScores, category);
+  
+  // Add database-compatible type value
+  const psycheTypeWithDb = {
+    ...psycheType,
+    dbType: mapPsycheTypeToDatabase(psycheType.type)
+  };
 
-  return { psycheType, scores: normalizedScores };
+  return { psycheType: psycheTypeWithDb, scores: normalizedScores };
 }
 
 /**

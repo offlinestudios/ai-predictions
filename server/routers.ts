@@ -1186,7 +1186,8 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
             .where(eq(users.id, ctx.user.id));
 
           // Save psyche profile using existing function
-          await savePsycheProfile(ctx.user.id, psycheType.type);
+          // Use dbType for database compatibility, fallback to type if not present
+          await savePsycheProfile(ctx.user.id, psycheType.dbType || psycheType.type);
 
           return {
             success: true,
