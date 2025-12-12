@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +78,14 @@ const SUBSCRIPTION_TIERS = [
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

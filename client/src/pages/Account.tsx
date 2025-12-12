@@ -211,7 +211,7 @@ export default function Account() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Get access to daily predictions, full history, and personalized insights.
                     </p>
-                    <Link href="/dashboard">
+                    <Link href="/pricing">
                       <Button className="w-full">
                         <Zap className="w-4 h-4 mr-2" />
                         View Plans

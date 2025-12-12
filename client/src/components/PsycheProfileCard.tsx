@@ -63,7 +63,7 @@ export default function PsycheProfileCard() {
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
+          <img src="/logo.svg" alt="" className="w-5 h-5" />
           {profile.displayName}
         </CardTitle>
         <CardDescription>{profile.description}</CardDescription>
@@ -92,7 +92,7 @@ export default function PsycheProfileCard() {
 
         <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
           <h4 className="font-semibold mb-2 text-sm uppercase tracking-wide flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
+            <img src="/logo.svg" alt="" className="w-4 h-4" />
             Your Growth Edge
           </h4>
           <p className="text-sm text-muted-foreground">{profile.growthEdge}</p>

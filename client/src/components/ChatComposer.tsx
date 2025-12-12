@@ -166,7 +166,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
             />
             
             {/* Inline buttons (right side) */}
-            <div className="absolute right-2 bottom-2.5 flex items-center gap-1.5">
+            <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
               {/* File Upload Button */}
               <Button
                 variant="ghost"
