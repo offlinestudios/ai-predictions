@@ -22,16 +22,9 @@ try {
     process.exit(1);
   }
 
-  // Generate migrations first, then apply them
-  // This avoids interactive prompts that hang Railway deployments
-  console.log('📝 Generating migrations...');
-  execSync('pnpm drizzle-kit generate', {
-    cwd: projectRoot,
-    stdio: 'inherit',
-    env: process.env
-  });
-  
-  console.log('🚀 Applying migrations...');
+  // Apply existing migrations only - do not generate new ones
+  // Generating on deployment can cause issues if schema hasn't actually changed
+  console.log('🚀 Applying existing migrations...');
   execSync('pnpm drizzle-kit migrate', {
     cwd: projectRoot,
     stdio: 'inherit',
