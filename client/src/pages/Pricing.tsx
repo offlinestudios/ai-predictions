@@ -1,9 +1,48 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Pricing() {
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const [, navigate] = useLocation();
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  
+  const createCheckoutMutation = trpc.subscription.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to create checkout session: " + error.message);
+      setLoadingTier(null);
+    },
+  });
+
+  const handleUpgrade = (tier: "plus" | "pro" | "premium") => {
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      window.location.href = getLoginUrl();
+      return;
+    }
+
+    setLoadingTier(tier);
+    
+    // Map tier to the correct format for the API
+    const apiTier = tier === "plus" ? "pro" : tier; // API only has "pro" and "premium"
+    const interval = tier === "premium" ? "year" : "month";
+    
+    createCheckoutMutation.mutate({
+      tier: apiTier as "pro" | "premium",
+      interval,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -110,8 +149,20 @@ export default function Pricing() {
               </li>
             </ul>
 
-            <Button asChild size="lg" className="w-full">
-              <a href={getLoginUrl()}>Upgrade to Plus</a>
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={() => handleUpgrade("plus")}
+              disabled={loadingTier === "plus"}
+            >
+              {loadingTier === "plus" ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Upgrade to Plus"
+              )}
             </Button>
           </div>
 
@@ -149,8 +200,21 @@ export default function Pricing() {
               </li>
             </ul>
 
-            <Button asChild variant="outline" size="lg" className="w-full">
-              <a href={getLoginUrl()}>Upgrade to Pro</a>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="w-full"
+              onClick={() => handleUpgrade("pro")}
+              disabled={loadingTier === "pro"}
+            >
+              {loadingTier === "pro" ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Upgrade to Pro"
+              )}
             </Button>
           </div>
 
@@ -188,8 +252,21 @@ export default function Pricing() {
               </li>
             </ul>
 
-            <Button asChild variant="secondary" size="lg" className="w-full">
-              <a href={getLoginUrl()}>Upgrade to Premium</a>
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className="w-full"
+              onClick={() => handleUpgrade("premium")}
+              disabled={loadingTier === "premium"}
+            >
+              {loadingTier === "premium" ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Upgrade to Premium"
+              )}
             </Button>
           </div>
         </div>
