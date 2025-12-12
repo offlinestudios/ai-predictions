@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { 
   ArrowLeft, ArrowRight, Loader2, Sparkles, Heart, Briefcase, 
@@ -83,11 +82,18 @@ export default function PsycheOnboardingNew() {
       if (savedData) {
         try {
           const parsedData = JSON.parse(savedData);
+          // Restore the state from saved data
+          setNickname(parsedData.nickname);
+          setPrimaryInterest(parsedData.primaryInterest);
+          setCoreResponses(parsedData.coreResponses);
+          setAdaptiveResponses(parsedData.adaptiveResponses);
+          // Submit immediately
           setIsSubmitting(true);
           submitOnboardingMutation.mutate(parsedData);
           localStorage.removeItem("hybridOnboardingData");
         } catch (e) {
           console.error("Failed to parse saved data", e);
+          localStorage.removeItem("hybridOnboardingData");
         }
       }
     }
@@ -531,20 +537,18 @@ export default function PsycheOnboardingNew() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <RadioGroup>
+                  <div className="space-y-3">
                     {coreQuestions[currentQuestionIndex].options.map((option, index) => (
-                      <div
+                      <button
                         key={index}
                         onClick={() => handleCoreQuestionAnswer(index)}
-                        className="flex items-start space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 cursor-pointer transition-all"
+                        className="w-full text-left flex items-start space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all"
                       >
-                        <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                        <Label htmlFor={`option-${index}`} className="cursor-pointer flex-1">
-                          {option.text}
-                        </Label>
-                      </div>
+                        <div className="w-5 h-5 rounded-full border-2 border-border mt-0.5 flex-shrink-0" />
+                        <span className="flex-1">{option.text}</span>
+                      </button>
                     ))}
-                  </RadioGroup>
+                  </div>
                   <Button onClick={handleBack} variant="outline" className="w-full">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
@@ -555,7 +559,7 @@ export default function PsycheOnboardingNew() {
           )}
 
           {/* Adaptive Questions */}
-          {currentStep === "adaptive-questions" && (
+          {currentStep === "adaptive-questions" && adaptiveQuestions.length > 0 && currentQuestionIndex < adaptiveQuestions.length && (
             <motion.div
               key={`adaptive-${currentQuestionIndex}`}
               initial={{ opacity: 0, x: 20 }}
@@ -575,20 +579,18 @@ export default function PsycheOnboardingNew() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <RadioGroup>
+                  <div className="space-y-3">
                     {adaptiveQuestions[currentQuestionIndex].options.map((option, index) => (
-                      <div
+                      <button
                         key={index}
                         onClick={() => handleAdaptiveQuestionAnswer(index)}
-                        className="flex items-start space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 cursor-pointer transition-all"
+                        className="w-full text-left flex items-start space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all"
                       >
-                        <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                        <Label htmlFor={`option-${index}`} className="cursor-pointer flex-1">
-                          {option.text}
-                        </Label>
-                      </div>
+                        <div className="w-5 h-5 rounded-full border-2 border-border mt-0.5 flex-shrink-0" />
+                        <span className="flex-1">{option.text}</span>
+                      </button>
                     ))}
-                  </RadioGroup>
+                  </div>
                   <Button onClick={handleBack} variant="outline" className="w-full">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
