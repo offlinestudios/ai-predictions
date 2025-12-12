@@ -161,7 +161,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
               onKeyDown={handleKeyDown}
               placeholder="What do you want to predict?"
               disabled={isLoading || disabled}
-              className="min-h-[44px] max-h-[120px] resize-none pl-4 pr-[88px] py-3 w-full rounded-2xl border-2 text-sm placeholder:text-sm"
+              className="min-h-[52px] max-h-[120px] resize-none pl-6 pr-[100px] py-4 w-full rounded-2xl border-2 text-base placeholder:text-base"
               rows={1}
             />
             

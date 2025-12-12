@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, Clock, ChevronRight, Plus, X, ChevronLeft, BarChart3 } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, Edit3, Search, MoreHorizontal, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
-import { TierBadge } from "@/components/Badge";
 import { trpc } from "@/lib/trpc";
 import { 
   Briefcase, 
@@ -15,6 +14,13 @@ import {
   MessageCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 interface UnifiedSidebarProps {
   user?: {
@@ -48,13 +54,6 @@ const categoryIcons = {
   general: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" },
 };
 
-const trajectoryLabels = {
-  instant: "Instant",
-  "30day": "30-Day",
-  "90day": "90-Day",
-  yearly: "Yearly",
-};
-
 export default function UnifiedSidebar({ 
   user, 
   subscription, 
@@ -68,6 +67,7 @@ export default function UnifiedSidebar({
 }: UnifiedSidebarProps) {
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
   
   const handleCollapsedChange = (collapsed: boolean) => {
     if (onCollapsedChange) {
@@ -83,13 +83,12 @@ export default function UnifiedSidebar({
     if (onNewPrediction) {
       onNewPrediction();
     } else {
-      // Reload the page to start fresh
       window.location.reload();
     }
   };
 
   const { data: historyData, isLoading } = trpc.prediction.getHistory.useQuery(
-    { limit: 10 },
+    { limit: 50 },
     { 
       enabled: isAuthenticated,
       refetchInterval: 30000 
@@ -97,6 +96,35 @@ export default function UnifiedSidebar({
   );
 
   const predictions = historyData?.predictions || [];
+  
+  // Filter predictions based on search query
+  const filteredPredictions = predictions.filter(pred =>
+    pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleShare = (predId: number) => {
+    // TODO: Implement share functionality
+    console.log("Share prediction:", predId);
+  };
+
+  const handleRename = (predId: number) => {
+    // TODO: Implement rename functionality
+    console.log("Rename prediction:", predId);
+  };
+
+  const handleAddToFavorites = (predId: number) => {
+    // TODO: Implement favorites functionality
+    console.log("Add to favorites:", predId);
+  };
+
+  const handleOpenInNewTab = (predId: number) => {
+    window.open(`/prediction/${predId}`, '_blank');
+  };
+
+  const handleDelete = (predId: number) => {
+    // TODO: Implement delete functionality
+    console.log("Delete prediction:", predId);
+  };
 
   if (!isAuthenticated) {
     return null;
@@ -144,65 +172,113 @@ export default function UnifiedSidebar({
         </div>
       </div>
 
-      {/* New Prediction Button */}
+      {/* New Prediction Button - Manus Style */}
       <div className="p-4 border-b border-border/50">
         <Button 
           onClick={handleNewPrediction}
           className="w-full justify-start"
-          variant="default"
+          variant="ghost"
+          size="lg"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          New Prediction
+          <Edit3 className="w-4 h-4 mr-3" />
+          <span className="text-base">New Prediction</span>
         </Button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="px-4 py-3 border-b border-border/50">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search predictions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9"
+          />
+        </div>
       </div>
 
       {/* Prediction History Section */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-4 py-4 border-b border-border/50">
-          <h2 className="text-sm font-semibold">Recent Predictions</h2>
+        <div className="px-4 py-3">
+          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recent Predictions</h2>
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-2">
+          <div className="px-2 pb-4 space-y-1">
             {isLoading ? (
-              <p className="text-sm text-muted-foreground">Loading...</p>
-            ) : predictions.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No predictions yet</p>
+              <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
+            ) : filteredPredictions.length === 0 ? (
+              <p className="text-sm text-muted-foreground px-4 py-2">
+                {searchQuery ? "No predictions found" : "No predictions yet"}
+              </p>
             ) : (
-              predictions.map((pred) => {
+              filteredPredictions.map((pred) => {
                 const category = pred.category as keyof typeof categoryIcons || "general";
-                const { icon: Icon, color, bg } = categoryIcons[category] || categoryIcons.general;
-                const trajectory = pred.trajectoryType as keyof typeof trajectoryLabels || "instant";
+                const { icon: Icon } = categoryIcons[category] || categoryIcons.general;
                 const isActive = pred.id === currentPredictionId;
 
                 return (
-                  <button
+                  <div
                     key={pred.id}
-                    onClick={() => onSelectPrediction?.(pred)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all group ${
+                    className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
                       isActive
-                        ? "border-primary bg-primary/5"
-                        : "border-border/50 hover:border-primary/50 hover:bg-accent/50"
+                        ? "bg-accent"
+                        : "hover:bg-accent/50"
                     }`}
                   >
-                    {/* Category Badge */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center justify-center w-6 h-6">
-                        <Icon className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    {/* Icon */}
+                    <div className="flex-shrink-0">
+                      <Icon className="w-4 h-4 text-muted-foreground" />
                     </div>
 
-                    {/* Question Text - Prominent */}
-                    <p className="text-sm font-medium line-clamp-2 mb-2">
+                    {/* Question Text - Single Line with Truncation */}
+                    <button
+                      onClick={() => onSelectPrediction?.(pred)}
+                      className="flex-1 text-left text-sm truncate min-w-0"
+                    >
                       {pred.userInput}
-                    </p>
+                    </button>
 
-                    {/* Timestamp */}
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}
-                    </p>
-                  </button>
+                    {/* Context Menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => handleShare(pred.id)}>
+                          <Share2 className="w-4 h-4 mr-2" />
+                          Share
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRename(pred.id)}>
+                          <Edit3 className="w-4 h-4 mr-2" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAddToFavorites(pred.id)}>
+                          <Star className="w-4 h-4 mr-2" />
+                          Add to favorites
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenInNewTab(pred.id)}>
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Open in new tab
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(pred.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 );
               })
             )}
@@ -212,10 +288,10 @@ export default function UnifiedSidebar({
 
       {/* Navigation Buttons */}
       <div className="border-t border-border/50">
-        <div className="p-4 space-y-2">
+        <div className="p-2 space-y-1">
           {subscription && ['pro', 'premium'].includes(subscription.tier) && (
             <Link href="/analytics">
-              <Button variant="ghost" className="w-full justify-start">
+              <Button variant="ghost" className="w-full justify-start" size="sm">
                 <BarChart3 className="w-4 h-4 mr-3" />
                 Analytics
               </Button>
@@ -223,7 +299,7 @@ export default function UnifiedSidebar({
           )}
           
           <Link href="/account">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start" size="sm">
               <Settings className="w-4 h-4 mr-3" />
               Account Settings
             </Button>
@@ -232,6 +308,7 @@ export default function UnifiedSidebar({
           <Button
             variant="ghost"
             className="w-full justify-start"
+            size="sm"
             onClick={handleSignOut}
           >
             <LogOut className="w-4 h-4 mr-3" />
