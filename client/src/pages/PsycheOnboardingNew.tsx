@@ -372,7 +372,7 @@ export default function PsycheOnboardingNew() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center">
       <div className="container max-w-2xl mx-auto px-4 py-8">
         {/* Progress bar */}
         {currentStep !== "welcome" && currentStep !== "signup-prompt" && currentStep !== "profile-reveal" && (
@@ -398,23 +398,14 @@ export default function PsycheOnboardingNew() {
                   <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="h-10 w-10 text-primary" />
                   </div>
-                  <CardTitle className="text-3xl font-bold">
+                  <CardTitle className="text-3xl mb-3">
                     Welcome to Predicsure AI
                   </CardTitle>
-                  <CardDescription className="text-lg">
-                    Answer 12 quick questions to discover your unique prediction style and get personalized insights.
+                  <CardDescription className="text-base">
+                    Let's create your personalized profile. We'll ask about your interests, situation, and how you think and decide. This helps our AI provide accurate predictions tailored specifically to you.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                    <p className="text-sm"><strong>What you'll discover:</strong></p>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Your psyche type and decision-making style</li>
-                      <li>• Personalized insights for your interests</li>
-                      <li>• Strengths and growth areas</li>
-                      <li>• Better predictions tailored to you</li>
-                    </ul>
-                  </div>
                   <Button onClick={handleNext} className="w-full" size="lg">
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
