@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, Edit3, Search, MoreHorizontal, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -180,7 +180,7 @@ export default function UnifiedSidebar({
           variant="ghost"
           size="lg"
         >
-          <Edit3 className="w-4 h-4 mr-3" />
+          <SquarePen className="w-4 h-4 mr-3" />
           <span className="text-base">New Prediction</span>
         </Button>
       </div>
@@ -236,7 +236,7 @@ export default function UnifiedSidebar({
                     {/* Question Text - Single Line with Truncation */}
                     <button
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex-1 text-left text-sm truncate min-w-0"
+                      className="flex-1 text-left text-sm min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
                     >
                       {pred.userInput}
                     </button>
@@ -247,9 +247,9 @@ export default function UnifiedSidebar({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                          className="h-6 w-6 flex-shrink-0"
                         >
-                          <MoreHorizontal className="w-4 h-4" />
+                          <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
@@ -258,7 +258,7 @@ export default function UnifiedSidebar({
                           Share
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleRename(pred.id)}>
-                          <Edit3 className="w-4 h-4 mr-2" />
+                          <SquarePen className="w-4 h-4 mr-2" />
                           Rename
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleAddToFavorites(pred.id)}>
