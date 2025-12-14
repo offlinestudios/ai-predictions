@@ -206,7 +206,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-1 overflow-hidden">
+          <div className="px-2 pb-4 space-y-1">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -222,40 +222,26 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors min-w-0 ${
+                    className={`group relative flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
                     }`}
                   >
                     {/* Main clickable row (icon + truncated text) */}
-                    <div
+                    <button
+                      type="button"
                       onClick={() => onSelectPrediction?.(pred)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          onSelectPrediction?.(pred);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      className="flex min-w-0 flex-1 items-center gap-2 text-left cursor-pointer overflow-hidden"
+                      className="flex w-full min-w-0 items-center gap-2 text-left pr-9"
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <span 
-                        className="block min-w-0 flex-1 truncate text-sm"
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
+                      <span className="block min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                         {pred.userInput}
                       </span>
-                    </div>
+                    </button>
 
-                    {/* Context Menu (3-dot) */}
-                    <div className="flex-shrink-0">
+                    {/* Context Menu (3-dot) - Absolutely positioned */}
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -263,7 +249,7 @@ export default function UnifiedSidebar({
                             variant="ghost"
                             size="icon"
                             aria-label="Prediction actions"
-                            className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                            className="h-7 w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                           >
                             <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                           </Button>
