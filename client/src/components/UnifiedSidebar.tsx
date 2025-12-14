@@ -236,9 +236,11 @@ export default function UnifiedSidebar({
                     {/* Question Text - Single Line with Truncation */}
                     <button
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex-1 text-left text-sm min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                      className="flex-1 text-left text-sm min-w-0 block"
                     >
-                      {pred.userInput}
+                      <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                        {pred.userInput}
+                      </span>
                     </button>
 
                     {/* Context Menu */}
