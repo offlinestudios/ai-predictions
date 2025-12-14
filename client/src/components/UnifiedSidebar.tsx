@@ -206,7 +206,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-1">
+          <div className="px-2 pb-4 space-y-1 overflow-hidden">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -239,7 +239,7 @@ export default function UnifiedSidebar({
                       }}
                       role="button"
                       tabIndex={0}
-                      className="flex min-w-0 flex-1 items-center gap-2 text-left cursor-pointer"
+                      className="flex min-w-0 flex-1 items-center gap-2 text-left cursor-pointer overflow-hidden"
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
                       <span className="block min-w-0 flex-1 truncate text-sm">
