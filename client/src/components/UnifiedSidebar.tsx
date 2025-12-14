@@ -222,64 +222,65 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors min-w-0 ${
+                    className={`group relative flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors min-w-0 ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
                     }`}
                   >
-                    {/* Icon */}
-                    <div className="flex-shrink-0">
-                      <Icon className="w-4 h-4 text-muted-foreground" />
-                    </div>
-
-                    {/* Question Text - Single Line with Truncation */}
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <button
-                        onClick={() => onSelectPrediction?.(pred)}
-                        className="w-full text-left text-sm truncate block"
-                      >
+                    {/* Main clickable row (icon + truncated text) */}
+                    <button
+                      type="button"
+                      onClick={() => onSelectPrediction?.(pred)}
+                      className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1 truncate text-sm">
                         {pred.userInput}
-                      </button>
-                    </div>
+                      </span>
+                    </button>
 
-                    {/* Context Menu */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 flex-shrink-0"
-                        >
-                          <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => handleShare(pred.id)}>
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleRename(pred.id)}>
-                          <SquarePen className="w-4 h-4 mr-2" />
-                          Rename
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAddToFavorites(pred.id)}>
-                          <Star className="w-4 h-4 mr-2" />
-                          Add to favorites
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleOpenInNewTab(pred.id)}>
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          Open in new tab
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(pred.id)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {/* Context Menu (3-dot) */}
+                    <div className="flex-shrink-0">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Prediction actions"
+                            className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                          >
+                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem onClick={() => handleShare(pred.id)}>
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Share
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleRename(pred.id)}>
+                            <SquarePen className="w-4 h-4 mr-2" />
+                            Rename
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAddToFavorites(pred.id)}>
+                            <Star className="w-4 h-4 mr-2" />
+                            Add to favorites
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenInNewTab(pred.id)}>
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Open in new tab
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(pred.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 );
               })
