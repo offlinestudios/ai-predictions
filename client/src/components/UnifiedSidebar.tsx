@@ -234,10 +234,10 @@ export default function UnifiedSidebar({
                     </div>
 
                     {/* Question Text - Single Line with Truncation */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <button
                         onClick={() => onSelectPrediction?.(pred)}
-                        className="w-full text-left text-sm overflow-hidden text-ellipsis whitespace-nowrap block"
+                        className="w-full text-left text-sm truncate block"
                       >
                         {pred.userInput}
                       </button>
