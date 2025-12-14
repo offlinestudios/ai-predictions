@@ -222,7 +222,7 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
+                    className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors min-w-0 ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
@@ -234,14 +234,14 @@ export default function UnifiedSidebar({
                     </div>
 
                     {/* Question Text - Single Line with Truncation */}
-                    <button
-                      onClick={() => onSelectPrediction?.(pred)}
-                      className="flex-1 text-left text-sm min-w-0 block"
-                    >
-                      <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                    <div className="flex-1 min-w-0">
+                      <button
+                        onClick={() => onSelectPrediction?.(pred)}
+                        className="w-full text-left text-sm overflow-hidden text-ellipsis whitespace-nowrap block"
+                      >
                         {pred.userInput}
-                      </span>
-                    </button>
+                      </button>
+                    </div>
 
                     {/* Context Menu */}
                     <DropdownMenu>
