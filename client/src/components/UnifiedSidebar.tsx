@@ -229,16 +229,23 @@ export default function UnifiedSidebar({
                     }`}
                   >
                     {/* Main clickable row (icon + truncated text) */}
-                    <button
-                      type="button"
+                    <div
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onSelectPrediction?.(pred);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className="flex min-w-0 flex-1 items-center gap-2 text-left cursor-pointer"
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
                       <span className="block min-w-0 flex-1 truncate text-sm">
                         {pred.userInput}
                       </span>
-                    </button>
+                    </div>
 
                     {/* Context Menu (3-dot) */}
                     <div className="flex-shrink-0">
