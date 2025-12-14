@@ -162,7 +162,9 @@ export default function Account() {
                   <p className="text-2xl font-bold">
                     {subscription?.tier === "free" 
                       ? `${subscription?.totalUsed || 0} / 3`
-                      : `${subscription?.usedToday || 0} / ${subscription?.dailyLimit || 0}`
+                      : subscription?.dailyLimit === -1
+                        ? `${subscription?.usedToday || 0}`
+                        : `${subscription?.usedToday || 0} / ${subscription?.dailyLimit || 0}`
                     }
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">

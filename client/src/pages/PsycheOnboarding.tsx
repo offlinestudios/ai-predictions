@@ -48,6 +48,9 @@ type OnboardingStep =
 export default function PsycheOnboarding() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const { data: existingProfile } = trpc.psyche.getProfile.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
   
   // Step management
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
@@ -70,12 +73,12 @@ export default function PsycheOnboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [combinedProfile, setCombinedProfile] = useState<any>(null);
 
-  // Check if user already completed onboarding
+  // Check if user already has a psyche profile
   useEffect(() => {
-    if (!authLoading && isAuthenticated && user?.onboardingCompleted) {
+    if (!authLoading && isAuthenticated && existingProfile) {
       navigate("/dashboard");
     }
-  }, [authLoading, isAuthenticated, user, navigate]);
+  }, [authLoading, isAuthenticated, existingProfile, navigate]);
 
   // Check if user just signed up and has stored responses
   useEffect(() => {
