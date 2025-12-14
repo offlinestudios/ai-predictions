@@ -242,7 +242,14 @@ export default function UnifiedSidebar({
                       className="flex min-w-0 flex-1 items-center gap-2 text-left cursor-pointer overflow-hidden"
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <span className="block min-w-0 flex-1 truncate text-sm">
+                      <span 
+                        className="block min-w-0 flex-1 truncate text-sm"
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
                         {pred.userInput}
                       </span>
                     </div>
