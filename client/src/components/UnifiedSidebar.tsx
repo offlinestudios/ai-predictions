@@ -206,7 +206,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-1">
+          <div className="px-2 pb-4 space-y-1 max-w-full">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -222,7 +222,7 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative px-2 py-1.5 rounded-lg transition-colors ${
+                    className={`group relative px-2 py-1.5 rounded-lg transition-colors max-w-full ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
@@ -231,10 +231,10 @@ export default function UnifiedSidebar({
                     <button
                       type="button"
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex w-full items-center gap-2 pr-8 text-left"
+                      className="flex w-full max-w-full items-center gap-2 pr-8 text-left overflow-hidden"
                     >
                       <Icon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                      <span className="truncate text-sm">
+                      <span className="block truncate text-sm min-w-0 flex-1">
                         {pred.userInput}
                       </span>
                     </button>
