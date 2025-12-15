@@ -232,12 +232,24 @@ export default function UnifiedSidebar({
                     <button
                       type="button"
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex w-full min-w-0 items-center gap-2 text-left pr-9"
+                      className="flex w-full min-w-0 items-center gap-2 text-left"
+                      style={{ paddingRight: '36px' }}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <span className="truncate text-sm flex-1">
-                        {pred.userInput}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className="text-sm"
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            margin: 0,
+                            padding: 0
+                          }}
+                        >
+                          {pred.userInput}
+                        </p>
+                      </div>
                     </button>
 
                     {/* Context Menu (3-dot) - Absolutely positioned */}
