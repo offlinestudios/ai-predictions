@@ -98,7 +98,7 @@ export default function UnifiedSidebar({
   const predictions = historyData?.predictions || [];
   
   // Helper function to truncate text with ellipsis
-  const truncateText = (text: string, maxLength: number = 35): string => {
+  const truncateText = (text: string, maxLength: number = 40): string => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength).trim() + '...';
   };
