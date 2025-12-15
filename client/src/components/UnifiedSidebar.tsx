@@ -236,20 +236,18 @@ export default function UnifiedSidebar({
                       style={{ paddingRight: '36px' }}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className="text-sm"
-                          style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            margin: 0,
-                            padding: 0
-                          }}
-                        >
-                          {pred.userInput}
-                        </p>
-                      </div>
+                      <p
+                        className="text-sm min-w-0 flex-1"
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          margin: 0,
+                          padding: 0
+                        }}
+                      >
+                        {pred.userInput}
+                      </p>
                     </button>
 
                     {/* Context Menu (3-dot) - Absolutely positioned */}
