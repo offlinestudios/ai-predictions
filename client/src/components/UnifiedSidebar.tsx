@@ -259,24 +259,24 @@ export default function UnifiedSidebar({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onClick={() => handleShare(pred.id)}>
+                          <DropdownMenuItem onSelect={() => handleShare(pred.id)}>
                             <Share2 className="w-4 h-4 mr-2" />
                             Share
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleRename(pred.id)}>
+                          <DropdownMenuItem onSelect={() => handleRename(pred.id)}>
                             <SquarePen className="w-4 h-4 mr-2" />
                             Rename
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAddToFavorites(pred.id)}>
+                          <DropdownMenuItem onSelect={() => handleAddToFavorites(pred.id)}>
                             <Star className="w-4 h-4 mr-2" />
                             Add to favorites
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleOpenInNewTab(pred.id)}>
+                          <DropdownMenuItem onSelect={() => handleOpenInNewTab(pred.id)}>
                             <ExternalLink className="w-4 h-4 mr-2" />
                             Open in new tab
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => handleDelete(pred.id)}
+                            onSelect={() => handleDelete(pred.id)}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
