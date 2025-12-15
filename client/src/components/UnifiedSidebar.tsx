@@ -235,7 +235,7 @@ export default function UnifiedSidebar({
                       className="flex w-full min-w-0 items-center gap-2 text-left pr-9"
                     >
                       <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <span className="block min-w-0 flex-1 overflow-hidden whitespace-nowrap [text-overflow:ellipsis] text-sm">
+                      <span className="truncate text-sm flex-1">
                         {pred.userInput}
                       </span>
                     </button>
