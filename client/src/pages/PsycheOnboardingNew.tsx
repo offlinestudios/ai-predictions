@@ -263,8 +263,8 @@ export default function PsycheOnboardingNew() {
         >
           <Card className="border-primary/20 shadow-2xl">
             <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                <Sparkles className="h-10 w-10 text-primary" />
+              <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-20 h-20" />
               </div>
               <CardTitle className="text-2xl font-bold">
                 Your Profile is Ready!
@@ -303,8 +303,8 @@ export default function PsycheOnboardingNew() {
         >
           <Card className="border-primary/20 shadow-2xl">
             <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                <Sparkles className="h-10 w-10 text-primary" />
+              <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-20 h-20" />
               </div>
               <CardTitle className="text-3xl font-bold">
                 {profile.psycheType.type}
@@ -395,8 +395,8 @@ export default function PsycheOnboardingNew() {
             >
               <Card className="border-primary/20 shadow-xl">
                 <CardHeader className="text-center space-y-4">
-                  <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Sparkles className="h-10 w-10 text-primary" />
+                  <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                    <img src="/logo.svg" alt="Predicsure AI" className="w-20 h-20" />
                   </div>
                   <CardTitle className="text-3xl mb-3">
                     Welcome to Predicsure AI
