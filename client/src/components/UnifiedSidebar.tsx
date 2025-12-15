@@ -222,35 +222,23 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
+                    className={`group relative px-2 py-1.5 rounded-lg transition-colors ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
                     }`}
                   >
-                    {/* Main clickable row (icon + truncated text) */}
                     <button
                       type="button"
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex w-full min-w-0 items-center gap-2 text-left"
-                      style={{ paddingRight: '36px' }}
+                      className="flex w-full items-center gap-2 pr-8 text-left"
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-                      <p
-                        className="text-sm min-w-0 flex-1"
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          margin: 0,
-                          padding: 0
-                        }}
-                      >
+                      <Icon className="w-4 h-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate text-sm">
                         {pred.userInput}
-                      </p>
+                      </span>
                     </button>
 
-                    {/* Context Menu (3-dot) - Absolutely positioned */}
                     <div className="absolute right-1 top-1/2 -translate-y-1/2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
