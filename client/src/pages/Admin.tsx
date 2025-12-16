@@ -3,15 +3,32 @@ import { trpc } from "../lib/trpc";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { Loader2, Users, Trash2, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, Users, Trash2, CheckCircle, AlertCircle, UserCog, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
+
+const PERSONALITY_TYPES = [
+  { id: "maverick", name: "The Maverick", description: "Bold risk-taker, driven by instinct", color: "bg-red-500/10 border-red-500/30 hover:bg-red-500/20" },
+  { id: "strategist", name: "The Strategist", description: "Methodical, data-driven planner", color: "bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20" },
+  { id: "visionary", name: "The Visionary", description: "Bold yet calculated, big-picture thinker", color: "bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20" },
+  { id: "guardian", name: "The Guardian", description: "Protective, stability-focused", color: "bg-green-500/10 border-green-500/30 hover:bg-green-500/20" },
+  { id: "pioneer", name: "The Pioneer", description: "Passionate, long-term visionary", color: "bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20" },
+  { id: "pragmatist", name: "The Pragmatist", description: "Practical, grounded realist", color: "bg-gray-500/10 border-gray-500/30 hover:bg-gray-500/20" },
+  { id: "catalyst", name: "The Catalyst", description: "Energetic, spontaneous inspirer", color: "bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20" },
+  { id: "adapter", name: "The Adapter", description: "Flexible, context-aware balancer", color: "bg-teal-500/10 border-teal-500/30 hover:bg-teal-500/20" },
+] as const;
 
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [currentPersonality, setCurrentPersonality] = useState<string | null>(null);
 
   // Get current user to check admin status
-  const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery();
+  const { data: user, isLoading: userLoading, refetch: refetchUser } = trpc.auth.me.useQuery();
+
+  // Get user's psyche profile
+  const { data: psycheProfile, refetch: refetchProfile } = trpc.psyche.getProfile.useQuery(undefined, {
+    enabled: !!user,
+  });
 
   // Get test users
   const { data: testUsers, isLoading: usersLoading, refetch } = trpc.admin.getTestUsers.useQuery(undefined, {
@@ -40,6 +57,19 @@ export default function Admin() {
     },
   });
 
+  // Impersonate personality mutation
+  const impersonateMutation = trpc.admin.impersonatePersonality.useMutation({
+    onSuccess: (data) => {
+      setMessage({ type: "success", text: data.message });
+      setCurrentPersonality(data.personality.type);
+      refetchProfile();
+      refetchUser();
+    },
+    onError: (error) => {
+      setMessage({ type: "error", text: error.message });
+    },
+  });
+
   const handleSeedUsers = () => {
     setMessage(null);
     seedMutation.mutate();
@@ -50,6 +80,11 @@ export default function Admin() {
       setMessage(null);
       deleteMutation.mutate();
     }
+  };
+
+  const handleImpersonate = (personalityType: typeof PERSONALITY_TYPES[number]["id"]) => {
+    setMessage(null);
+    impersonateMutation.mutate({ personalityType });
   };
 
   // Check if user is admin
@@ -105,6 +140,109 @@ export default function Admin() {
           </Alert>
         )}
 
+        {/* Quick Personality Switcher - Most Important Feature */}
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserCog className="w-5 h-5" />
+              Quick Personality Switcher
+              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Recommended</span>
+            </CardTitle>
+            <CardDescription>
+              Instantly switch your personality type to test how predictions differ. Your current personality: 
+              <strong className="text-foreground ml-1">{psycheProfile?.displayName || "Not set"}</strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {PERSONALITY_TYPES.map((personality) => (
+                <button
+                  key={personality.id}
+                  onClick={() => handleImpersonate(personality.id)}
+                  disabled={impersonateMutation.isPending}
+                  className={`p-4 rounded-lg border-2 text-left transition-all ${personality.color} ${
+                    psycheProfile?.displayName === personality.name ? "ring-2 ring-primary ring-offset-2" : ""
+                  }`}
+                >
+                  <div className="font-semibold text-sm">{personality.name}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{personality.description}</div>
+                  {psycheProfile?.displayName === personality.name && (
+                    <div className="flex items-center gap-1 mt-2 text-xs text-primary">
+                      <Sparkles className="w-3 h-3" />
+                      Current
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+            
+            {impersonateMutation.isPending && (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                <span className="text-sm">Switching personality...</span>
+              </div>
+            )}
+
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-sm mb-2">How to Test:</h4>
+              <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>Click any personality above to switch instantly</li>
+                <li>Go to Dashboard and ask a prediction question</li>
+                <li>Switch to a different personality and ask the same question</li>
+                <li>Compare how the AI responds differently based on personality!</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Test Questions Reference */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Test Prediction Questions</CardTitle>
+            <CardDescription>Use these questions to compare predictions across personalities</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">CAREER</div>
+                  <p className="text-sm">"Should I quit my job and start my own business?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">FINANCE</div>
+                  <p className="text-sm">"Should I invest $10,000 in cryptocurrency right now?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">LOVE</div>
+                  <p className="text-sm">"Is my current relationship going to lead to marriage?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">HEALTH</div>
+                  <p className="text-sm">"Should I try an extreme fasting diet to lose weight?"</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">STOCKS</div>
+                  <p className="text-sm">"Will Tesla stock go up or down in the next 6 months?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">SPORTS</div>
+                  <p className="text-sm">"Will the Lakers win the NBA championship this year?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">GENERAL</div>
+                  <p className="text-sm">"Should I move to a new city for a fresh start?"</p>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">HIGH RISK</div>
+                  <p className="text-sm">"Should I bet my savings on a startup opportunity?"</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Test Users Management */}
         <Card>
           <CardHeader>
@@ -113,7 +251,7 @@ export default function Admin() {
               Test Users Management
             </CardTitle>
             <CardDescription>
-              Create and manage test users with different personality types for testing predictions
+              Create separate test user accounts (alternative to personality switcher above)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -122,6 +260,7 @@ export default function Admin() {
               <Button
                 onClick={handleSeedUsers}
                 disabled={seedMutation.isPending}
+                variant="outline"
                 className="flex-1"
               >
                 {seedMutation.isPending ? (
@@ -151,18 +290,6 @@ export default function Admin() {
                   </>
                 )}
               </Button>
-            </div>
-
-            {/* Instructions */}
-            <div className="bg-muted p-4 rounded-lg space-y-2">
-              <h3 className="font-semibold text-sm">How to Use:</h3>
-              <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                <li>Click "Seed Test Users" to create 8 test accounts with different personalities</li>
-                <li>Sign up with Clerk using the test emails (e.g., test-maverick@test.com)</li>
-                <li>Set any password you want during signup</li>
-                <li>You'll be logged in with that personality type already assigned</li>
-                <li>Test predictions to see how responses differ by personality</li>
-              </ol>
             </div>
 
             {/* Test Users List */}
@@ -202,38 +329,6 @@ export default function Admin() {
                 <p className="text-sm">Click "Seed Test Users" to create them</p>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Test User Credentials */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Test User Credentials</CardTitle>
-            <CardDescription>Use these emails to sign up with Clerk</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-3">
-              {[
-                { email: "test-maverick@test.com", personality: "The Maverick", color: "bg-red-100 text-red-800" },
-                { email: "test-strategist@test.com", personality: "The Strategist", color: "bg-blue-100 text-blue-800" },
-                { email: "test-visionary@test.com", personality: "The Visionary", color: "bg-purple-100 text-purple-800" },
-                { email: "test-guardian@test.com", personality: "The Guardian", color: "bg-green-100 text-green-800" },
-                { email: "test-pioneer@test.com", personality: "The Pioneer", color: "bg-orange-100 text-orange-800" },
-                { email: "test-pragmatist@test.com", personality: "The Pragmatist", color: "bg-gray-100 text-gray-800" },
-                { email: "test-catalyst@test.com", personality: "The Catalyst", color: "bg-yellow-100 text-yellow-800" },
-                { email: "test-adapter@test.com", personality: "The Adapter", color: "bg-teal-100 text-teal-800" },
-              ].map((user) => (
-                <div key={user.email} className="p-3 border rounded-lg space-y-1">
-                  <p className="font-mono text-sm">{user.email}</p>
-                  <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${user.color}`}>
-                    {user.personality}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              <strong>Password:</strong> Set any password you want during Clerk signup (e.g., "test123")
-            </p>
           </CardContent>
         </Card>
       </div>

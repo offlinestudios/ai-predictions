@@ -390,6 +390,240 @@ export const adminRouter = router({
   /**
    * Delete all test users
    */
+  /**
+   * Impersonate a personality type for testing
+   * Updates the current admin user's psyche profile to match the selected personality
+   */
+  impersonatePersonality: protectedProcedure
+    .input(z.object({
+      personalityType: z.enum([
+        "maverick", "strategist", "visionary", "guardian",
+        "pioneer", "pragmatist", "catalyst", "adapter"
+      ]),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Verify user is admin
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Admin access required",
+        });
+      }
+
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database unavailable",
+        });
+      }
+
+      // Define personality profiles
+      const personalities: Record<string, {
+        psycheType: string;
+        displayName: string;
+        description: string;
+        coreTraits: string[];
+        decisionMakingStyle: string;
+        growthEdge: string;
+        psycheParameters: Record<string, number>;
+      }> = {
+        maverick: {
+          psycheType: "risk_addict",
+          displayName: "The Maverick",
+          description: "Bold, passionate, and driven by instinct. You thrive on taking risks and making quick, decisive moves based on your gut feelings.",
+          coreTraits: ["Risk-embracing", "Emotionally expressive", "Present-focused", "Intuitive"],
+          decisionMakingStyle: "Quick decision-making with high energy and adaptability",
+          growthEdge: "May act impulsively and struggle with patience",
+          psycheParameters: {
+            risk_appetite: 0.9,
+            emotional_reactivity: 0.9,
+            time_horizon: 0.2,
+            analytical_weight: 0.2,
+            volatility_tolerance: 0.9,
+            change_aversion: 0.1,
+          },
+        },
+        strategist: {
+          psycheType: "quiet_strategist",
+          displayName: "The Strategist",
+          description: "Methodical, patient, and data-driven. You excel at long-term planning and making calculated decisions based on thorough analysis.",
+          coreTraits: ["Risk-averse", "Emotionally measured", "Future-oriented", "Analytical"],
+          decisionMakingStyle: "Strategic thinking with consistent execution and risk management",
+          growthEdge: "May miss time-sensitive opportunities and struggle with uncertainty",
+          psycheParameters: {
+            risk_appetite: 0.2,
+            emotional_reactivity: 0.2,
+            time_horizon: 0.9,
+            analytical_weight: 0.9,
+            volatility_tolerance: 0.1,
+            change_aversion: 0.8,
+          },
+        },
+        visionary: {
+          psycheType: "ambitious_builder",
+          displayName: "The Visionary",
+          description: "Bold yet calculated, you take big risks backed by solid research. You balance ambition with strategic thinking for long-term success.",
+          coreTraits: ["Calculated risk-taker", "Emotionally controlled", "Future-oriented", "Strategic"],
+          decisionMakingStyle: "Big-picture thinking with disciplined execution",
+          growthEdge: "May undervalue emotional factors and be overly confident",
+          psycheParameters: {
+            risk_appetite: 0.8,
+            emotional_reactivity: 0.3,
+            time_horizon: 0.8,
+            analytical_weight: 0.8,
+            volatility_tolerance: 0.7,
+            change_aversion: 0.3,
+          },
+        },
+        guardian: {
+          psycheType: "stabilizer",
+          displayName: "The Guardian",
+          description: "Protective, emotionally attuned, and focused on long-term security. You prioritize stability and deep connections over quick wins.",
+          coreTraits: ["Risk-cautious", "Emotionally aware", "Future-oriented", "Intuitive"],
+          decisionMakingStyle: "Emotionally intelligent with strong protective instincts",
+          growthEdge: "May avoid necessary risks and struggle with change",
+          psycheParameters: {
+            risk_appetite: 0.2,
+            emotional_reactivity: 0.8,
+            time_horizon: 0.8,
+            analytical_weight: 0.3,
+            volatility_tolerance: 0.2,
+            change_aversion: 0.8,
+          },
+        },
+        pioneer: {
+          psycheType: "long_term_builder",
+          displayName: "The Pioneer",
+          description: "Passionate and ambitious with a long-term vision. You are willing to take bold risks to achieve your dreams and inspire others.",
+          coreTraits: ["Risk-embracing", "Emotionally driven", "Future-oriented", "Visionary"],
+          decisionMakingStyle: "Inspirational leadership with high motivation",
+          growthEdge: "May overextend resources and be emotionally volatile",
+          psycheParameters: {
+            risk_appetite: 0.8,
+            emotional_reactivity: 0.8,
+            time_horizon: 0.9,
+            analytical_weight: 0.4,
+            volatility_tolerance: 0.7,
+            change_aversion: 0.2,
+          },
+        },
+        pragmatist: {
+          psycheType: "pattern_analyst",
+          displayName: "The Pragmatist",
+          description: "Practical, grounded, and focused on what works right now. You make steady, rational decisions based on current realities.",
+          coreTraits: ["Risk-averse", "Emotionally neutral", "Present-focused", "Practical"],
+          decisionMakingStyle: "Reliable execution with clear-headed decisions",
+          growthEdge: "May lack long-term vision and be overly conservative",
+          psycheParameters: {
+            risk_appetite: 0.3,
+            emotional_reactivity: 0.3,
+            time_horizon: 0.3,
+            analytical_weight: 0.8,
+            volatility_tolerance: 0.3,
+            change_aversion: 0.6,
+          },
+        },
+        catalyst: {
+          psycheType: "momentum_chaser",
+          displayName: "The Catalyst",
+          description: "Energetic, spontaneous, and emotionally expressive. You live in the moment and inspire action through your passion and enthusiasm.",
+          coreTraits: ["Emotionally expressive", "Present-focused", "Intuitive", "Action-oriented"],
+          decisionMakingStyle: "High energy with inspiring presence",
+          growthEdge: "May lack long-term planning and be impulsive",
+          psycheParameters: {
+            risk_appetite: 0.7,
+            emotional_reactivity: 0.8,
+            time_horizon: 0.2,
+            analytical_weight: 0.3,
+            volatility_tolerance: 0.8,
+            change_aversion: 0.2,
+          },
+        },
+        adapter: {
+          psycheType: "intuitive_empath",
+          displayName: "The Adapter",
+          description: "Flexible, balanced, and context-aware. You adjust your approach based on the situation, blending intuition with analysis and caution with boldness.",
+          coreTraits: ["Balanced risk approach", "Emotionally flexible", "Adaptable time horizon", "Situational decision-making"],
+          decisionMakingStyle: "Versatile and context-sensitive approach",
+          growthEdge: "May lack clear identity and struggle with commitment",
+          psycheParameters: {
+            risk_appetite: 0.5,
+            emotional_reactivity: 0.5,
+            time_horizon: 0.5,
+            analytical_weight: 0.5,
+            volatility_tolerance: 0.5,
+            change_aversion: 0.5,
+          },
+        },
+      };
+
+      const personality = personalities[input.personalityType];
+      if (!personality) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid personality type",
+        });
+      }
+
+      try {
+        // Check if psyche profile exists for current user
+        const existingProfile = await db
+          .select()
+          .from(psycheProfiles)
+          .where(eq(psycheProfiles.userId, ctx.user.id))
+          .limit(1);
+
+        if (existingProfile.length > 0) {
+          // Update existing profile
+          await db
+            .update(psycheProfiles)
+            .set({
+              psycheType: personality.psycheType as any,
+              displayName: personality.displayName,
+              description: personality.description,
+              coreTraits: JSON.stringify(personality.coreTraits),
+              decisionMakingStyle: personality.decisionMakingStyle,
+              growthEdge: personality.growthEdge,
+              psycheParameters: JSON.stringify(personality.psycheParameters),
+              updatedAt: new Date(),
+            })
+            .where(eq(psycheProfiles.userId, ctx.user.id));
+        } else {
+          // Create new profile
+          await db.insert(psycheProfiles).values({
+            userId: ctx.user.id,
+            psycheType: personality.psycheType as any,
+            displayName: personality.displayName,
+            description: personality.description,
+            coreTraits: JSON.stringify(personality.coreTraits),
+            decisionMakingStyle: personality.decisionMakingStyle,
+            growthEdge: personality.growthEdge,
+            psycheParameters: JSON.stringify(personality.psycheParameters),
+          });
+        }
+
+        return {
+          success: true,
+          message: `Now impersonating: ${personality.displayName}`,
+          personality: {
+            type: input.personalityType,
+            displayName: personality.displayName,
+            description: personality.description,
+          },
+        };
+      } catch (error) {
+        console.error("[Admin] Error impersonating personality:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to impersonate personality",
+        });
+      }
+    }),
+
+  /**
+   * Delete all test users
+   */
   deleteTestUsers: protectedProcedure.mutation(async ({ ctx }) => {
     // Verify user is admin
     if (ctx.user.role !== "admin") {
