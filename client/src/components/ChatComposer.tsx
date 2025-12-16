@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Paperclip, ArrowUp, X, Plus, Sparkles, Calendar, Lock, Zap, ChevronDown } from "lucide-react";
+import { 
+  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles, Calendar, Lock, Zap,
+  MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ChatComposerProps {
   onSubmit: (question: string, category: string, files: File[], deepMode: boolean, trajectoryType: string) => void;
@@ -36,14 +36,14 @@ const TRAJECTORY_OPTIONS: { id: TrajectoryType; label: string; description: stri
   { id: "yearly", label: "Yearly Forecast", description: "Annual vision", minTier: "premium" },
 ];
 
-const CATEGORY_OPTIONS = [
-  { id: "general", label: "General", icon: "💭" },
-  { id: "career", label: "Career", icon: "💼" },
-  { id: "relationships", label: "Relationships", icon: "❤️" },
-  { id: "finance", label: "Finance", icon: "💰" },
-  { id: "health", label: "Health", icon: "🏃" },
-  { id: "sports", label: "Sports", icon: "🏆" },
-  { id: "stocks", label: "Stocks", icon: "📈" },
+const CATEGORY_OPTIONS: { id: string; label: string; icon: React.ElementType }[] = [
+  { id: "general", label: "General", icon: MessageCircle },
+  { id: "career", label: "Career", icon: Briefcase },
+  { id: "relationships", label: "Relationships", icon: Heart },
+  { id: "finance", label: "Finance", icon: DollarSign },
+  { id: "health", label: "Health", icon: Activity },
+  { id: "sports", label: "Sports", icon: Trophy },
+  { id: "stocks", label: "Stocks", icon: TrendingUp },
 ];
 
 const TIER_HIERARCHY = ["free", "plus", "pro", "premium"];
@@ -62,25 +62,21 @@ export default function ChatComposer({
   const [deepMode, setDeepMode] = useState(false);
   const [trajectoryType, setTrajectoryType] = useState<TrajectoryType>("instant");
   const [showOptions, setShowOptions] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentTier = subscription?.tier || "free";
   const currentTierIndex = TIER_HIERARCHY.indexOf(currentTier);
 
-  // Check if a feature is available for the current tier
   const isFeatureAvailable = (minTier: string) => {
     const minTierIndex = TIER_HIERARCHY.indexOf(minTier);
     return currentTierIndex >= minTierIndex;
   };
 
-  // Deep mode requires Plus or higher
   const canUseDeepMode = isFeatureAvailable("plus");
-
-  // Check if any premium features are active
   const hasActiveFeatures = (deepMode && canUseDeepMode) || trajectoryType !== "instant";
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -91,7 +87,6 @@ export default function ChatComposer({
   const handleSubmit = () => {
     if (!question.trim() || isLoading || disabled) return;
     
-    // Check character limit
     if (question.length > 1000) {
       toast.error("Your prediction question is too long. Please keep it under 1000 characters.");
       return;
@@ -126,10 +121,7 @@ export default function ChatComposer({
   const handleDeepModeToggle = () => {
     if (!canUseDeepMode) {
       toast.info("Deep Mode requires Plus subscription", {
-        action: onUpgradeClick ? {
-          label: "Upgrade",
-          onClick: onUpgradeClick
-        } : undefined
+        action: onUpgradeClick ? { label: "Upgrade", onClick: onUpgradeClick } : undefined
       });
       return;
     }
@@ -143,10 +135,7 @@ export default function ChatComposer({
     if (!isFeatureAvailable(option.minTier)) {
       const tierName = option.minTier.charAt(0).toUpperCase() + option.minTier.slice(1);
       toast.info(`${option.label} requires ${tierName} subscription`, {
-        action: onUpgradeClick ? {
-          label: "Upgrade",
-          onClick: onUpgradeClick
-        } : undefined
+        action: onUpgradeClick ? { label: "Upgrade", onClick: onUpgradeClick } : undefined
       });
       return;
     }
@@ -154,6 +143,7 @@ export default function ChatComposer({
   };
 
   const currentCategory = CATEGORY_OPTIONS.find(c => c.id === category);
+  const CurrentCategoryIcon = currentCategory?.icon || MessageCircle;
   const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
 
   return (
@@ -163,17 +153,10 @@ export default function ChatComposer({
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-2">
             {files.map((file, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-full text-sm"
-              >
+              <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-full text-sm">
                 <Paperclip className="w-3 h-3" />
                 <span className="max-w-[120px] truncate">{file.name}</span>
-                <button
-                  onClick={() => removeFile(index)}
-                  className="hover:text-destructive"
-                  disabled={isLoading}
-                >
+                <button onClick={() => removeFile(index)} className="hover:text-destructive" disabled={isLoading}>
                   <X className="w-3 h-3" />
                 </button>
               </div>
@@ -181,7 +164,7 @@ export default function ChatComposer({
           </div>
         )}
 
-        {/* Active Features Pills - Only show when features are active */}
+        {/* Active Features Pills */}
         {hasActiveFeatures && (
           <div className="flex flex-wrap gap-2 mb-2">
             {deepMode && canUseDeepMode && (
@@ -207,7 +190,7 @@ export default function ChatComposer({
           </div>
         )}
 
-        {/* Composer Bar */}
+        {/* Main Composer */}
         <div className="relative w-full">
           <input
             ref={fileInputRef}
@@ -218,178 +201,212 @@ export default function ChatComposer({
             className="hidden"
           />
           
-          <div className="relative flex items-end gap-2">
-            {/* Plus Button - Opens Options Menu */}
-            <DropdownMenu open={showOptions} onOpenChange={setShowOptions}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-10 w-10 rounded-full shrink-0 transition-all",
-                    showOptions ? "bg-accent rotate-45" : "hover:bg-accent",
-                    hasActiveFeatures && "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                  )}
-                  disabled={isLoading || disabled}
+          {/* Textarea Container */}
+          <div className="relative flex items-end rounded-2xl border-2 border-border bg-background focus-within:border-primary/50 transition-colors">
+            {/* Left Side: Plus Button + Category Button (inside textarea) */}
+            <div className="flex items-center gap-1 pl-2 pb-3">
+              {/* Plus Button - Opens Options Popover */}
+              <Popover open={showOptions} onOpenChange={setShowOptions}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "h-8 w-8 rounded-full flex items-center justify-center transition-all hover:bg-accent",
+                      showOptions && "bg-accent rotate-45",
+                      hasActiveFeatures && "ring-2 ring-primary ring-offset-1 ring-offset-background"
+                    )}
+                    disabled={isLoading || disabled}
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  align="start" 
+                  side="top" 
+                  sideOffset={12}
+                  className="w-72 p-0 rounded-xl shadow-xl border border-border/50"
                 >
-                  <Plus className="w-5 h-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-64">
-                {/* Category Selection */}
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Category</DropdownMenuLabel>
-                <div className="grid grid-cols-4 gap-1 p-2">
-                  {CATEGORY_OPTIONS.map((cat) => (
+                  {/* Analysis Mode */}
+                  <div className="p-3 border-b border-border/50">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">Analysis Mode</div>
                     <button
-                      key={cat.id}
-                      onClick={() => {
-                        setCategory(cat.id);
-                      }}
-                      className={cn(
-                        "flex flex-col items-center gap-1 p-2 rounded-lg text-xs transition-colors",
-                        category === cat.id 
-                          ? "bg-primary text-primary-foreground" 
-                          : "hover:bg-accent"
-                      )}
+                      onClick={handleDeepModeToggle}
+                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors"
                     >
-                      <span className="text-base">{cat.icon}</span>
-                      <span className="truncate w-full text-center">{cat.label}</span>
+                      <div className="flex items-center gap-3">
+                        {canUseDeepMode ? (
+                          <Sparkles className="w-4 h-4 text-primary" />
+                        ) : (
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        )}
+                        <div className="text-left">
+                          <div className="font-medium text-sm">Deep Mode</div>
+                          <div className="text-xs text-muted-foreground">Detailed analysis & scenarios</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!canUseDeepMode && (
+                          <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded">Plus</span>
+                        )}
+                        <div className={cn(
+                          "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                          deepMode && canUseDeepMode 
+                            ? "bg-primary border-primary text-primary-foreground" 
+                            : "border-muted-foreground/30"
+                        )}>
+                          {deepMode && canUseDeepMode && <span className="text-xs">✓</span>}
+                        </div>
+                      </div>
                     </button>
-                  ))}
-                </div>
+                  </div>
 
-                <DropdownMenuSeparator />
-
-                {/* Deep Mode Toggle */}
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Analysis Mode</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={handleDeepModeToggle}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                      {canUseDeepMode ? (
-                        <Sparkles className="w-4 h-4 text-primary" />
-                      ) : (
-                        <Lock className="w-4 h-4 text-muted-foreground" />
-                      )}
-                      <div>
-                        <div className="font-medium">Deep Mode</div>
-                        <div className="text-xs text-muted-foreground">Detailed analysis & scenarios</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {!canUseDeepMode && (
-                        <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded">Plus</span>
-                      )}
-                      <div className={cn(
-                        "w-4 h-4 rounded border-2 flex items-center justify-center",
-                        deepMode && canUseDeepMode ? "bg-primary border-primary" : "border-muted-foreground/30"
-                      )}>
-                        {deepMode && canUseDeepMode && <span className="text-primary-foreground text-xs">✓</span>}
-                      </div>
+                  {/* Forecast Timeframe */}
+                  <div className="p-3 border-b border-border/50">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">Forecast Timeframe</div>
+                    <div className="space-y-1">
+                      {TRAJECTORY_OPTIONS.map((option) => {
+                        const isAvailable = isFeatureAvailable(option.minTier);
+                        const isSelected = trajectoryType === option.id;
+                        
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleTrajectorySelect(option.id)}
+                            className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              {isAvailable ? (
+                                option.id === "instant" ? <Zap className="w-4 h-4" /> : <Calendar className="w-4 h-4" />
+                              ) : (
+                                <Lock className="w-4 h-4 text-muted-foreground" />
+                              )}
+                              <div className="text-left">
+                                <div className={cn("font-medium text-sm", !isAvailable && "text-muted-foreground")}>
+                                  {option.label}
+                                </div>
+                                <div className="text-xs text-muted-foreground">{option.description}</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {!isAvailable && (
+                                <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded capitalize">
+                                  {option.minTier}
+                                </span>
+                              )}
+                              {isSelected && isAvailable && (
+                                <span className="text-primary font-medium">✓</span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
-
-                {/* Trajectory Options */}
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Forecast Timeframe</DropdownMenuLabel>
-                {TRAJECTORY_OPTIONS.map((option) => {
-                  const isAvailable = isFeatureAvailable(option.minTier);
-                  const isSelected = trajectoryType === option.id;
-                  
-                  return (
-                    <DropdownMenuItem
-                      key={option.id}
-                      onClick={() => handleTrajectorySelect(option.id)}
-                      className="cursor-pointer"
+                  {/* Attach Files */}
+                  <div className="p-3">
+                    <button
+                      onClick={() => {
+                        fileInputRef.current?.click();
+                        setShowOptions(false);
+                      }}
+                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
                     >
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-2">
-                          {isAvailable ? (
-                            option.id === "instant" ? <Zap className="w-4 h-4" /> : <Calendar className="w-4 h-4" />
-                          ) : (
-                            <Lock className="w-4 h-4 text-muted-foreground" />
-                          )}
-                          <div>
-                            <div className={cn("font-medium", !isAvailable && "text-muted-foreground")}>{option.label}</div>
-                            <div className="text-xs text-muted-foreground">{option.description}</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {!isAvailable && (
-                            <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded capitalize">{option.minTier}</span>
-                          )}
-                          {isSelected && isAvailable && (
-                            <span className="text-primary">✓</span>
-                          )}
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                  );
-                })}
+                      <Paperclip className="w-4 h-4" />
+                      <span className="font-medium text-sm">Attach Files</span>
+                    </button>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-                <DropdownMenuSeparator />
-
-                {/* File Upload */}
-                <DropdownMenuItem
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                    setShowOptions(false);
-                  }}
-                  className="cursor-pointer"
+              {/* Category Button - Separate Popover */}
+              <Popover open={showCategoryPicker} onOpenChange={setShowCategoryPicker}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "h-8 px-3 rounded-full flex items-center gap-1.5 text-sm font-medium transition-all hover:bg-accent",
+                      showCategoryPicker && "bg-accent"
+                    )}
+                    disabled={isLoading || disabled}
+                  >
+                    <CurrentCategoryIcon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{currentCategory?.label}</span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  align="start" 
+                  side="top" 
+                  sideOffset={12}
+                  className="w-56 p-3 rounded-xl shadow-xl border border-border/50"
                 >
-                  <Paperclip className="w-4 h-4 mr-2" />
-                  <span>Attach Files</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Category</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    {CATEGORY_OPTIONS.map((cat) => {
+                      const Icon = cat.icon;
+                      const isSelected = category === cat.id;
+                      
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            setCategory(cat.id);
+                            setShowCategoryPicker(false);
+                          }}
+                          className={cn(
+                            "flex items-center gap-2 p-2 rounded-lg text-sm transition-colors",
+                            isSelected 
+                              ? "bg-primary text-primary-foreground" 
+                              : "hover:bg-accent"
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{cat.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
 
             {/* Textarea */}
-            <div className="relative flex-1">
-              <Textarea
-                ref={textareaRef}
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="What do you want to predict?"
-                disabled={isLoading || disabled}
-                className="min-h-[52px] max-h-[120px] resize-none pl-4 pr-12 py-4 w-full rounded-2xl border-2 text-base placeholder:text-base"
-                rows={1}
-              />
-              
-              {/* Send Button - Inside textarea */}
-              <div className="absolute right-2 bottom-2 top-2 flex items-center">
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!question.trim() || isLoading || disabled}
-                  size="icon"
-                  className="h-8 w-8 rounded-lg"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ArrowUp className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
+            <Textarea
+              ref={textareaRef}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="What do you want to predict?"
+              disabled={isLoading || disabled}
+              className="min-h-[52px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-4 pr-12 text-base placeholder:text-base bg-transparent"
+              rows={1}
+            />
+            
+            {/* Send Button (right side, inside textarea) */}
+            <div className="pr-2 pb-3">
+              <Button
+                onClick={handleSubmit}
+                disabled={!question.trim() || isLoading || disabled}
+                size="icon"
+                className="h-8 w-8 rounded-full"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ArrowUp className="w-4 h-4" />
+                )}
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Minimal Hint Text */}
+        {/* Minimal Status Text */}
         <p className="text-xs text-muted-foreground mt-2 text-center">
-          <span className="text-muted-foreground/60">{currentCategory?.icon}</span>
-          <span className="ml-1">{currentCategory?.label}</span>
+          Press Enter to send
           {hasActiveFeatures && (
-            <>
-              <span className="mx-2 text-muted-foreground/30">•</span>
-              {deepMode && canUseDeepMode && <span className="text-primary">Deep</span>}
-              {deepMode && canUseDeepMode && trajectoryType !== "instant" && <span className="mx-1">+</span>}
-              {trajectoryType !== "instant" && <span className="text-primary">{currentTrajectory?.label.replace(" Forecast", "")}</span>}
-            </>
+            <span className="text-primary ml-2">
+              {deepMode && canUseDeepMode && "Deep Mode"}
+              {deepMode && canUseDeepMode && trajectoryType !== "instant" && " + "}
+              {trajectoryType !== "instant" && currentTrajectory?.label.replace(" Forecast", "")}
+            </span>
           )}
         </p>
       </div>
