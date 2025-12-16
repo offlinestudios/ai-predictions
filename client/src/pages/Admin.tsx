@@ -4,10 +4,10 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Loader2, Users, Trash2, CheckCircle, AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 export default function Admin() {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Get current user to check admin status
@@ -70,7 +70,7 @@ export default function Admin() {
             <CardDescription>You do not have permission to access this page.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate("/dashboard")} className="w-full">
+            <Button onClick={() => setLocation("/dashboard")} className="w-full">
               Go to Dashboard
             </Button>
           </CardContent>
@@ -88,7 +88,7 @@ export default function Admin() {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-1">Manage test users and system settings</p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+          <Button variant="outline" onClick={() => setLocation("/dashboard")}>
             Back to Dashboard
           </Button>
         </div>
