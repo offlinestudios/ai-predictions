@@ -484,6 +484,9 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           .where(eq(users.id, ctx.user.id))
           .limit(1);
         
+        // Get user's psyche profile for personality-aware predictions
+        const psycheProfile = await getUserPsycheProfile(ctx.user.id);
+        
         // Build personalized system prompt based on trajectory type and mode
         let systemPrompt = "";
         
@@ -667,6 +670,92 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           systemPrompt += `- Aligned with their age, location, income, and industry realities\n`;
           systemPrompt += `- Acknowledge constraints and opportunities unique to their situation\n`;
           systemPrompt += `- Provide timeline predictions that match their life stage\n`;
+        }
+        
+        // Add personality-aware prediction guidance
+        if (psycheProfile) {
+          try {
+            const params = JSON.parse(psycheProfile.psycheParameters);
+            
+            systemPrompt += `\n\n**🧠 Personality Profile:**\n`;
+            systemPrompt += `- Type: ${psycheProfile.displayName}\n`;
+            systemPrompt += `- Core Approach: ${psycheProfile.decisionMakingStyle}\n`;
+            
+            // Risk appetite guidance
+            if (params.risk_appetite > 0.7) {
+              systemPrompt += `- Risk Profile: HIGH RISK APPETITE (${Math.round(params.risk_appetite * 100)}%) - This user embraces bold moves and ambitious goals\n`;
+              systemPrompt += `  → Encourage calculated risks, big opportunities, and aggressive timelines\n`;
+              systemPrompt += `  → Frame predictions around growth, momentum, and seizing opportunities\n`;
+              systemPrompt += `  → Use energizing language: "leap", "breakthrough", "momentum", "bold move"\n`;
+            } else if (params.risk_appetite < 0.4) {
+              systemPrompt += `- Risk Profile: LOW RISK APPETITE (${Math.round(params.risk_appetite * 100)}%) - This user values safety and stability\n`;
+              systemPrompt += `  → Emphasize security, gradual progress, and risk mitigation\n`;
+              systemPrompt += `  → Frame predictions around steady growth and protected downside\n`;
+              systemPrompt += `  → Use reassuring language: "secure", "stable", "protected", "gradual"\n`;
+            } else {
+              systemPrompt += `- Risk Profile: MODERATE RISK APPETITE (${Math.round(params.risk_appetite * 100)}%) - This user balances opportunity with caution\n`;
+              systemPrompt += `  → Present both opportunities and risks transparently\n`;
+              systemPrompt += `  → Frame predictions around calculated moves with backup plans\n`;
+            }
+            
+            // Emotional reactivity guidance
+            if (params.emotional_reactivity > 0.7) {
+              systemPrompt += `- Emotional Style: HIGHLY EMOTIONAL (${Math.round(params.emotional_reactivity * 100)}%) - This user leads with feelings and intuition\n`;
+              systemPrompt += `  → Use empathetic, emotionally resonant language\n`;
+              systemPrompt += `  → Acknowledge their feelings and validate their emotional experience\n`;
+              systemPrompt += `  → Connect predictions to their values, passions, and deeper meaning\n`;
+              systemPrompt += `  → Use heart-centered language: "feel", "resonate", "passion", "intuition"\n`;
+            } else if (params.emotional_reactivity < 0.4) {
+              systemPrompt += `- Emotional Style: ANALYTICAL (${Math.round(params.emotional_reactivity * 100)}%) - This user values logic and data\n`;
+              systemPrompt += `  → Use data-driven, rational arguments and clear logic\n`;
+              systemPrompt += `  → Provide specific numbers, percentages, and measurable outcomes\n`;
+              systemPrompt += `  → Focus on objective analysis rather than emotional appeals\n`;
+              systemPrompt += `  → Use analytical language: "data shows", "analysis indicates", "probability", "metrics"\n`;
+            } else {
+              systemPrompt += `- Emotional Style: BALANCED (${Math.round(params.emotional_reactivity * 100)}%) - This user integrates both logic and emotion\n`;
+              systemPrompt += `  → Blend emotional resonance with rational analysis\n`;
+              systemPrompt += `  → Acknowledge feelings while providing logical frameworks\n`;
+            }
+            
+            // Time horizon guidance
+            if (params.time_horizon > 0.7) {
+              systemPrompt += `- Time Orientation: LONG-TERM FOCUSED (${Math.round(params.time_horizon * 100)}%) - This user thinks in years, not months\n`;
+              systemPrompt += `  → Emphasize sustainable growth and long-term vision\n`;
+              systemPrompt += `  → Frame predictions around 5-10 year trajectories and legacy\n`;
+              systemPrompt += `  → Discuss compound effects and patient wealth-building\n`;
+              systemPrompt += `  → Use future-oriented language: "legacy", "foundation", "sustainable", "long-term"\n`;
+            } else if (params.time_horizon < 0.4) {
+              systemPrompt += `- Time Orientation: PRESENT-FOCUSED (${Math.round(params.time_horizon * 100)}%) - This user values immediate results\n`;
+              systemPrompt += `  → Provide immediate, actionable steps and quick wins\n`;
+              systemPrompt += `  → Frame predictions around near-term outcomes (days/weeks)\n`;
+              systemPrompt += `  → Focus on what they can do RIGHT NOW to see results\n`;
+              systemPrompt += `  → Use immediate language: "today", "this week", "right now", "immediate"\n`;
+            } else {
+              systemPrompt += `- Time Orientation: MEDIUM-TERM FOCUSED (${Math.round(params.time_horizon * 100)}%) - This user balances present and future\n`;
+              systemPrompt += `  → Blend short-term actions with medium-term goals (3-12 months)\n`;
+              systemPrompt += `  → Show how immediate steps lead to future outcomes\n`;
+            }
+            
+            // Analytical weight guidance
+            if (params.analytical_weight > 0.7) {
+              systemPrompt += `- Decision Style: HIGHLY ANALYTICAL (${Math.round(params.analytical_weight * 100)}%) - This user needs thorough analysis\n`;
+              systemPrompt += `  → Provide detailed breakdowns, pros/cons lists, and scenario analysis\n`;
+              systemPrompt += `  → Include specific data points, research, and evidence\n`;
+              systemPrompt += `  → Structure predictions with clear frameworks and methodologies\n`;
+            } else if (params.analytical_weight < 0.4) {
+              systemPrompt += `- Decision Style: INTUITIVE (${Math.round(params.analytical_weight * 100)}%) - This user trusts gut feelings\n`;
+              systemPrompt += `  → Focus on big picture, patterns, and intuitive insights\n`;
+              systemPrompt += `  → Less data, more narrative and storytelling\n`;
+              systemPrompt += `  → Help them trust their instincts and inner knowing\n`;
+            }
+            
+            systemPrompt += `\n**🎯 CRITICAL INSTRUCTION:**\n`;
+            systemPrompt += `Your prediction MUST be tailored to this exact personality profile. The language, tone, risk level, timeframe, and recommendations should ALL align with their specific parameters above. This is not optional - it's core to providing value.\n`;
+            
+          } catch (error) {
+            console.error('[Prediction] Error parsing psyche parameters:', error);
+            // Continue without personality customization if parsing fails
+          }
         }
         
         // Add personalization based on user history
