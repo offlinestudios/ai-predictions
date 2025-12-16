@@ -63,6 +63,9 @@ export default function DashboardChat() {
   // Generate prediction mutation
   const generateMutation = trpc.prediction.generate.useMutation({
     onSuccess: (data, variables) => {
+      // Remove loading/system message first
+      setMessages(prev => prev.filter(m => m.type !== "system"));
+      
       // Add assistant message with prediction
       const assistantMessage: Message = {
         id: `msg-${Date.now()}-assistant`,
@@ -70,9 +73,10 @@ export default function DashboardChat() {
         content: data.prediction,
         category: variables.category,
         timestamp: new Date(),
-        accuracy: {
-          score: data.confidenceScore || 65,
-          label: data.confidenceScore && data.confidenceScore >= 80 ? "High" : data.confidenceScore && data.confidenceScore >= 60 ? "Moderate" : "Low",
+        // Only include accuracy if we have a real confidence score from deep mode
+        accuracy: data.confidenceScore ? {
+          score: data.confidenceScore,
+          label: data.confidenceScore >= 80 ? "High" : data.confidenceScore >= 60 ? "Moderate" : "Low",
           potentialScore: 95,
           suggestedDetails: [
             "Age Range",
@@ -81,7 +85,7 @@ export default function DashboardChat() {
             "Relationship Status",
             "Current Life Stage"
           ]
-        }
+        } : undefined
       };
       
       setMessages(prev => [...prev, assistantMessage]);
@@ -177,9 +181,10 @@ export default function DashboardChat() {
       content: prediction.predictionResult,
       category: prediction.category || "general",
       timestamp: new Date(prediction.createdAt),
-      accuracy: {
-        score: prediction.confidenceScore || 65,
-        label: prediction.confidenceScore && prediction.confidenceScore >= 80 ? "High" : prediction.confidenceScore && prediction.confidenceScore >= 60 ? "Moderate" : "Low",
+      // Only include accuracy if we have a real confidence score
+      accuracy: prediction.confidenceScore ? {
+        score: prediction.confidenceScore,
+        label: prediction.confidenceScore >= 80 ? "High" : prediction.confidenceScore >= 60 ? "Moderate" : "Low",
         potentialScore: 95,
         suggestedDetails: [
           "Age Range",
@@ -188,7 +193,7 @@ export default function DashboardChat() {
           "Relationship Status",
           "Current Life Stage"
         ]
-      }
+      } : undefined
     };
 
     setMessages([userMessage, assistantMessage]);

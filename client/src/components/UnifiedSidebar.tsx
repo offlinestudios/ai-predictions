@@ -240,7 +240,7 @@ export default function UnifiedSidebar({
                       className="flex w-full max-w-full items-center gap-2 pr-8 text-left overflow-hidden"
                     >
                       <Icon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm">
+                      <span className="text-sm truncate block">
                         {truncateText(pred.userInput)}
                       </span>
                     </button>
