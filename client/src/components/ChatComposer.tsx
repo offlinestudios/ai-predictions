@@ -1,23 +1,63 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Paperclip, ArrowUp, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp } from "lucide-react";
+import { Loader2, Paperclip, ArrowUp, X, MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp, Sparkles, Calendar, Lock, Zap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ChatComposerProps {
-  onSubmit: (question: string, category: string, files: File[]) => void;
+  onSubmit: (question: string, category: string, files: File[], deepMode: boolean, trajectoryType: string) => void;
   isLoading: boolean;
   disabled?: boolean;
   sidebarCollapsed?: boolean;
+  subscription?: {
+    tier: string;
+    dailyLimit: number;
+    usedToday: number;
+    totalUsed: number;
+  } | null;
+  onUpgradeClick?: () => void;
 }
 
-export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCollapsed = false }: ChatComposerProps) {
+type TrajectoryType = "instant" | "30day" | "90day" | "yearly";
+
+const TRAJECTORY_OPTIONS: { id: TrajectoryType; label: string; description: string; minTier: string }[] = [
+  { id: "instant", label: "Instant", description: "Immediate insight", minTier: "free" },
+  { id: "30day", label: "30-Day", description: "Monthly forecast", minTier: "plus" },
+  { id: "90day", label: "90-Day", description: "Quarterly outlook", minTier: "pro" },
+  { id: "yearly", label: "Yearly", description: "Annual vision", minTier: "premium" },
+];
+
+const TIER_HIERARCHY = ["free", "plus", "pro", "premium"];
+
+export default function ChatComposer({ 
+  onSubmit, 
+  isLoading, 
+  disabled, 
+  sidebarCollapsed = false,
+  subscription,
+  onUpgradeClick
+}: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [category, setCategory] = useState("relationships");
   const [files, setFiles] = useState<File[]>([]);
+  const [deepMode, setDeepMode] = useState(false);
+  const [trajectoryType, setTrajectoryType] = useState<TrajectoryType>("instant");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const currentTier = subscription?.tier || "free";
+  const currentTierIndex = TIER_HIERARCHY.indexOf(currentTier);
+
+  // Check if a feature is available for the current tier
+  const isFeatureAvailable = (minTier: string) => {
+    const minTierIndex = TIER_HIERARCHY.indexOf(minTier);
+    return currentTierIndex >= minTierIndex;
+  };
+
+  // Deep mode requires Plus or higher
+  const canUseDeepMode = isFeatureAvailable("plus");
 
   // Auto-resize textarea
   useEffect(() => {
@@ -36,7 +76,7 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
       return;
     }
     
-    onSubmit(question, category, files);
+    onSubmit(question, category, files, deepMode && canUseDeepMode, trajectoryType);
     setQuestion("");
     setFiles([]);
     if (textareaRef.current) {
@@ -62,14 +102,45 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeepModeToggle = () => {
+    if (!canUseDeepMode) {
+      toast.info("Deep Mode requires Plus subscription or higher", {
+        action: onUpgradeClick ? {
+          label: "Upgrade",
+          onClick: onUpgradeClick
+        } : undefined
+      });
+      return;
+    }
+    setDeepMode(!deepMode);
+  };
+
+  const handleTrajectorySelect = (trajectory: TrajectoryType) => {
+    const option = TRAJECTORY_OPTIONS.find(t => t.id === trajectory);
+    if (!option) return;
+
+    if (!isFeatureAvailable(option.minTier)) {
+      const tierName = option.minTier.charAt(0).toUpperCase() + option.minTier.slice(1);
+      toast.info(`${option.label} forecasts require ${tierName} subscription`, {
+        action: onUpgradeClick ? {
+          label: "Upgrade",
+          onClick: onUpgradeClick
+        } : undefined
+      });
+      return;
+    }
+    setTrajectoryType(trajectory);
+  };
+
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       {/* On mobile (<lg), positioned 64px from bottom to sit above bottom nav */}
       <div className="container max-w-4xl py-3 md:py-4">
-        {/* Category Selector - Mobile Optimized */}
-        <div className="mb-2 md:mb-3">
+        {/* Top Row: Category + Premium Features */}
+        <div className="flex flex-wrap items-center gap-2 mb-2 md:mb-3">
+          {/* Category Selector */}
           <Select value={category} onValueChange={setCategory} disabled={isLoading || disabled}>
-            <SelectTrigger className="w-full md:w-48 h-9 text-sm">
+            <SelectTrigger className="w-full sm:w-40 h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -117,6 +188,61 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
               </SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Deep Mode Toggle */}
+          <button
+            onClick={handleDeepModeToggle}
+            disabled={isLoading || disabled}
+            className={cn(
+              "flex items-center gap-1.5 px-3 h-9 rounded-lg border text-sm font-medium transition-all",
+              deepMode && canUseDeepMode
+                ? "bg-primary text-primary-foreground border-primary"
+                : canUseDeepMode
+                  ? "bg-background hover:bg-accent border-border"
+                  : "bg-muted/50 text-muted-foreground border-border/50 cursor-not-allowed"
+            )}
+          >
+            {canUseDeepMode ? (
+              <Sparkles className="w-4 h-4" />
+            ) : (
+              <Lock className="w-3.5 h-3.5" />
+            )}
+            <span>Deep Mode</span>
+            {!canUseDeepMode && (
+              <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded-full ml-1">Plus</span>
+            )}
+          </button>
+
+          {/* Trajectory Selector */}
+          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+            {TRAJECTORY_OPTIONS.map((option) => {
+              const isAvailable = isFeatureAvailable(option.minTier);
+              const isSelected = trajectoryType === option.id;
+              
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => handleTrajectorySelect(option.id)}
+                  disabled={isLoading || disabled}
+                  className={cn(
+                    "flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSelected && isAvailable
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : isAvailable
+                        ? "hover:bg-accent text-foreground"
+                        : "text-muted-foreground cursor-not-allowed"
+                  )}
+                  title={!isAvailable ? `Requires ${option.minTier.charAt(0).toUpperCase() + option.minTier.slice(1)}` : option.description}
+                >
+                  {!isAvailable && <Lock className="w-3 h-3" />}
+                  {option.id === "instant" && isAvailable && <Zap className="w-3 h-3" />}
+                  {option.id !== "instant" && isAvailable && <Calendar className="w-3 h-3" />}
+                  <span className="hidden sm:inline">{option.label}</span>
+                  <span className="sm:hidden">{option.id === "instant" ? "Now" : option.label.replace("-Day", "d")}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* File Previews */}
@@ -198,6 +324,12 @@ export default function ChatComposer({ onSubmit, isLoading, disabled, sidebarCol
         {/* Hint Text */}
         <p className="text-xs text-muted-foreground mt-2 text-center">
           Press Enter to send, Shift+Enter for new line
+          {deepMode && canUseDeepMode && (
+            <span className="ml-2 text-primary">• Deep Mode active</span>
+          )}
+          {trajectoryType !== "instant" && (
+            <span className="ml-2 text-primary">• {TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType)?.label} forecast</span>
+          )}
         </p>
       </div>
     </div>

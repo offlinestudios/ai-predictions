@@ -106,7 +106,7 @@ export default function DashboardChat() {
   });
 
   // Handle prediction submission
-  const handleSubmit = async (question: string, category: string, files: File[]) => {
+  const handleSubmit = async (question: string, category: string, files: File[], deepMode: boolean = false, trajectoryType: string = "instant") => {
     if (!question.trim()) return;
 
     // Check usage limits
@@ -160,7 +160,8 @@ export default function DashboardChat() {
     generateMutation.mutate({
       userInput: question,
       category: categoryMap[category] || "general",
-      trajectoryType: "instant"
+      deepMode: deepMode,
+      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly"
     });
   };
 
@@ -286,6 +287,8 @@ export default function DashboardChat() {
           isLoading={isGenerating}
           disabled={isComposerDisabled}
           sidebarCollapsed={sidebarCollapsed}
+          subscription={subscription}
+          onUpgradeClick={() => setShowPostPredictionPaywall(true)}
         />
 
         {/* Modals */}
