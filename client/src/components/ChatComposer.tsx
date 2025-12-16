@@ -143,17 +143,16 @@ export default function ChatComposer({
   };
 
   const currentCategory = CATEGORY_OPTIONS.find(c => c.id === category);
-  const CurrentCategoryIcon = currentCategory?.icon || MessageCircle;
   const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
 
   return (
-    <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border/50 pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
+    <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       <div className="container max-w-4xl py-3 md:py-4">
         {/* File Previews */}
         {files.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mb-3">
             {files.map((file, index) => (
-              <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-full text-sm">
+              <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
                 <Paperclip className="w-3 h-3" />
                 <span className="max-w-[120px] truncate">{file.name}</span>
                 <button onClick={() => removeFile(index)} className="hover:text-destructive" disabled={isLoading}>
@@ -166,31 +165,31 @@ export default function ChatComposer({
 
         {/* Active Features Pills */}
         {hasActiveFeatures && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mb-3">
             {deepMode && canUseDeepMode && (
               <button
                 onClick={() => setDeepMode(false)}
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium hover:bg-primary/20 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/15 text-primary rounded-full text-xs font-medium hover:bg-primary/25 transition-colors"
               >
-                <Sparkles className="w-3 h-3" />
+                <Sparkles className="w-3.5 h-3.5" />
                 Deep Mode
-                <X className="w-3 h-3 ml-0.5" />
+                <X className="w-3 h-3 ml-1 opacity-60" />
               </button>
             )}
             {trajectoryType !== "instant" && (
               <button
                 onClick={() => setTrajectoryType("instant")}
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium hover:bg-primary/20 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/15 text-primary rounded-full text-xs font-medium hover:bg-primary/25 transition-colors"
               >
-                <Calendar className="w-3 h-3" />
+                <Calendar className="w-3.5 h-3.5" />
                 {currentTrajectory?.label}
-                <X className="w-3 h-3 ml-0.5" />
+                <X className="w-3 h-3 ml-1 opacity-60" />
               </button>
             )}
           </div>
         )}
 
-        {/* Main Composer */}
+        {/* Main Composer - Manus Style */}
         <div className="relative w-full">
           <input
             ref={fileInputRef}
@@ -201,214 +200,204 @@ export default function ChatComposer({
             className="hidden"
           />
           
-          {/* Textarea Container */}
-          <div className="relative flex items-end rounded-2xl border-2 border-border bg-background focus-within:border-primary/50 transition-colors">
-            {/* Left Side: Plus Button + Category Button (inside textarea) */}
-            <div className="flex items-center gap-1 pl-2 pb-3">
-              {/* Plus Button - Opens Options Popover */}
-              <Popover open={showOptions} onOpenChange={setShowOptions}>
-                <PopoverTrigger asChild>
-                  <button
-                    className={cn(
-                      "h-8 w-8 rounded-full flex items-center justify-center transition-all hover:bg-accent",
-                      showOptions && "bg-accent rotate-45",
-                      hasActiveFeatures && "ring-2 ring-primary ring-offset-1 ring-offset-background"
-                    )}
-                    disabled={isLoading || disabled}
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent 
-                  align="start" 
-                  side="top" 
-                  sideOffset={12}
-                  className="w-72 p-0 rounded-xl shadow-xl border border-border/50"
+          {/* Composer Container - Single rounded border like Manus */}
+          <div className="flex items-end gap-0 rounded-[20px] border border-border/60 bg-card p-1.5 shadow-sm">
+            {/* Plus Button - Manus style: circle with border */}
+            <Popover open={showOptions} onOpenChange={setShowOptions}>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    "h-9 w-9 rounded-full flex items-center justify-center border border-border/60 transition-all shrink-0",
+                    "hover:bg-accent hover:border-border",
+                    showOptions && "bg-accent border-border rotate-45"
+                  )}
+                  disabled={isLoading || disabled}
                 >
-                  {/* Analysis Mode */}
-                  <div className="p-3 border-b border-border/50">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">Analysis Mode</div>
-                    <button
-                      onClick={handleDeepModeToggle}
-                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        {canUseDeepMode ? (
-                          <Sparkles className="w-4 h-4 text-primary" />
-                        ) : (
-                          <Lock className="w-4 h-4 text-muted-foreground" />
-                        )}
-                        <div className="text-left">
-                          <div className="font-medium text-sm">Deep Mode</div>
-                          <div className="text-xs text-muted-foreground">Detailed analysis & scenarios</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {!canUseDeepMode && (
-                          <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded">Plus</span>
-                        )}
-                        <div className={cn(
-                          "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
-                          deepMode && canUseDeepMode 
-                            ? "bg-primary border-primary text-primary-foreground" 
-                            : "border-muted-foreground/30"
-                        )}>
-                          {deepMode && canUseDeepMode && <span className="text-xs">✓</span>}
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* Forecast Timeframe */}
-                  <div className="p-3 border-b border-border/50">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">Forecast Timeframe</div>
-                    <div className="space-y-1">
-                      {TRAJECTORY_OPTIONS.map((option) => {
-                        const isAvailable = isFeatureAvailable(option.minTier);
-                        const isSelected = trajectoryType === option.id;
-                        
-                        return (
-                          <button
-                            key={option.id}
-                            onClick={() => handleTrajectorySelect(option.id)}
-                            className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              {isAvailable ? (
-                                option.id === "instant" ? <Zap className="w-4 h-4" /> : <Calendar className="w-4 h-4" />
-                              ) : (
-                                <Lock className="w-4 h-4 text-muted-foreground" />
-                              )}
-                              <div className="text-left">
-                                <div className={cn("font-medium text-sm", !isAvailable && "text-muted-foreground")}>
-                                  {option.label}
-                                </div>
-                                <div className="text-xs text-muted-foreground">{option.description}</div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {!isAvailable && (
-                                <span className="text-[10px] bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded capitalize">
-                                  {option.minTier}
-                                </span>
-                              )}
-                              {isSelected && isAvailable && (
-                                <span className="text-primary font-medium">✓</span>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      })}
+                  <Plus className="w-4 h-4" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent 
+                align="start" 
+                side="top" 
+                sideOffset={8}
+                className="w-64 p-0 rounded-2xl border border-border/60 bg-card shadow-lg"
+              >
+                {/* Deep Mode */}
+                <div className="p-3">
+                  <button
+                    onClick={() => {
+                      handleDeepModeToggle();
+                      if (canUseDeepMode) setShowOptions(false);
+                    }}
+                    className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-accent transition-colors"
+                  >
+                    <div className={cn(
+                      "h-8 w-8 rounded-lg flex items-center justify-center",
+                      deepMode && canUseDeepMode ? "bg-primary text-primary-foreground" : "bg-muted"
+                    )}>
+                      {canUseDeepMode ? (
+                        <Sparkles className="w-4 h-4" />
+                      ) : (
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      )}
                     </div>
-                  </div>
-
-                  {/* Attach Files */}
-                  <div className="p-3">
-                    <button
-                      onClick={() => {
-                        fileInputRef.current?.click();
-                        setShowOptions(false);
-                      }}
-                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
-                    >
-                      <Paperclip className="w-4 h-4" />
-                      <span className="font-medium text-sm">Attach Files</span>
-                    </button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-
-              {/* Category Button - Separate Popover */}
-              <Popover open={showCategoryPicker} onOpenChange={setShowCategoryPicker}>
-                <PopoverTrigger asChild>
-                  <button
-                    className={cn(
-                      "h-8 px-3 rounded-full flex items-center gap-1.5 text-sm font-medium transition-all hover:bg-accent",
-                      showCategoryPicker && "bg-accent"
+                    <div className="flex-1 text-left">
+                      <div className="font-medium text-sm">Deep Mode</div>
+                      <div className="text-xs text-muted-foreground">Detailed analysis</div>
+                    </div>
+                    {!canUseDeepMode && (
+                      <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">Plus</span>
                     )}
-                    disabled={isLoading || disabled}
-                  >
-                    <CurrentCategoryIcon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{currentCategory?.label}</span>
+                    {deepMode && canUseDeepMode && (
+                      <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
+                        <span className="text-primary-foreground text-xs">✓</span>
+                      </div>
+                    )}
                   </button>
-                </PopoverTrigger>
-                <PopoverContent 
-                  align="start" 
-                  side="top" 
-                  sideOffset={12}
-                  className="w-56 p-3 rounded-xl shadow-xl border border-border/50"
-                >
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Category</div>
-                  <div className="grid grid-cols-2 gap-1">
-                    {CATEGORY_OPTIONS.map((cat) => {
-                      const Icon = cat.icon;
-                      const isSelected = category === cat.id;
-                      
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => {
-                            setCategory(cat.id);
-                            setShowCategoryPicker(false);
-                          }}
-                          className={cn(
-                            "flex items-center gap-2 p-2 rounded-lg text-sm transition-colors",
-                            isSelected 
-                              ? "bg-primary text-primary-foreground" 
-                              : "hover:bg-accent"
+                </div>
+
+                <div className="h-px bg-border/60 mx-3" />
+
+                {/* Forecast Timeframe */}
+                <div className="p-3">
+                  <div className="text-xs font-medium text-muted-foreground mb-2 px-2">Forecast</div>
+                  {TRAJECTORY_OPTIONS.map((option) => {
+                    const isAvailable = isFeatureAvailable(option.minTier);
+                    const isSelected = trajectoryType === option.id;
+                    
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => {
+                          handleTrajectorySelect(option.id);
+                          if (isAvailable) setShowOptions(false);
+                        }}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-accent transition-colors"
+                      >
+                        <div className={cn(
+                          "h-8 w-8 rounded-lg flex items-center justify-center",
+                          isSelected && isAvailable ? "bg-primary text-primary-foreground" : "bg-muted"
+                        )}>
+                          {isAvailable ? (
+                            option.id === "instant" ? <Zap className="w-4 h-4" /> : <Calendar className="w-4 h-4" />
+                          ) : (
+                            <Lock className="w-4 h-4 text-muted-foreground" />
                           )}
-                        >
-                          <Icon className="w-4 h-4" />
-                          <span>{cat.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className={cn("font-medium text-sm", !isAvailable && "text-muted-foreground")}>
+                            {option.label}
+                          </div>
+                        </div>
+                        {!isAvailable && (
+                          <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium capitalize">
+                            {option.minTier}
+                          </span>
+                        )}
+                        {isSelected && isAvailable && (
+                          <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
+                            <span className="text-primary-foreground text-xs">✓</span>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="h-px bg-border/60 mx-3" />
+
+                {/* Attach Files */}
+                <div className="p-3">
+                  <button
+                    onClick={() => {
+                      fileInputRef.current?.click();
+                      setShowOptions(false);
+                    }}
+                    className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-accent transition-colors"
+                  >
+                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                      <Paperclip className="w-4 h-4" />
+                    </div>
+                    <span className="font-medium text-sm">Attach Files</span>
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Category Button - Manus style: solid purple pill */}
+            <Popover open={showCategoryPicker} onOpenChange={setShowCategoryPicker}>
+              <PopoverTrigger asChild>
+                <button
+                  className="h-9 px-4 rounded-full bg-primary text-primary-foreground text-sm font-medium transition-all hover:bg-primary/90 shrink-0 ml-1.5"
+                  disabled={isLoading || disabled}
+                >
+                  {currentCategory?.label}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent 
+                align="start" 
+                side="top" 
+                sideOffset={8}
+                className="w-auto p-4 rounded-2xl border border-border/60 bg-card shadow-lg"
+              >
+                <div className="text-xs font-medium text-muted-foreground mb-3">Category</div>
+                <div className="flex flex-wrap gap-2 max-w-[280px]">
+                  {CATEGORY_OPTIONS.map((cat) => {
+                    const Icon = cat.icon;
+                    const isSelected = category === cat.id;
+                    
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setCategory(cat.id);
+                          setShowCategoryPicker(false);
+                        }}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all",
+                          isSelected 
+                            ? "bg-primary text-primary-foreground" 
+                            : "border border-border/60 hover:bg-accent"
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
 
             {/* Textarea */}
-            <Textarea
-              ref={textareaRef}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="What do you want to predict?"
-              disabled={isLoading || disabled}
-              className="min-h-[52px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-4 pr-12 text-base placeholder:text-base bg-transparent"
-              rows={1}
-            />
-            
-            {/* Send Button (right side, inside textarea) */}
-            <div className="pr-2 pb-3">
-              <Button
-                onClick={handleSubmit}
-                disabled={!question.trim() || isLoading || disabled}
-                size="icon"
-                className="h-8 w-8 rounded-full"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowUp className="w-4 h-4" />
-                )}
-              </Button>
+            <div className="flex-1 min-w-0">
+              <Textarea
+                ref={textareaRef}
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="What do you want to predict?"
+                disabled={isLoading || disabled}
+                className="min-h-[36px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-2 px-3 text-sm placeholder:text-muted-foreground bg-transparent"
+                rows={1}
+              />
             </div>
+            
+            {/* Send Button - Manus style: solid purple circle */}
+            <Button
+              onClick={handleSubmit}
+              disabled={!question.trim() || isLoading || disabled}
+              size="icon"
+              className="h-9 w-9 rounded-full shrink-0"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ArrowUp className="w-4 h-4" />
+              )}
+            </Button>
           </div>
         </div>
-
-        {/* Minimal Status Text */}
-        <p className="text-xs text-muted-foreground mt-2 text-center">
-          Press Enter to send
-          {hasActiveFeatures && (
-            <span className="text-primary ml-2">
-              {deepMode && canUseDeepMode && "Deep Mode"}
-              {deepMode && canUseDeepMode && trajectoryType !== "instant" && " + "}
-              {trajectoryType !== "instant" && currentTrajectory?.label.replace(" Forecast", "")}
-            </span>
-          )}
-        </p>
       </div>
     </div>
   );
