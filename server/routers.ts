@@ -583,6 +583,22 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         } else {
           systemPrompt = `You are an AI fortune teller and prediction specialist. Generate insightful, personalized predictions based on user input. Be creative, positive, and specific. Keep predictions between 100-300 words. If files are provided, analyze them for additional context.
 
+**Prediction Accuracy Score:**
+At the end of your prediction, provide a realistic confidence/accuracy score (0-100%) based on:
+- Clarity and specificity of the question asked (vague questions = lower score)
+- Amount of context available about the user
+- Predictability of the topic (career paths are more predictable than lottery numbers)
+- Timeframe (shorter timeframes = higher accuracy)
+- Category complexity (health/finance need professional advice = lower score)
+Format: "Confidence: XX%"
+
+Score Guidelines:
+- 85-95%: Very specific question with clear context and short timeframe
+- 70-84%: Good question with reasonable context
+- 55-69%: Moderate question, some uncertainty factors
+- 40-54%: Vague question or highly unpredictable topic
+- Below 40%: Extremely uncertain (random events, distant future, insufficient info)
+
 **Follow-Up Questions:**
 After your prediction, generate 2-3 deeply personalized follow-up questions that:
 - Are specifically tailored to the user's current life situation and psyche
@@ -824,9 +840,9 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           ? messageContent 
           : "Unable to generate prediction at this time.";
         
-        // Extract confidence score if present (for deep mode)
+        // Extract confidence score if present (for ALL predictions now)
         let confidenceScore: number | null = null;
-        if (input.deepMode && typeof predictionResult === 'string') {
+        if (typeof predictionResult === 'string') {
           const confidenceMatch = predictionResult.match(/Confidence:\s*(\d+)%/i);
           if (confidenceMatch) {
             confidenceScore = parseInt(confidenceMatch[1], 10);

@@ -3,8 +3,15 @@ import { trpc } from "../lib/trpc";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { Loader2, Users, Trash2, CheckCircle, AlertCircle, UserCog, Sparkles } from "lucide-react";
+import { Loader2, Users, Trash2, CheckCircle, AlertCircle, UserCog, Sparkles, CreditCard, Crown, Zap, Star } from "lucide-react";
 import { useLocation } from "wouter";
+
+const SUBSCRIPTION_TIERS = [
+  { id: "free", name: "Free", description: "3 predictions/week, basic features", icon: Star, color: "bg-gray-500/10 border-gray-500/30 hover:bg-gray-500/20" },
+  { id: "plus", name: "Plus", description: "Unlimited + 30-day forecasts", icon: Zap, color: "bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20" },
+  { id: "pro", name: "Pro", description: "90-day forecasts + scenarios", icon: Crown, color: "bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20" },
+  { id: "premium", name: "Premium", description: "Everything + yearly forecasts", icon: Crown, color: "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20" },
+] as const;
 
 const PERSONALITY_TYPES = [
   { id: "maverick", name: "The Maverick", description: "Bold risk-taker, driven by instinct", color: "bg-red-500/10 border-red-500/30 hover:bg-red-500/20" },
@@ -69,6 +76,27 @@ export default function Admin() {
       setMessage({ type: "error", text: error.message });
     },
   });
+
+  // Get current subscription
+  const { data: subscription, refetch: refetchSubscription } = trpc.subscription.getCurrent.useQuery(undefined, {
+    enabled: !!user,
+  });
+
+  // Change subscription tier mutation
+  const changeTierMutation = trpc.admin.changeSubscriptionTier.useMutation({
+    onSuccess: (data) => {
+      setMessage({ type: "success", text: data.message });
+      refetchSubscription();
+    },
+    onError: (error) => {
+      setMessage({ type: "error", text: error.message });
+    },
+  });
+
+  const handleChangeTier = (tier: typeof SUBSCRIPTION_TIERS[number]["id"]) => {
+    setMessage(null);
+    changeTierMutation.mutate({ tier });
+  };
 
   const handleSeedUsers = () => {
     setMessage(null);
@@ -191,6 +219,67 @@ export default function Admin() {
                 <li>Switch to a different personality and ask the same question</li>
                 <li>Compare how the AI responds differently based on personality!</li>
               </ol>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Subscription Tier Switcher */}
+        <Card className="border-2 border-amber-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Subscription Tier Switcher
+              <span className="text-xs bg-amber-500/20 text-amber-600 px-2 py-1 rounded-full">Testing</span>
+            </CardTitle>
+            <CardDescription>
+              Switch between subscription tiers to test premium features. Current tier:
+              <strong className="text-foreground ml-1 capitalize">{subscription?.tier || "Free"}</strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {SUBSCRIPTION_TIERS.map((tier) => {
+                const Icon = tier.icon;
+                return (
+                  <button
+                    key={tier.id}
+                    onClick={() => handleChangeTier(tier.id)}
+                    disabled={changeTierMutation.isPending}
+                    className={`p-4 rounded-lg border-2 text-left transition-all ${tier.color} ${
+                      subscription?.tier === tier.id ? "ring-2 ring-amber-500 ring-offset-2" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-4 h-4" />
+                      <span className="font-semibold text-sm">{tier.name}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">{tier.description}</div>
+                    {subscription?.tier === tier.id && (
+                      <div className="flex items-center gap-1 mt-2 text-xs text-amber-600">
+                        <Sparkles className="w-3 h-3" />
+                        Current
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {changeTierMutation.isPending && (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                <span className="text-sm">Changing subscription...</span>
+              </div>
+            )}
+
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-sm mb-2">Tier Features:</h4>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p><strong>Free:</strong> 3 predictions/week, instant forecasts only</p>
+                <p><strong>Plus:</strong> Unlimited + Deep Mode + 30-day forecasts</p>
+                <p><strong>Pro:</strong> + 90-day forecasts + Alternate scenarios + Analytics</p>
+                <p><strong>Premium:</strong> + Yearly forecasts + All future features</p>
+              </div>
             </div>
           </CardContent>
         </Card>

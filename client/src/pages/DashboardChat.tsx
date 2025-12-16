@@ -73,10 +73,10 @@ export default function DashboardChat() {
         content: data.prediction,
         category: variables.category,
         timestamp: new Date(),
-        // Only include accuracy if we have a real confidence score from deep mode
-        accuracy: data.confidenceScore ? {
-          score: data.confidenceScore,
-          label: data.confidenceScore >= 80 ? "High" : data.confidenceScore >= 60 ? "Moderate" : "Low",
+        // All predictions now have real confidence scores based on question quality
+        accuracy: {
+          score: data.confidenceScore || 50, // Fallback to 50 if somehow missing
+          label: (data.confidenceScore || 50) >= 80 ? "High" : (data.confidenceScore || 50) >= 60 ? "Moderate" : "Low",
           potentialScore: 95,
           suggestedDetails: [
             "Age Range",
@@ -85,7 +85,7 @@ export default function DashboardChat() {
             "Relationship Status",
             "Current Life Stage"
           ]
-        } : undefined
+        }
       };
       
       setMessages(prev => [...prev, assistantMessage]);
@@ -181,10 +181,10 @@ export default function DashboardChat() {
       content: prediction.predictionResult,
       category: prediction.category || "general",
       timestamp: new Date(prediction.createdAt),
-      // Only include accuracy if we have a real confidence score
-      accuracy: prediction.confidenceScore ? {
-        score: prediction.confidenceScore,
-        label: prediction.confidenceScore >= 80 ? "High" : prediction.confidenceScore >= 60 ? "Moderate" : "Low",
+      // Show accuracy for all predictions (older ones without scores get 50 as fallback)
+      accuracy: {
+        score: prediction.confidenceScore || 50,
+        label: (prediction.confidenceScore || 50) >= 80 ? "High" : (prediction.confidenceScore || 50) >= 60 ? "Moderate" : "Low",
         potentialScore: 95,
         suggestedDetails: [
           "Age Range",
@@ -193,7 +193,7 @@ export default function DashboardChat() {
           "Relationship Status",
           "Current Life Stage"
         ]
-      } : undefined
+      }
     };
 
     setMessages([userMessage, assistantMessage]);

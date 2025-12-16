@@ -686,4 +686,76 @@ export const adminRouter = router({
       });
     }
   }),
+
+  /**
+   * Change current user's subscription tier (for testing)
+   */
+  changeSubscriptionTier: protectedProcedure
+    .input(z.object({
+      tier: z.enum(["free", "plus", "pro", "premium"]),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Verify user is admin
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Admin access required",
+        });
+      }
+
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database unavailable",
+        });
+      }
+
+      try {
+        // Check if subscription exists for current user
+        const existingSub = await db
+          .select()
+          .from(subscriptions)
+          .where(eq(subscriptions.userId, ctx.user.id))
+          .limit(1);
+
+        if (existingSub.length > 0) {
+          // Update existing subscription
+          await db
+            .update(subscriptions)
+            .set({
+              tier: input.tier,
+              updatedAt: new Date(),
+            })
+            .where(eq(subscriptions.userId, ctx.user.id));
+        } else {
+          // Create new subscription
+          await db.insert(subscriptions).values({
+            userId: ctx.user.id,
+            tier: input.tier,
+            stripeCustomerId: `test_${ctx.user.id}`,
+            stripeSubscriptionId: `test_sub_${ctx.user.id}`,
+          });
+        }
+
+        const tierNames: Record<string, string> = {
+          free: "Free",
+          plus: "Plus ($9.99/mo)",
+          pro: "Pro ($19.99/mo)",
+          premium: "Premium ($59/year)",
+        };
+
+        return {
+          success: true,
+          message: `Subscription changed to ${tierNames[input.tier]}`,
+          tier: input.tier,
+        };
+      } catch (error) {
+        console.error("[Admin] Error changing subscription tier:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to change subscription tier",
+        });
+      }
+    }),
 });
