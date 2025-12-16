@@ -23,6 +23,7 @@ import DataSecurity from "./pages/DataSecurity";
 import AIMethodology from "./pages/AIMethodology";
 import Disclaimer from "./pages/Disclaimer";
 import About from "./pages/About";
+import Admin from "./pages/Admin";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -59,6 +60,7 @@ function Router() {
       <Route path={"/ai-methodology"} component={AIMethodology} />
       <Route path={"/disclaimer"} component={Disclaimer} />
       <Route path={"/about"} component={About} />
+      <Route path={"/admin"} component={Admin} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
       </Switch>
