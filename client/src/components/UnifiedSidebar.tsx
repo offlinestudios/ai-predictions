@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-
-import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +14,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface UnifiedSidebarProps {
   user?: {
@@ -40,8 +49,6 @@ interface UnifiedSidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-
-
 export default function UnifiedSidebar({ 
   user, 
   subscription, 
@@ -56,6 +63,12 @@ export default function UnifiedSidebar({
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [renamingId, setRenamingId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  
+  const utils = trpc.useUtils();
   
   const handleCollapsedChange = (collapsed: boolean) => {
     if (onCollapsedChange) {
@@ -83,6 +96,32 @@ export default function UnifiedSidebar({
     }
   );
 
+  // Delete mutation
+  const deleteMutation = trpc.prediction.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Prediction deleted");
+      utils.prediction.getHistory.invalidate();
+      setDeleteDialogOpen(false);
+      setDeletingId(null);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete prediction");
+    }
+  });
+
+  // Rename mutation
+  const renameMutation = trpc.prediction.rename.useMutation({
+    onSuccess: () => {
+      toast.success("Prediction renamed");
+      utils.prediction.getHistory.invalidate();
+      setRenamingId(null);
+      setRenameValue("");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to rename prediction");
+    }
+  });
+
   const predictions = historyData?.predictions || [];
   
   // Helper function to truncate text with ellipsis
@@ -96,28 +135,44 @@ export default function UnifiedSidebar({
     pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleShare = (predId: number) => {
-    // TODO: Implement share functionality
-    console.log("Share prediction:", predId);
+  const handleShare = (pred: typeof predictions[0]) => {
+    if (pred.shareToken) {
+      const shareUrl = `${window.location.origin}/share/${pred.shareToken}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard!");
+    } else {
+      toast.error("Share link not available");
+    }
   };
 
-  const handleRename = (predId: number) => {
-    // TODO: Implement rename functionality
-    console.log("Rename prediction:", predId);
+  const handleStartRename = (pred: typeof predictions[0]) => {
+    setRenamingId(pred.id);
+    setRenameValue(pred.userInput);
   };
 
-  const handleAddToFavorites = (predId: number) => {
-    // TODO: Implement favorites functionality
-    console.log("Add to favorites:", predId);
+  const handleSaveRename = () => {
+    if (renamingId && renameValue.trim()) {
+      renameMutation.mutate({
+        predictionId: renamingId,
+        newTitle: renameValue.trim()
+      });
+    }
   };
 
-  const handleOpenInNewTab = (predId: number) => {
-    window.open(`/prediction/${predId}`, '_blank');
+  const handleCancelRename = () => {
+    setRenamingId(null);
+    setRenameValue("");
   };
 
-  const handleDelete = (predId: number) => {
-    // TODO: Implement delete functionality
-    console.log("Delete prediction:", predId);
+  const handleDeleteClick = (predId: number) => {
+    setDeletingId(predId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingId) {
+      deleteMutation.mutate({ predictionId: deletingId });
+    }
   };
 
   if (!isAuthenticated) {
@@ -210,6 +265,7 @@ export default function UnifiedSidebar({
             ) : (
               filteredPredictions.map((pred) => {
                 const isActive = pred.id === currentPredictionId;
+                const isRenaming = renamingId === pred.id;
 
                 return (
                   <div
@@ -220,56 +276,82 @@ export default function UnifiedSidebar({
                         : "hover:bg-accent/50"
                     }`}
                   >
-                    <button
-                      type="button"
-                      onClick={() => onSelectPrediction?.(pred)}
-                      className="flex w-full max-w-full items-center pr-8 text-left overflow-hidden"
-                    >
-                      <span className="text-sm truncate block">
-                        {truncateText(pred.userInput)}
-                      </span>
-                    </button>
+                    {isRenaming ? (
+                      <div className="flex items-center gap-1">
+                        <Input
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          className="h-7 text-sm flex-1"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveRename();
+                            if (e.key === "Escape") handleCancelRename();
+                          }}
+                        />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={handleSaveRename}
+                          disabled={renameMutation.isPending}
+                        >
+                          <Check className="w-3.5 h-3.5 text-green-500" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={handleCancelRename}
+                        >
+                          <X className="w-3.5 h-3.5 text-red-500" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onSelectPrediction?.(pred)}
+                          className="flex w-full max-w-full items-center pr-8 text-left overflow-hidden"
+                        >
+                          <span className="text-sm truncate block">
+                            {truncateText(pred.userInput)}
+                          </span>
+                        </button>
 
-                    <div className="absolute right-1 top-1/2 -translate-y-1/2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Prediction actions"
-                            className="h-7 w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                          >
-                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onSelect={() => handleShare(pred.id)}>
-                            <Share2 className="w-4 h-4 mr-2" />
-                            Share
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => handleRename(pred.id)}>
-                            <SquarePen className="w-4 h-4 mr-2" />
-                            Rename
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => handleAddToFavorites(pred.id)}>
-                            <Star className="w-4 h-4 mr-2" />
-                            Add to favorites
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => handleOpenInNewTab(pred.id)}>
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Open in new tab
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onSelect={() => handleDelete(pred.id)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Prediction actions"
+                                className="h-7 w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                              >
+                                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                              <DropdownMenuItem onSelect={() => handleShare(pred)}>
+                                <Share2 className="w-4 h-4 mr-2" />
+                                Share
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => handleStartRename(pred)}>
+                                <SquarePen className="w-4 h-4 mr-2" />
+                                Rename
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onSelect={() => handleDeleteClick(pred.id)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </>
+                    )}
                   </div>
                 );
               })
@@ -308,6 +390,27 @@ export default function UnifiedSidebar({
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Prediction</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this prediction? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </aside>
   );
 }

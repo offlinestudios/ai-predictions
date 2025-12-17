@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Button } from "../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Link } from "wouter";
-import { ArrowLeft, TrendingUp, Target, Zap, ThumbsUp, ThumbsDown, BarChart3, PieChart, Calendar, Download, Crown } from "lucide-react";
+import { ArrowLeft, TrendingUp, Target, Zap, ThumbsUp, ThumbsDown, BarChart3, Calendar, Download, Crown, Clock, Activity } from "lucide-react";
 
 export default function Analytics() {
   const { isSignedIn } = useClerkAuth();
@@ -18,16 +18,16 @@ export default function Analytics() {
     return `/sign-in?redirect_url=${encodeURIComponent(currentUrl)}`;
   };
 
-  // Fetch subscription to check if user is Premium
+  // Fetch subscription to check if user is Pro or Premium
   const { data: subscription, isLoading: subLoading } = trpc.subscription.getCurrent.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
 
-  // Fetch analytics data
+  // Fetch analytics data - available for pro and premium users
   const { data: analytics, isLoading: analyticsLoading } = trpc.prediction.getAnalytics.useQuery(
     { dateRange },
-    { enabled: isAuthenticated && subscription?.tier === "premium" }
+    { enabled: isAuthenticated && subscription && ['pro', 'premium'].includes(subscription.tier) }
   );
 
   // Redirect if not authenticated
@@ -49,8 +49,8 @@ export default function Analytics() {
     );
   }
 
-  // Show upgrade prompt if not Premium
-  if (!subLoading && subscription?.tier !== "premium") {
+  // Show upgrade prompt if not Pro or Premium
+  if (!subLoading && subscription && !['pro', 'premium'].includes(subscription.tier)) {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
@@ -72,34 +72,34 @@ export default function Analytics() {
                   <Crown className="w-12 h-12 text-primary" />
                 </div>
               </div>
-              <CardTitle className="text-2xl">Premium Feature</CardTitle>
+              <CardTitle className="text-2xl">Pro Feature</CardTitle>
               <CardDescription className="text-base">
-                Prediction Analytics is exclusively available for Premium subscribers
+                Prediction Analytics is available for Pro and Premium subscribers
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <h3 className="font-semibold text-lg">What you'll get with Premium Analytics:</h3>
+                <h3 className="font-semibold text-lg">What you'll get with Analytics:</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <BarChart3 className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-                    <span>Track prediction accuracy trends over time</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <PieChart className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-                    <span>Visual breakdown of predictions by category</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Target className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-                    <span>Confidence score analysis for deep mode predictions</span>
+                    <span>Trajectory breakdown (Instant, 30-Day, 90-Day, Yearly)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <TrendingUp className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                    <span>Weekly prediction trends over time</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Target className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                    <span>Confidence score distribution analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Activity className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
                     <span>Usage streaks and engagement statistics</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Download className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
-                    <span>Export your analytics data as CSV</span>
+                    <span>Export your analytics data</span>
                   </li>
                 </ul>
               </div>
@@ -107,7 +107,7 @@ export default function Analytics() {
               <Link href="/account">
                 <Button className="w-full" size="lg">
                   <Crown className="w-4 h-4 mr-2" />
-                  Upgrade to Premium - $29.99/mo
+                  Upgrade to Pro - $19.99/mo
                 </Button>
               </Link>
             </CardContent>
@@ -134,29 +134,41 @@ export default function Analytics() {
 
   const { 
     totalPredictions, 
-    categoryBreakdown, 
+    trajectoryBreakdown,
+    weeklyTrends,
+    confidenceDistribution,
     feedbackStats, 
     deepModeStats,
     confidenceAverage,
     currentStreak,
     longestStreak,
-    accuracyTrend 
   } = analytics;
 
-  // Calculate percentages for category breakdown
-  const categoryData = Object.entries(categoryBreakdown).map(([category, count]) => ({
-    category,
-    count: count as number,
-    percentage: totalPredictions > 0 ? ((count as number / totalPredictions) * 100).toFixed(1) : "0",
+  // Calculate percentages for trajectory breakdown
+  const trajectoryData = [
+    { key: "instant", label: "Instant", count: trajectoryBreakdown.instant, color: "bg-blue-500" },
+    { key: "30day", label: "30-Day", count: trajectoryBreakdown["30day"], color: "bg-green-500" },
+    { key: "90day", label: "90-Day", count: trajectoryBreakdown["90day"], color: "bg-purple-500" },
+    { key: "yearly", label: "Yearly", count: trajectoryBreakdown.yearly, color: "bg-amber-500" },
+  ].map(item => ({
+    ...item,
+    percentage: totalPredictions > 0 ? ((item.count / totalPredictions) * 100).toFixed(1) : "0",
   }));
 
-  const categoryColors: Record<string, string> = {
-    career: "bg-blue-500",
-    love: "bg-pink-500",
-    finance: "bg-green-500",
-    health: "bg-purple-500",
-    general: "bg-gray-500",
-  };
+  // Calculate max for weekly trends chart
+  const maxWeeklyCount = Math.max(...weeklyTrends.map(w => w.count), 1);
+
+  // Confidence distribution data
+  const totalConfidenceScores = confidenceDistribution.low + confidenceDistribution.moderate + confidenceDistribution.high + confidenceDistribution.veryHigh;
+  const confidenceData = [
+    { label: "Low (0-49%)", count: confidenceDistribution.low, color: "bg-red-500" },
+    { label: "Moderate (50-69%)", count: confidenceDistribution.moderate, color: "bg-yellow-500" },
+    { label: "High (70-84%)", count: confidenceDistribution.high, color: "bg-green-500" },
+    { label: "Very High (85-100%)", count: confidenceDistribution.veryHigh, color: "bg-emerald-500" },
+  ].map(item => ({
+    ...item,
+    percentage: totalConfidenceScores > 0 ? ((item.count / totalConfidenceScores) * 100).toFixed(1) : "0",
+  }));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -249,40 +261,107 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                Deep mode predictions
+                All predictions
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Category Breakdown */}
+        {/* Trajectory Breakdown */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PieChart className="w-5 h-5" />
-              Category Breakdown
+              <Clock className="w-5 h-5" />
+              Trajectory Breakdown
             </CardTitle>
-            <CardDescription>Distribution of predictions across categories</CardDescription>
+            <CardDescription>Distribution of predictions by forecast timeframe</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {categoryData.map(({ category, count, percentage }) => (
-                <div key={category} className="space-y-2">
+              {trajectoryData.map(({ key, label, count, percentage, color }) => (
+                <div key={key} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="capitalize font-medium">{category}</span>
+                    <span className="font-medium">{label}</span>
                     <span className="text-muted-foreground">
                       {count} ({percentage}%)
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                     <div
-                      className={`h-full ${categoryColors[category] || "bg-gray-500"} transition-all duration-500`}
+                      className={`h-full ${color} transition-all duration-500`}
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Weekly Trends */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Weekly Prediction Trends
+            </CardTitle>
+            <CardDescription>Predictions per week over the last 8 weeks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-end justify-between gap-2 h-40">
+              {weeklyTrends.map((week, index) => (
+                <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full flex flex-col items-center justify-end h-32">
+                    <span className="text-xs text-muted-foreground mb-1">{week.count}</span>
+                    <div
+                      className="w-full bg-primary rounded-t transition-all duration-500"
+                      style={{ 
+                        height: `${(week.count / maxWeeklyCount) * 100}%`,
+                        minHeight: week.count > 0 ? '8px' : '2px'
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground">W{index + 1}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Confidence Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5" />
+              Confidence Score Distribution
+            </CardTitle>
+            <CardDescription>How confident are your predictions?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {totalConfidenceScores === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No confidence scores recorded yet. Make some predictions to see the distribution.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {confidenceData.map(({ label, count, percentage, color }) => (
+                  <div key={label} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">{label}</span>
+                      <span className="text-muted-foreground">
+                        {count} ({percentage}%)
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full ${color} transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 

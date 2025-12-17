@@ -1012,6 +1012,72 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         
         return prediction;
       }),
+
+    delete: protectedProcedure
+      .input(z.object({
+        predictionId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        // Verify the prediction belongs to the user
+        const [prediction] = await db
+          .select()
+          .from(predictions)
+          .where(and(
+            eq(predictions.id, input.predictionId),
+            eq(predictions.userId, ctx.user.id)
+          ))
+          .limit(1);
+
+        if (!prediction) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Prediction not found or you don't have permission to delete it",
+          });
+        }
+
+        // Delete the prediction
+        await db.delete(predictions).where(eq(predictions.id, input.predictionId));
+
+        return { success: true };
+      }),
+
+    rename: protectedProcedure
+      .input(z.object({
+        predictionId: z.number(),
+        newTitle: z.string().min(1).max(200),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        // Verify the prediction belongs to the user
+        const [prediction] = await db
+          .select()
+          .from(predictions)
+          .where(and(
+            eq(predictions.id, input.predictionId),
+            eq(predictions.userId, ctx.user.id)
+          ))
+          .limit(1);
+
+        if (!prediction) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Prediction not found or you don't have permission to rename it",
+          });
+        }
+
+        // Update the userInput (which serves as the title)
+        await db
+          .update(predictions)
+          .set({ userInput: input.newTitle })
+          .where(eq(predictions.id, input.predictionId));
+
+        return { success: true, newTitle: input.newTitle };
+      }),
     
     getAnalytics: protectedProcedure
       .input(z.object({
@@ -1046,20 +1112,53 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         // Calculate analytics
         const totalPredictions = userPredictions.length;
 
-        // Category breakdown
-        const categoryBreakdown: Record<string, number> = {
-          career: 0,
-          love: 0,
-          finance: 0,
-          health: 0,
-          general: 0,
+        // Trajectory breakdown (replaces category breakdown)
+        const trajectoryBreakdown: Record<string, number> = {
+          instant: 0,
+          "30day": 0,
+          "90day": 0,
+          yearly: 0,
         };
         
         userPredictions.forEach(p => {
-          if (p.category && categoryBreakdown[p.category] !== undefined) {
-            categoryBreakdown[p.category]++;
+          const trajectory = p.trajectoryType || "instant";
+          if (trajectoryBreakdown[trajectory] !== undefined) {
+            trajectoryBreakdown[trajectory]++;
           }
         });
+
+        // Time-based trends (predictions per week for last 8 weeks)
+        const weeklyTrends: { week: string; count: number }[] = [];
+        const eightWeeksAgo = new Date(now.getTime() - 8 * 7 * 24 * 60 * 60 * 1000);
+        
+        for (let i = 0; i < 8; i++) {
+          const weekStart = new Date(now.getTime() - (7 - i) * 7 * 24 * 60 * 60 * 1000);
+          const weekEnd = new Date(now.getTime() - (6 - i) * 7 * 24 * 60 * 60 * 1000);
+          weekStart.setHours(0, 0, 0, 0);
+          weekEnd.setHours(23, 59, 59, 999);
+          
+          const weekCount = userPredictions.filter(p => {
+            const predDate = new Date(p.createdAt);
+            return predDate >= weekStart && predDate <= weekEnd;
+          }).length;
+          
+          weeklyTrends.push({
+            week: `Week ${i + 1}`,
+            count: weekCount
+          });
+        }
+
+        // Confidence score distribution
+        const allConfidenceScores = userPredictions
+          .map(p => p.confidenceScore)
+          .filter((score): score is number => score !== null);
+        
+        const confidenceDistribution = {
+          low: allConfidenceScores.filter(s => s < 50).length,      // 0-49%
+          moderate: allConfidenceScores.filter(s => s >= 50 && s < 70).length, // 50-69%
+          high: allConfidenceScores.filter(s => s >= 70 && s < 85).length,     // 70-84%
+          veryHigh: allConfidenceScores.filter(s => s >= 85).length,           // 85-100%
+        };
 
         // Feedback statistics
         const feedbackStats = {
@@ -1133,13 +1232,14 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
 
         return {
           totalPredictions,
-          categoryBreakdown,
+          trajectoryBreakdown,
+          weeklyTrends,
+          confidenceDistribution,
           feedbackStats,
           deepModeStats,
           confidenceAverage,
           currentStreak,
           longestStreak,
-          accuracyTrend: [], // Placeholder for future implementation
         };
       }),
 
