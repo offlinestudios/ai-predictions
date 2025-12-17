@@ -482,11 +482,11 @@ export default function Dashboard() {
           onSelectPrediction={handleSelectPrediction}
           currentPredictionId={currentPredictionId}
           isAuthenticated={isAuthenticated}
-          className="hidden lg:flex fixed left-0 top-0 h-screen w-80 z-40"
+          className="hidden lg:flex fixed left-0 top-0 h-screen w-64 z-40"
         />
       )}
 
-      <div className="container py-4 md:py-8 max-w-6xl lg:ml-80">
+      <div className="container py-4 md:py-8 max-w-6xl lg:ml-64">
         <div className="flex flex-col md:grid md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Subscription Status - Show first on mobile (for quick glance), sidebar on desktop */}
           <div className="order-1 md:order-1 lg:order-1 lg:col-span-1">

@@ -124,7 +124,8 @@ export default function UnifiedSidebar({
   const predictions = historyData?.predictions || [];
   
   // Pure JavaScript text truncation - bypasses CSS entirely
-  const truncateText = (text: string, maxChars: number = 38): string => {
+  // 28 chars fits well in a 256px (w-64) sidebar
+  const truncateText = (text: string, maxChars: number = 28): string => {
     if (text.length <= maxChars) return text;
     return text.substring(0, maxChars).trim() + '...';
   };
@@ -312,7 +313,7 @@ export default function UnifiedSidebar({
                           onClick={() => onSelectPrediction?.(pred)}
                           className="flex-1 px-3 py-2 text-left"
                         >
-                          <span className="text-sm">
+                          <span className="text-sm whitespace-nowrap">
                             {truncateText(pred.userInput)}
                           </span>
                         </button>

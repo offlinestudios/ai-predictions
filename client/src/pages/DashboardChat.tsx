@@ -218,7 +218,7 @@ export default function DashboardChat() {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Desktop: Fixed Left Sidebar */}
-      <div className={`hidden lg:block h-screen sticky top-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-80'}`}>
+      <div className={`hidden lg:block h-screen sticky top-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
         {isAuthenticated && (
           <UnifiedSidebar
             user={user}
