@@ -67,8 +67,33 @@ export default function UnifiedSidebar({
   const [renameValue, setRenameValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [textMaxWidth, setTextMaxWidth] = useState(240); // Dynamic width
+  const containerRef = useRef<HTMLDivElement>(null);
   
   const utils = trpc.useUtils();
+  
+  // Measure container width dynamically
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        // Container width minus padding (px-2 = 8px each side) minus button space (pr-8 = 32px) minus some buffer
+        const containerWidth = containerRef.current.offsetWidth;
+        // px-2 on container = 16px, px-3 on button = 12px, pr-8 for dropdown = 32px
+        const availableWidth = containerWidth - 16 - 12 - 32 - 8; // 8px extra buffer
+        setTextMaxWidth(Math.max(availableWidth, 150)); // Minimum 150px
+      }
+    };
+    
+    updateWidth();
+    
+    // Use ResizeObserver for dynamic updates
+    const resizeObserver = new ResizeObserver(updateWidth);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    return () => resizeObserver.disconnect();
+  }, []);
   
   const handleCollapsedChange = (collapsed: boolean) => {
     if (onCollapsedChange) {
@@ -169,9 +194,6 @@ export default function UnifiedSidebar({
     return result.trim() + ellipsis;
   }, [measureTextWidth]);
   
-  // Target width for sidebar text (sidebar is ~320px, minus padding and button space)
-  const textMaxWidth = 260;
-  
   // Filter predictions based on search query
   const filteredPredictions = predictions.filter(pred =>
     pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
@@ -206,8 +228,8 @@ export default function UnifiedSidebar({
     setRenameValue("");
   };
 
-  const handleDeleteClick = (predId: number) => {
-    setDeletingId(predId);
+  const handleDeleteClick = (id: number) => {
+    setDeletingId(id);
     setDeleteDialogOpen(true);
   };
 
@@ -285,19 +307,19 @@ export default function UnifiedSidebar({
             placeholder="Search predictions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9"
+            className="pl-9 h-9 bg-muted/50"
           />
         </div>
       </div>
 
-      {/* Prediction History Section */}
+      {/* Prediction History */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="px-4 py-3">
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recent Predictions</h2>
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-0.5">
+          <div ref={containerRef} className="px-2 pb-4 space-y-0.5">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -402,35 +424,29 @@ export default function UnifiedSidebar({
         </ScrollArea>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="border-t border-border/50">
-        <div className="p-2 space-y-1">
-          {subscription && ['pro', 'premium'].includes(subscription.tier) && (
-            <Link href="/analytics">
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <BarChart3 className="w-4 h-4 mr-3" />
-                Analytics
-              </Button>
-            </Link>
-          )}
-          
-          <Link href="/account">
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <Settings className="w-4 h-4 mr-3" />
-              Account Settings
-            </Button>
-          </Link>
-
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            size="sm"
-            onClick={handleSignOut}
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Logout
+      {/* Bottom Section */}
+      <div className="border-t border-border/50 p-4 space-y-2">
+        <Link href="/analytics">
+          <Button variant="ghost" className="w-full justify-start" size="sm">
+            <BarChart3 className="w-4 h-4 mr-3" />
+            Analytics
           </Button>
-        </div>
+        </Link>
+        <Link href="/account">
+          <Button variant="ghost" className="w-full justify-start" size="sm">
+            <Settings className="w-4 h-4 mr-3" />
+            Settings
+          </Button>
+        </Link>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-muted-foreground hover:text-foreground" 
+          size="sm"
+          onClick={handleSignOut}
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Sign Out
+        </Button>
       </div>
 
       {/* Delete Confirmation Dialog */}
@@ -444,7 +460,7 @@ export default function UnifiedSidebar({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
