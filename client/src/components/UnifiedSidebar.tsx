@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
@@ -67,33 +67,7 @@ export default function UnifiedSidebar({
   const [renameValue, setRenameValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [textMaxWidth, setTextMaxWidth] = useState(240); // Dynamic width
-  const containerRef = useRef<HTMLDivElement>(null);
-  
   const utils = trpc.useUtils();
-  
-  // Measure container width dynamically
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        // Container width minus padding (px-2 = 8px each side) minus button space (pr-8 = 32px) minus some buffer
-        const containerWidth = containerRef.current.offsetWidth;
-        // px-2 on container = 16px, px-3 on button = 12px, pr-8 for dropdown = 32px
-        const availableWidth = containerWidth - 16 - 12 - 32 - 8; // 8px extra buffer
-        setTextMaxWidth(Math.max(availableWidth, 150)); // Minimum 150px
-      }
-    };
-    
-    updateWidth();
-    
-    // Use ResizeObserver for dynamic updates
-    const resizeObserver = new ResizeObserver(updateWidth);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-    
-    return () => resizeObserver.disconnect();
-  }, []);
   
   const handleCollapsedChange = (collapsed: boolean) => {
     if (onCollapsedChange) {
@@ -148,51 +122,6 @@ export default function UnifiedSidebar({
   });
 
   const predictions = historyData?.predictions || [];
-  
-  // Canvas-based text measurement for accurate pixel-width truncation
-  const measureTextWidth = useCallback((text: string, font: string = '14px system-ui, -apple-system, sans-serif'): number => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) return text.length * 8; // Fallback
-    context.font = font;
-    return context.measureText(text).width;
-  }, []);
-  
-  // Truncate text to fit within a specific pixel width
-  const truncateToWidth = useCallback((text: string, maxWidth: number): string => {
-    const ellipsis = '...';
-    const ellipsisWidth = measureTextWidth(ellipsis);
-    const targetWidth = maxWidth - ellipsisWidth;
-    
-    // Check if text already fits
-    if (measureTextWidth(text) <= maxWidth) {
-      return text;
-    }
-    
-    // Binary search for the right truncation point
-    let low = 0;
-    let high = text.length;
-    let result = '';
-    
-    while (low < high) {
-      const mid = Math.floor((low + high + 1) / 2);
-      const truncated = text.substring(0, mid);
-      if (measureTextWidth(truncated) <= targetWidth) {
-        result = truncated;
-        low = mid;
-      } else {
-        high = mid - 1;
-      }
-    }
-    
-    // Try to truncate at word boundary for cleaner look
-    const lastSpace = result.lastIndexOf(' ');
-    if (lastSpace > result.length * 0.7) {
-      return result.substring(0, lastSpace) + ellipsis;
-    }
-    
-    return result.trim() + ellipsis;
-  }, [measureTextWidth]);
   
   // Filter predictions based on search query
   const filteredPredictions = predictions.filter(pred =>
@@ -319,7 +248,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div ref={containerRef} className="px-2 pb-4 space-y-0.5">
+          <div className="px-2 pb-4 space-y-0.5">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -371,18 +300,18 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="relative flex items-center h-9 pr-8">
+                      <div className="flex items-center h-9">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="w-full px-3 py-2 text-left"
+                          className="flex-1 min-w-0 px-3 py-2 text-left"
                         >
-                          <span className="text-sm block whitespace-nowrap">
-                            {truncateToWidth(pred.userInput, textMaxWidth)}
+                          <span className="text-sm block truncate">
+                            {pred.userInput}
                           </span>
                         </button>
 
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                        <div className="flex-shrink-0 pr-1">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
