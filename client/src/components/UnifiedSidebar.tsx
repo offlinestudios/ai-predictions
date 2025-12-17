@@ -123,6 +123,12 @@ export default function UnifiedSidebar({
 
   const predictions = historyData?.predictions || [];
   
+  // Pure JavaScript text truncation - bypasses CSS entirely
+  const truncateText = (text: string, maxChars: number = 38): string => {
+    if (text.length <= maxChars) return text;
+    return text.substring(0, maxChars).trim() + '...';
+  };
+  
   // Filter predictions based on search query
   const filteredPredictions = predictions.filter(pred =>
     pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
@@ -304,18 +310,10 @@ export default function UnifiedSidebar({
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden"
+                          className="flex-1 px-3 py-2 text-left"
                         >
-                          <span 
-                            className="text-sm block"
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'block'
-                            }}
-                          >
-                            {pred.userInput}
+                          <span className="text-sm">
+                            {truncateText(pred.userInput)}
                           </span>
                         </button>
 
