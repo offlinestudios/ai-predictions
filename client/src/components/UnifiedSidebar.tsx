@@ -124,8 +124,8 @@ export default function UnifiedSidebar({
   const predictions = historyData?.predictions || [];
   
   // Pure JavaScript text truncation - bypasses CSS entirely
-  // 32 chars for 256px (w-64) sidebar with overflow-hidden as backup
-  const truncateText = (text: string, maxChars: number = 32): string => {
+  // 26 chars to fit within 256px (w-64) sidebar with padding
+  const truncateText = (text: string, maxChars: number = 26): string => {
     if (text.length <= maxChars) return text;
     return text.substring(0, maxChars).trim() + '...';
   };
@@ -255,7 +255,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-0.5">
+          <div className="px-2 pb-4 space-y-0.5 overflow-hidden">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -270,7 +270,7 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative rounded-lg transition-colors ${
+                    className={`group relative rounded-lg transition-colors overflow-hidden ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
