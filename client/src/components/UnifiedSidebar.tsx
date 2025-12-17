@@ -314,18 +314,25 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center h-9">
+                      <div className="relative flex items-center h-9 pr-8">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 px-3 py-2 text-left overflow-hidden"
+                          className="w-full px-3 py-2 text-left"
                         >
-                          <span className="text-sm block whitespace-nowrap">
-                            {truncateText(pred.userInput)}
+                          <span 
+                            className="text-sm block"
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {pred.userInput}
                           </span>
                         </button>
 
-                        <div className="pr-2">
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -333,7 +340,7 @@ export default function UnifiedSidebar({
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Prediction actions"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                                className="h-7 w-7 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
                               >
                                 <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                               </Button>
