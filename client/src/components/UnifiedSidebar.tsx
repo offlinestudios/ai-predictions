@@ -304,9 +304,17 @@ export default function UnifiedSidebar({
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left"
+                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden"
                         >
-                          <span className="text-sm block truncate">
+                          <span 
+                            className="text-sm block"
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              display: 'block'
+                            }}
+                          >
                             {pred.userInput}
                           </span>
                         </button>
