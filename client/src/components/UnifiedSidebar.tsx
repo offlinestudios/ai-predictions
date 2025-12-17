@@ -307,14 +307,22 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center h-9 overflow-hidden">
+                      <div className="flex items-center h-9 w-full">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden transition-all duration-200"
+                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden group-hover:flex-[1_1_calc(100%-32px)] transition-all duration-200"
                         >
-                          <span className="text-sm whitespace-nowrap block overflow-hidden text-ellipsis transition-all duration-200 group-hover:mr-8">
-                            {truncateText(pred.userInput, 28)}
+                          <span 
+                            className="text-sm block"
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              width: '100%'
+                            }}
+                          >
+                            {pred.userInput}
                           </span>
                         </button>
 
