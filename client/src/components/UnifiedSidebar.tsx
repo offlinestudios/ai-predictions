@@ -307,18 +307,18 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center h-9 pr-2">
+                      <div className="relative flex items-center h-9">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden"
+                          className="w-full px-3 py-2 pr-10 text-left"
                         >
-                          <span className="text-sm whitespace-nowrap block overflow-hidden">
+                          <span className="text-sm whitespace-nowrap block">
                             {truncateText(pred.userInput)}
                           </span>
                         </button>
 
-                        <div className="flex-shrink-0 w-8 flex justify-center">
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
