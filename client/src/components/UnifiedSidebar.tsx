@@ -124,8 +124,8 @@ export default function UnifiedSidebar({
   const predictions = historyData?.predictions || [];
   
   // Pure JavaScript text truncation - bypasses CSS entirely
-  // 26 chars to fit within 256px (w-64) sidebar with padding
-  const truncateText = (text: string, maxChars: number = 26): string => {
+  // 32 chars default - text retracts on hover to show dropdown
+  const truncateText = (text: string, maxChars: number = 32): string => {
     if (text.length <= maxChars) return text;
     return text.substring(0, maxChars).trim() + '...';
   };
@@ -307,18 +307,18 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="relative flex items-center h-9">
+                      <div className="flex items-center h-9">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="w-full px-3 py-2 pr-10 text-left"
+                          className="flex-1 min-w-0 px-3 py-2 text-left transition-all duration-200 group-hover:pr-0"
                         >
-                          <span className="text-sm whitespace-nowrap block">
-                            {truncateText(pred.userInput)}
+                          <span className="text-sm whitespace-nowrap block overflow-hidden transition-all duration-200 group-hover:mr-8">
+                            {truncateText(pred.userInput, 32)}
                           </span>
                         </button>
 
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <div className="flex-shrink-0 w-0 group-hover:w-8 overflow-hidden transition-all duration-200 flex items-center justify-center">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
