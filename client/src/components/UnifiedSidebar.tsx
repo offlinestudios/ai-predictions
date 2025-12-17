@@ -6,13 +6,7 @@ import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { 
-  Briefcase, 
-  Heart, 
-  DollarSign, 
-  Activity, 
-  MessageCircle
-} from "lucide-react";
+
 import { formatDistanceToNow } from "date-fns";
 import {
   DropdownMenu,
@@ -46,13 +40,7 @@ interface UnifiedSidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-const categoryIcons = {
-  career: { icon: Briefcase, color: "text-purple-500", bg: "bg-purple-500/10" },
-  love: { icon: Heart, color: "text-purple-500", bg: "bg-purple-500/10" },
-  finance: { icon: DollarSign, color: "text-purple-500", bg: "bg-purple-500/10" },
-  health: { icon: Activity, color: "text-purple-500", bg: "bg-purple-500/10" },
-  general: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" },
-};
+
 
 export default function UnifiedSidebar({ 
   user, 
@@ -221,8 +209,6 @@ export default function UnifiedSidebar({
               </p>
             ) : (
               filteredPredictions.map((pred) => {
-                const category = pred.category as keyof typeof categoryIcons || "general";
-                const { icon: Icon } = categoryIcons[category] || categoryIcons.general;
                 const isActive = pred.id === currentPredictionId;
 
                 return (
@@ -237,9 +223,8 @@ export default function UnifiedSidebar({
                     <button
                       type="button"
                       onClick={() => onSelectPrediction?.(pred)}
-                      className="flex w-full max-w-full items-center gap-2 pr-8 text-left overflow-hidden"
+                      className="flex w-full max-w-full items-center pr-8 text-left overflow-hidden"
                     >
-                      <Icon className="w-4 h-4 shrink-0 text-muted-foreground" />
                       <span className="text-sm truncate block">
                         {truncateText(pred.userInput)}
                       </span>

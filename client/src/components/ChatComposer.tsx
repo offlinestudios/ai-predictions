@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { 
-  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles, Calendar, Lock, Zap,
-  MessageCircle, Briefcase, Heart, DollarSign, Activity, Trophy, TrendingUp
+  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles, Calendar, Lock, Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/popover";
 
 interface ChatComposerProps {
-  onSubmit: (question: string, category: string, files: File[], deepMode: boolean, trajectoryType: string) => void;
+  onSubmit: (question: string, files: File[], deepMode: boolean, trajectoryType: string) => void;
   isLoading: boolean;
   disabled?: boolean;
   sidebarCollapsed?: boolean;
@@ -36,16 +35,6 @@ const TRAJECTORY_OPTIONS: { id: TrajectoryType; label: string; description: stri
   { id: "yearly", label: "Yearly Forecast", description: "Annual vision", minTier: "premium" },
 ];
 
-const CATEGORY_OPTIONS: { id: string; label: string; icon: React.ElementType }[] = [
-  { id: "general", label: "General", icon: MessageCircle },
-  { id: "career", label: "Career", icon: Briefcase },
-  { id: "relationships", label: "Relationships", icon: Heart },
-  { id: "finance", label: "Finance", icon: DollarSign },
-  { id: "health", label: "Health", icon: Activity },
-  { id: "sports", label: "Sports", icon: Trophy },
-  { id: "stocks", label: "Stocks", icon: TrendingUp },
-];
-
 const TIER_HIERARCHY = ["free", "plus", "pro", "premium"];
 
 export default function ChatComposer({ 
@@ -57,12 +46,10 @@ export default function ChatComposer({
   onUpgradeClick
 }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
-  const [category, setCategory] = useState("relationships");
   const [files, setFiles] = useState<File[]>([]);
   const [deepMode, setDeepMode] = useState(false);
   const [trajectoryType, setTrajectoryType] = useState<TrajectoryType>("instant");
   const [showOptions, setShowOptions] = useState(false);
-  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,7 +79,7 @@ export default function ChatComposer({
       return;
     }
     
-    onSubmit(question, category, files, deepMode && canUseDeepMode, trajectoryType);
+    onSubmit(question, files, deepMode && canUseDeepMode, trajectoryType);
     setQuestion("");
     setFiles([]);
     if (textareaRef.current) {
@@ -142,7 +129,6 @@ export default function ChatComposer({
     setTrajectoryType(trajectory);
   };
 
-  const currentCategory = CATEGORY_OPTIONS.find(c => c.id === category);
   const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
 
   return (
@@ -324,59 +310,14 @@ export default function ChatComposer({
               </PopoverContent>
             </Popover>
 
-            {/* Category Button - Manus style: solid purple pill */}
-            <Popover open={showCategoryPicker} onOpenChange={setShowCategoryPicker}>
-              <PopoverTrigger asChild>
-                <button
-                  className="h-9 px-4 rounded-full bg-primary text-primary-foreground text-sm font-medium transition-all hover:bg-primary/90 shrink-0 ml-1.5"
-                  disabled={isLoading || disabled}
-                >
-                  {currentCategory?.label}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent 
-                align="start" 
-                side="top" 
-                sideOffset={8}
-                className="w-auto p-4 rounded-2xl border border-border/60 bg-card shadow-lg"
-              >
-                <div className="text-xs font-medium text-muted-foreground mb-3">Category</div>
-                <div className="flex flex-wrap gap-2 max-w-[280px]">
-                  {CATEGORY_OPTIONS.map((cat) => {
-                    const Icon = cat.icon;
-                    const isSelected = category === cat.id;
-                    
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setCategory(cat.id);
-                          setShowCategoryPicker(false);
-                        }}
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all",
-                          isSelected 
-                            ? "bg-primary text-primary-foreground" 
-                            : "border border-border/60 hover:bg-accent"
-                        )}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {cat.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
-
             {/* Textarea */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 ml-1.5">
               <Textarea
                 ref={textareaRef}
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="What do you want to predict?"
+                placeholder="Predict anything"
                 disabled={isLoading || disabled}
                 className="min-h-[36px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-2 px-3 text-sm placeholder:text-muted-foreground bg-transparent"
                 rows={1}

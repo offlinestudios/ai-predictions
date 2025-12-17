@@ -24,7 +24,6 @@ interface Message {
   id: string;
   type: "user" | "assistant" | "system";
   content: string;
-  category?: string;
   timestamp: Date;
   accuracy?: {
     score: number;
@@ -71,7 +70,7 @@ export default function DashboardChat() {
         id: `msg-${Date.now()}-assistant`,
         type: "assistant",
         content: data.prediction,
-        category: variables.category,
+
         timestamp: new Date(),
         // All predictions now have real confidence scores based on question quality
         accuracy: {
@@ -106,7 +105,7 @@ export default function DashboardChat() {
   });
 
   // Handle prediction submission
-  const handleSubmit = async (question: string, category: string, files: File[], deepMode: boolean = false, trajectoryType: string = "instant") => {
+  const handleSubmit = async (question: string, files: File[], deepMode: boolean = false, trajectoryType: string = "instant") => {
     if (!question.trim()) return;
 
     // Check usage limits
@@ -127,7 +126,6 @@ export default function DashboardChat() {
       id: `msg-${Date.now()}-user`,
       type: "user",
       content: question,
-      category,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, userMessage]);
@@ -144,22 +142,10 @@ export default function DashboardChat() {
     setIsGenerating(true);
 
     // TODO: Handle file uploads if needed
-    // For now, just generate prediction with question
-
-    // Map frontend categories to backend schema
-    const categoryMap: Record<string, "career" | "love" | "finance" | "health" | "general"> = {
-      "general": "general",
-      "career": "career",
-      "relationships": "love",
-      "finance": "finance",
-      "health": "health",
-      "sports": "general", // Map sports to general
-      "stocks": "finance" // Map stocks to finance
-    };
 
     generateMutation.mutate({
       userInput: question,
-      category: categoryMap[category] || "general",
+      category: "general", // Always use general category
       deepMode: deepMode,
       trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly"
     });
@@ -172,7 +158,7 @@ export default function DashboardChat() {
       id: `msg-${Date.now()}-user`,
       type: "user",
       content: prediction.userInput,
-      category: prediction.category || "general",
+
       timestamp: new Date(prediction.createdAt)
     };
 
@@ -180,7 +166,7 @@ export default function DashboardChat() {
       id: `msg-${Date.now()}-assistant`,
       type: "assistant",
       content: prediction.predictionResult,
-      category: prediction.category || "general",
+
       timestamp: new Date(prediction.createdAt),
       // Show accuracy for all predictions (older ones without scores get 50 as fallback)
       accuracy: {
@@ -297,7 +283,6 @@ export default function DashboardChat() {
             open={showPostPredictionPaywall}
             onOpenChange={setShowPostPredictionPaywall}
             userTier={subscription.tier}
-            predictionCategory="general"
           />
         )}
 

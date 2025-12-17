@@ -1,17 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
-  Briefcase, 
-  Heart, 
-  DollarSign, 
-  Activity, 
-  MessageCircle,
   ChevronLeft,
   ChevronRight,
-  Clock
+  Clock,
+  Sparkles
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -28,14 +24,6 @@ interface PredictionHistoryProps {
   isOpen?: boolean;
   onToggle?: () => void;
 }
-
-const categoryIcons = {
-  career: { icon: Briefcase, color: "text-blue-500", bg: "bg-blue-500/10" },
-  love: { icon: Heart, color: "text-pink-500", bg: "bg-pink-500/10" },
-  finance: { icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
-  health: { icon: Activity, color: "text-orange-500", bg: "bg-orange-500/10" },
-  general: { icon: MessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" },
-};
 
 const trajectoryLabels = {
   instant: "Instant",
@@ -104,8 +92,6 @@ export default function PredictionHistory({ onSelectPrediction, currentPredictio
         ) : (
           <div className="space-y-2 p-2">
             {predictions.map((pred) => {
-              const category = (pred.category || "general") as keyof typeof categoryIcons;
-              const { icon: Icon, color, bg } = categoryIcons[category];
               const isActive = pred.id === currentPredictionId;
               const trajectoryLabel = trajectoryLabels[pred.trajectoryType as keyof typeof trajectoryLabels] || "Instant";
 
@@ -126,22 +112,14 @@ export default function PredictionHistory({ onSelectPrediction, currentPredictio
                       : "border-border bg-card hover:border-primary/50"
                   }`}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className={`rounded-lg p-2 ${bg}`}>
-                      <Icon className={`h-4 w-4 ${color}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium line-clamp-2">
-                        {pred.userInput}
-                      </p>
-                      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="capitalize">{category}</span>
-                        <span>•</span>
-                        <span>{trajectoryLabel}</span>
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}
-                      </p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium line-clamp-2">
+                      {pred.userInput}
+                    </p>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{trajectoryLabel}</span>
+                      <span>•</span>
+                      <span>{formatDistanceToNow(new Date(pred.createdAt), { addSuffix: true })}</span>
                     </div>
                   </div>
                 </button>
