@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import TextTruncate from "react-text-truncate";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
@@ -125,18 +124,53 @@ export default function UnifiedSidebar({
 
   const predictions = historyData?.predictions || [];
   
-  // Helper function to truncate text with ellipsis at word boundary (Manus/ChatGPT style)
-  const truncateText = (text: string, maxLength: number = 44): string => {
-    if (text.length <= maxLength) return text;
-    // Find the last space before maxLength to truncate at word boundary
-    const truncated = text.substring(0, maxLength);
-    const lastSpace = truncated.lastIndexOf(' ');
-    // If there's a space and it's not too far back, truncate at word boundary
-    if (lastSpace > maxLength * 0.6) {
-      return truncated.substring(0, lastSpace) + '...';
+  // Canvas-based text measurement for accurate pixel-width truncation
+  const measureTextWidth = useCallback((text: string, font: string = '14px system-ui, -apple-system, sans-serif'): number => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return text.length * 8; // Fallback
+    context.font = font;
+    return context.measureText(text).width;
+  }, []);
+  
+  // Truncate text to fit within a specific pixel width
+  const truncateToWidth = useCallback((text: string, maxWidth: number): string => {
+    const ellipsis = '...';
+    const ellipsisWidth = measureTextWidth(ellipsis);
+    const targetWidth = maxWidth - ellipsisWidth;
+    
+    // Check if text already fits
+    if (measureTextWidth(text) <= maxWidth) {
+      return text;
     }
-    return truncated.trim() + '...';
-  };
+    
+    // Binary search for the right truncation point
+    let low = 0;
+    let high = text.length;
+    let result = '';
+    
+    while (low < high) {
+      const mid = Math.floor((low + high + 1) / 2);
+      const truncated = text.substring(0, mid);
+      if (measureTextWidth(truncated) <= targetWidth) {
+        result = truncated;
+        low = mid;
+      } else {
+        high = mid - 1;
+      }
+    }
+    
+    // Try to truncate at word boundary for cleaner look
+    const lastSpace = result.lastIndexOf(' ');
+    if (lastSpace > result.length * 0.7) {
+      return result.substring(0, lastSpace) + ellipsis;
+    }
+    
+    return result.trim() + ellipsis;
+  }, [measureTextWidth]);
+  
+  // Target width for sidebar text (sidebar is ~320px, minus padding and button space)
+  const textMaxWidth = 260;
   
   // Filter predictions based on search query
   const filteredPredictions = predictions.filter(pred =>
@@ -321,13 +355,8 @@ export default function UnifiedSidebar({
                           onClick={() => onSelectPrediction?.(pred)}
                           className="w-full px-3 py-2 text-left"
                         >
-                          <span className="text-sm block">
-                            <TextTruncate
-                              line={1}
-                              element="span"
-                              truncateText="..."
-                              text={pred.userInput}
-                            />
+                          <span className="text-sm block whitespace-nowrap">
+                            {truncateToWidth(pred.userInput, textMaxWidth)}
                           </span>
                         </button>
 
