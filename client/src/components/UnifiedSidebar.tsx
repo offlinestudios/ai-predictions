@@ -307,26 +307,24 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center h-9 w-full">
-                        <button
-                          type="button"
-                          onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden group-hover:flex-[1_1_calc(100%-32px)] transition-all duration-200"
+                      <div className="flex items-center h-9 w-full overflow-hidden">
+                        <div 
+                          className="flex-1 min-w-0 overflow-hidden transition-all duration-200 group-hover:flex-[0_1_calc(100%-32px)]"
                         >
-                          <span 
-                            className="text-sm block"
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              width: '100%'
-                            }}
+                          <button
+                            type="button"
+                            onClick={() => onSelectPrediction?.(pred)}
+                            className="w-full px-3 py-2 text-left"
                           >
-                            {pred.userInput}
-                          </span>
-                        </button>
+                            <span 
+                              className="text-sm block truncate"
+                            >
+                              {pred.userInput}
+                            </span>
+                          </button>
+                        </div>
 
-                        <div className="flex-shrink-0 w-0 group-hover:w-8 overflow-hidden transition-all duration-200 flex items-center justify-center">
+                        <div className="flex-shrink-0 w-0 group-hover:w-8 overflow-visible transition-all duration-200 flex items-center justify-center">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
