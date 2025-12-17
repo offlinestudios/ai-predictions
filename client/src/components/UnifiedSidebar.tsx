@@ -124,8 +124,8 @@ export default function UnifiedSidebar({
 
   const predictions = historyData?.predictions || [];
   
-  // Helper function to truncate text with ellipsis
-  const truncateText = (text: string, maxLength: number = 35): string => {
+  // Helper function to truncate text with ellipsis - increased to 50 chars for wider display
+  const truncateText = (text: string, maxLength: number = 50): string => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength).trim() + '...';
   };
@@ -311,10 +311,10 @@ export default function UnifiedSidebar({
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex w-full max-w-full items-center pr-8 text-left overflow-hidden"
+                          className="flex w-full items-center pr-6 text-left overflow-hidden"
                         >
-                          <span className="text-sm truncate block">
-                            {truncateText(pred.userInput)}
+                          <span className="text-sm truncate">
+                            {pred.userInput}
                           </span>
                         </button>
 
