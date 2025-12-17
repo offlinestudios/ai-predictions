@@ -125,7 +125,7 @@ export default function UnifiedSidebar({
   const predictions = historyData?.predictions || [];
   
   // Helper function to truncate text with ellipsis at word boundary (Manus/ChatGPT style)
-  const truncateText = (text: string, maxLength: number = 38): string => {
+  const truncateText = (text: string, maxLength: number = 48): string => {
     if (text.length <= maxLength) return text;
     // Find the last space before maxLength to truncate at word boundary
     const truncated = text.substring(0, maxLength);
@@ -321,7 +321,7 @@ export default function UnifiedSidebar({
                           className="flex-1 px-3 py-2 text-left"
                         >
                           <span className="text-sm leading-tight">
-                            {truncateText(pred.userInput, 38)}
+                            {truncateText(pred.userInput)}
                           </span>
                         </button>
 
