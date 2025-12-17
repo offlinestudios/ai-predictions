@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import TextTruncate from "react-text-truncate";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
@@ -320,15 +321,13 @@ export default function UnifiedSidebar({
                           onClick={() => onSelectPrediction?.(pred)}
                           className="w-full px-3 py-2 text-left"
                         >
-                          <span 
-                            className="text-sm block"
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {pred.userInput}
+                          <span className="text-sm block">
+                            <TextTruncate
+                              line={1}
+                              element="span"
+                              truncateText="..."
+                              text={pred.userInput}
+                            />
                           </span>
                         </button>
 
