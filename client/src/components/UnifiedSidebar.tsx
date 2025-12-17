@@ -124,10 +124,17 @@ export default function UnifiedSidebar({
 
   const predictions = historyData?.predictions || [];
   
-  // Helper function to truncate text with ellipsis - increased to 50 chars for wider display
-  const truncateText = (text: string, maxLength: number = 50): string => {
+  // Helper function to truncate text with ellipsis at word boundary (Manus/ChatGPT style)
+  const truncateText = (text: string, maxLength: number = 38): string => {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
+    // Find the last space before maxLength to truncate at word boundary
+    const truncated = text.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    // If there's a space and it's not too far back, truncate at word boundary
+    if (lastSpace > maxLength * 0.6) {
+      return truncated.substring(0, lastSpace) + '...';
+    }
+    return truncated.trim() + '...';
   };
   
   // Filter predictions based on search query
@@ -255,7 +262,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-1 max-w-full">
+          <div className="px-2 pb-4 space-y-0.5">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -307,25 +314,18 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center">
+                      <div className="flex items-center h-9">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-2 py-1.5 text-left"
+                          className="flex-1 px-3 py-2 text-left"
                         >
-                          <p 
-                            className="text-sm text-foreground"
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {pred.userInput}
-                          </p>
+                          <span className="text-sm leading-tight">
+                            {truncateText(pred.userInput, 38)}
+                          </span>
                         </button>
 
-                        <div className="flex-shrink-0 pr-1">
+                        <div className="pr-2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -333,7 +333,7 @@ export default function UnifiedSidebar({
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Prediction actions"
-                                className="h-7 w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
                               >
                                 <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                               </Button>
