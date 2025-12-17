@@ -270,14 +270,14 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative px-2 py-1.5 rounded-lg transition-colors max-w-full ${
+                    className={`group relative rounded-lg transition-colors ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
                     }`}
                   >
                     {isRenaming ? (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 px-2 py-1.5">
                         <Input
                           value={renameValue}
                           onChange={(e) => setRenameValue(e.target.value)}
@@ -291,7 +291,7 @@ export default function UnifiedSidebar({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-7 w-7"
+                          className="h-7 w-7 flex-shrink-0"
                           onClick={handleSaveRename}
                           disabled={renameMutation.isPending}
                         >
@@ -300,25 +300,32 @@ export default function UnifiedSidebar({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-7 w-7"
+                          className="h-7 w-7 flex-shrink-0"
                           onClick={handleCancelRename}
                         >
                           <X className="w-3.5 h-3.5 text-red-500" />
                         </Button>
                       </div>
                     ) : (
-                      <>
+                      <div className="flex items-center">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="w-full pr-6 text-left overflow-hidden"
+                          className="flex-1 min-w-0 px-2 py-1.5 text-left"
                         >
-                          <span className="block text-sm truncate w-full">
+                          <p 
+                            className="text-sm text-foreground"
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             {pred.userInput}
-                          </span>
+                          </p>
                         </button>
 
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                        <div className="flex-shrink-0 pr-1">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -350,7 +357,7 @@ export default function UnifiedSidebar({
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 );
