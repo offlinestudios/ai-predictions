@@ -320,7 +320,7 @@ export default function UnifiedSidebar({
                               className="text-sm"
                               style={{
                                 display: 'block',
-                                maxWidth: '100%',
+                                maxWidth: '200px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap'
