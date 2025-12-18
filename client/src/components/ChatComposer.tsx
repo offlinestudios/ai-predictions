@@ -187,7 +187,7 @@ export default function ChatComposer({
           />
           
           {/* Composer Container - Single rounded border like Manus */}
-          <div className="flex items-end gap-0 rounded-[20px] border border-border/60 bg-card p-1.5 shadow-sm">
+          <div className="flex items-end gap-0 rounded-[20px] border border-border bg-card/80 backdrop-blur-sm p-1.5 shadow-md ring-1 ring-border/20">
             {/* Plus Button - Manus style: circle with border */}
             <Popover open={showOptions} onOpenChange={setShowOptions}>
               <PopoverTrigger asChild>
