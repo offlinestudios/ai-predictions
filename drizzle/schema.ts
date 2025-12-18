@@ -126,6 +126,8 @@ export const predictions = pgTable("predictions", {
   predictionTimeline: varchar("predictionTimeline", { length: 50 }),
   /** Trajectory type: instant (immediate), 30day, 90day, or yearly forecast */
   trajectoryType: trajectoryTypeEnum("trajectoryType").default("instant").notNull(),
+  /** Parent prediction ID for follow-up questions (null for root predictions) */
+  parentPredictionId: integer("parentPredictionId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

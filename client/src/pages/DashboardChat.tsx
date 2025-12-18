@@ -97,7 +97,9 @@ export default function DashboardChat() {
       setIsGenerating(false);
 
       // Set current prediction for share modal
-      if (data.id) {
+      // Only set the prediction ID if this is a new root prediction (not a follow-up)
+      // This ensures follow-ups stay linked to the original prediction thread
+      if (data.id && !data.isFollowUp) {
         setCurrentPredictionId(data.id);
         setCurrentPrediction({
           id: data.id,
@@ -160,11 +162,14 @@ export default function DashboardChat() {
 
     // TODO: Handle file uploads if needed
 
+    // If there's an existing prediction in the thread, this is a follow-up
+    // Pass the parent prediction ID so it doesn't create a new sidebar entry
     generateMutation.mutate({
       userInput: question,
       category: "general", // Always use general category
       deepMode: deepMode,
-      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly"
+      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
+      parentPredictionId: currentPredictionId || undefined, // Link follow-ups to the root prediction
     });
   };
 

@@ -411,6 +411,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         attachmentUrls: z.array(z.string()).optional(),
         deepMode: z.boolean().optional().default(false),
         trajectoryType: z.enum(["instant", "30day", "90day", "yearly"]).optional().default("instant"),
+        parentPredictionId: z.number().optional(), // For follow-up questions
       }))
       .mutation(async ({ ctx, input }) => {
         // Check subscription limits
@@ -861,6 +862,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           predictionMode: input.deepMode ? 'deep' : 'standard',
           confidenceScore,
           trajectoryType: input.trajectoryType || 'instant',
+          parentPredictionId: input.parentPredictionId || null, // Track follow-ups
         });
 
         // Increment usage counter
@@ -879,10 +881,12 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         return {
           prediction: predictionResult,
           predictionId: newPrediction.id,
+          id: newPrediction.id, // Alias for predictionId for consistency
           shareToken: newPrediction.shareToken!,
           remainingToday: subscription.dailyLimit - subscription.usedToday - 1,
           confidenceScore,
           deepMode: input.deepMode,
+          isFollowUp: !!input.parentPredictionId, // Flag to indicate if this was a follow-up
         };
       }),
 
@@ -900,6 +904,9 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         
         // Build where conditions
         const conditions: any[] = [eq(predictions.userId, ctx.user.id)];
+        
+        // Only show root predictions (not follow-ups) in the sidebar
+        conditions.push(isNull(predictions.parentPredictionId));
         
         // Apply category filter
         if (input.category && input.category !== "all") {
@@ -939,6 +946,9 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         
         // Get total count for pagination
         const countConditions: any[] = [eq(predictions.userId, ctx.user.id)];
+        
+        // Only count root predictions (not follow-ups)
+        countConditions.push(isNull(predictions.parentPredictionId));
         
         if (input.category && input.category !== "all") {
           countConditions.push(eq(predictions.category, input.category));
