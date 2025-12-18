@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X, Copy, Twitter, Facebook, Linkedin, Link2 } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -12,6 +12,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
@@ -135,11 +139,46 @@ export default function UnifiedSidebar({
     pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleShare = (pred: typeof predictions[0]) => {
+  const getShareUrl = (pred: typeof predictions[0]) => {
     if (pred.shareToken) {
-      const shareUrl = `${window.location.origin}/share/${pred.shareToken}`;
+      return `${window.location.origin}/share/${pred.shareToken}`;
+    }
+    return null;
+  };
+
+  const handleCopyLink = (pred: typeof predictions[0]) => {
+    const shareUrl = getShareUrl(pred);
+    if (shareUrl) {
       navigator.clipboard.writeText(shareUrl);
       toast.success("Share link copied to clipboard!");
+    } else {
+      toast.error("Share link not available");
+    }
+  };
+
+  const handleShareTwitter = (pred: typeof predictions[0]) => {
+    const shareUrl = getShareUrl(pred);
+    if (shareUrl) {
+      const text = encodeURIComponent(`Check out my AI prediction: "${pred.userInput.substring(0, 100)}${pred.userInput.length > 100 ? '...' : ''}"`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    } else {
+      toast.error("Share link not available");
+    }
+  };
+
+  const handleShareFacebook = (pred: typeof predictions[0]) => {
+    const shareUrl = getShareUrl(pred);
+    if (shareUrl) {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    } else {
+      toast.error("Share link not available");
+    }
+  };
+
+  const handleShareLinkedIn = (pred: typeof predictions[0]) => {
+    const shareUrl = getShareUrl(pred);
+    if (shareUrl) {
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
     } else {
       toast.error("Share link not available");
     }
@@ -333,7 +372,7 @@ export default function UnifiedSidebar({
                             }`}>
                               {dateStr} · {timeStr}
                             </span>
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                               <DropdownMenuTrigger asChild>
                                 <Button
                                   type="button"
@@ -341,22 +380,56 @@ export default function UnifiedSidebar({
                                   size="icon"
                                   aria-label="Prediction actions"
                                   className="h-6 w-6 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                  }}
+                                  onTouchEnd={(e) => {
+                                    e.stopPropagation();
+                                  }}
                                 >
                                   <MoreHorizontal className={`w-3.5 h-3.5 ${
                                     isActive ? 'text-foreground/70' : 'text-muted-foreground'
                                   }`} />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" sideOffset={5} className="w-48 z-50">
-                                <DropdownMenuItem onSelect={() => handleShare(pred)}>
-                                  <Share2 className="w-4 h-4 mr-2" />
-                                  Share
-                                </DropdownMenuItem>
+                              <DropdownMenuContent 
+                                align="end" 
+                                sideOffset={5} 
+                                className="w-52 z-[100]"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {/* Share submenu */}
+                                <DropdownMenuSub>
+                                  <DropdownMenuSubTrigger>
+                                    <Share2 className="w-4 h-4 mr-2" />
+                                    Share
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuSubContent className="w-48">
+                                    <DropdownMenuItem onSelect={() => handleCopyLink(pred)}>
+                                      <Copy className="w-4 h-4 mr-2" />
+                                      Copy Link
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => handleShareTwitter(pred)}>
+                                      <Twitter className="w-4 h-4 mr-2" />
+                                      Share on X
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleShareFacebook(pred)}>
+                                      <Facebook className="w-4 h-4 mr-2" />
+                                      Share on Facebook
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleShareLinkedIn(pred)}>
+                                      <Linkedin className="w-4 h-4 mr-2" />
+                                      Share on LinkedIn
+                                    </DropdownMenuItem>
+                                  </DropdownMenuSubContent>
+                                </DropdownMenuSub>
                                 <DropdownMenuItem onSelect={() => handleStartRename(pred)}>
                                   <SquarePen className="w-4 h-4 mr-2" />
                                   Rename
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem 
                                   onSelect={() => handleDeleteClick(pred.id)}
                                   className="text-destructive focus:text-destructive"
