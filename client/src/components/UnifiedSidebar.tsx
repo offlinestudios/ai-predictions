@@ -307,16 +307,16 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="relative h-9 w-full">
+                      <div className="flex items-center h-9 w-full">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="w-full h-full px-3 py-2 text-left pr-10"
+                          className="flex-1 min-w-0 px-3 py-2 text-left"
                         >
                           <span 
                             className="text-sm block"
                             style={{
-                              maxWidth: 'calc(100% - 8px)',
+                              width: '100%',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap'
@@ -326,7 +326,7 @@ export default function UnifiedSidebar({
                           </span>
                         </button>
 
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                        <div className="flex-shrink-0 w-8 flex items-center justify-center">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -339,7 +339,7 @@ export default function UnifiedSidebar({
                                 <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="end" sideOffset={5} className="w-48 z-50">
                               <DropdownMenuItem onSelect={() => handleShare(pred)}>
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Share
