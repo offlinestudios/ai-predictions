@@ -116,7 +116,7 @@ export function ShareModal({ isOpen, onClose, prediction }: ShareModalProps) {
         <div className="flex items-center justify-center gap-4 pt-2">
           <button
             onClick={handleCopyLink}
-            className="flex flex-col items-center gap-2 p-3 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-0"
+            className="flex flex-col items-center gap-2 p-3 focus:outline-none focus:ring-0"
             disabled={!shareUrl}
           >
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
@@ -131,7 +131,7 @@ export function ShareModal({ isOpen, onClose, prediction }: ShareModalProps) {
 
           <button
             onClick={handleShareTwitter}
-            className="flex flex-col items-center gap-2 p-3 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-0"
+            className="flex flex-col items-center gap-2 p-3 focus:outline-none focus:ring-0"
             disabled={!shareUrl}
           >
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
@@ -142,7 +142,7 @@ export function ShareModal({ isOpen, onClose, prediction }: ShareModalProps) {
 
           <button
             onClick={handleShareLinkedIn}
-            className="flex flex-col items-center gap-2 p-3 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-0"
+            className="flex flex-col items-center gap-2 p-3 focus:outline-none focus:ring-0"
             disabled={!shareUrl}
           >
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
@@ -153,7 +153,7 @@ export function ShareModal({ isOpen, onClose, prediction }: ShareModalProps) {
 
           <button
             onClick={handleShareFacebook}
-            className="flex flex-col items-center gap-2 p-3 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-0"
+            className="flex flex-col items-center gap-2 p-3 focus:outline-none focus:ring-0"
             disabled={!shareUrl}
           >
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
