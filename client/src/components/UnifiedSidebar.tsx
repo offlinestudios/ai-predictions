@@ -255,7 +255,7 @@ export default function UnifiedSidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-0.5 overflow-hidden">
+          <div className="px-2 pb-4 space-y-0.5">
             {isLoading ? (
               <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
@@ -270,7 +270,7 @@ export default function UnifiedSidebar({
                 return (
                   <div
                     key={pred.id}
-                    className={`group relative rounded-lg transition-colors overflow-hidden ${
+                    className={`group relative rounded-lg transition-colors ${
                       isActive
                         ? "bg-accent"
                         : "hover:bg-accent/50"
@@ -307,16 +307,16 @@ export default function UnifiedSidebar({
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center h-9 w-full">
+                      <div className="relative h-9 w-full">
                         <button
                           type="button"
                           onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left overflow-hidden"
+                          className="w-full h-full px-3 py-2 text-left pr-10"
                         >
                           <span 
-                            className="text-sm block transition-all duration-200 group-hover:max-w-[168px]"
+                            className="text-sm block"
                             style={{
-                              maxWidth: '200px',
+                              maxWidth: 'calc(100% - 8px)',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap'
@@ -326,7 +326,7 @@ export default function UnifiedSidebar({
                           </span>
                         </button>
 
-                        <div className="flex-shrink-0 w-0 group-hover:w-8 transition-all duration-200 flex items-center justify-center">
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -339,7 +339,7 @@ export default function UnifiedSidebar({
                                 <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" side="right" className="w-48">
+                            <DropdownMenuContent align="end" className="w-48">
                               <DropdownMenuItem onSelect={() => handleShare(pred)}>
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Share
