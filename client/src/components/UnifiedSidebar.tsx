@@ -248,121 +248,132 @@ export default function UnifiedSidebar({
         </div>
       </div>
 
-      {/* Prediction History */}
+      {/* Prediction History - Timeline View */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="px-4 py-3">
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recent Predictions</h2>
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="px-2 pb-4 space-y-0.5">
+          <div className="px-4 pb-4">
             {isLoading ? (
-              <p className="text-sm text-muted-foreground px-4 py-2">Loading...</p>
+              <p className="text-sm text-muted-foreground py-2">Loading...</p>
             ) : filteredPredictions.length === 0 ? (
-              <p className="text-sm text-muted-foreground px-4 py-2">
+              <p className="text-sm text-muted-foreground py-2">
                 {searchQuery ? "No predictions found" : "No predictions yet"}
               </p>
             ) : (
-              filteredPredictions.map((pred) => {
-                const isActive = pred.id === currentPredictionId;
-                const isRenaming = renamingId === pred.id;
+              <div className="relative">
+                {/* Timeline line */}
+                <div className="absolute left-[7px] top-3 bottom-3 w-0.5 bg-border" />
+                
+                {filteredPredictions.map((pred, index) => {
+                  const isActive = pred.id === currentPredictionId;
+                  const isRenaming = renamingId === pred.id;
+                  const predDate = new Date(pred.createdAt);
+                  const isToday = new Date().toDateString() === predDate.toDateString();
+                  const timeStr = predDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const dateStr = isToday ? 'Today' : predDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
-                return (
-                  <div
-                    key={pred.id}
-                    className={`group relative rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-accent"
-                        : "hover:bg-accent/50"
-                    }`}
-                  >
-                    {isRenaming ? (
-                      <div className="flex items-center gap-1 px-2 py-1.5">
-                        <Input
-                          value={renameValue}
-                          onChange={(e) => setRenameValue(e.target.value)}
-                          className="h-7 text-sm flex-1"
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") handleSaveRename();
-                            if (e.key === "Escape") handleCancelRename();
-                          }}
-                        />
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7 flex-shrink-0"
-                          onClick={handleSaveRename}
-                          disabled={renameMutation.isPending}
-                        >
-                          <Check className="w-3.5 h-3.5 text-green-500" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7 flex-shrink-0"
-                          onClick={handleCancelRename}
-                        >
-                          <X className="w-3.5 h-3.5 text-red-500" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center h-9 w-full">
-                        <button
-                          type="button"
-                          onClick={() => onSelectPrediction?.(pred)}
-                          className="flex-1 min-w-0 px-3 py-2 text-left"
-                        >
-                          <span 
-                            className="text-sm block"
-                            style={{
-                              width: '100%',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                  return (
+                    <div
+                      key={pred.id}
+                      className="relative pl-6 pb-4 last:pb-0 group"
+                    >
+                      {/* Timeline dot */}
+                      <div 
+                        className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 transition-colors ${
+                          isActive 
+                            ? 'bg-primary border-primary' 
+                            : 'bg-background border-muted-foreground/30 group-hover:border-primary/50'
+                        }`}
+                      />
+                      
+                      {isRenaming ? (
+                        <div className="flex items-center gap-1">
+                          <Input
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            className="h-8 text-sm flex-1"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleSaveRename();
+                              if (e.key === "Escape") handleCancelRename();
                             }}
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 flex-shrink-0"
+                            onClick={handleSaveRename}
+                            disabled={renameMutation.isPending}
                           >
-                            {pred.userInput}
-                          </span>
-                        </button>
-
-                        <div className="flex-shrink-0 w-8 flex items-center justify-center">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Prediction actions"
-                                className="h-7 w-7 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                              >
-                                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" sideOffset={5} className="w-48 z-50">
-                              <DropdownMenuItem onSelect={() => handleShare(pred)}>
-                                <Share2 className="w-4 h-4 mr-2" />
-                                Share
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onSelect={() => handleStartRename(pred)}>
-                                <SquarePen className="w-4 h-4 mr-2" />
-                                Rename
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onSelect={() => handleDeleteClick(pred.id)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                            <Check className="w-3.5 h-3.5 text-green-500" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 flex-shrink-0"
+                            onClick={handleCancelRename}
+                          >
+                            <X className="w-3.5 h-3.5 text-red-500" />
+                          </Button>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+                      ) : (
+                        <div 
+                          className={`rounded-lg p-2 cursor-pointer transition-colors ${
+                            isActive ? 'bg-accent' : 'hover:bg-accent/50'
+                          }`}
+                          onClick={() => onSelectPrediction?.(pred)}
+                        >
+                          {/* Date/Time */}
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-muted-foreground">
+                              {dateStr} · {timeStr}
+                            </span>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label="Prediction actions"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" sideOffset={5} className="w-48 z-50">
+                                <DropdownMenuItem onSelect={() => handleShare(pred)}>
+                                  <Share2 className="w-4 h-4 mr-2" />
+                                  Share
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => handleStartRename(pred)}>
+                                  <SquarePen className="w-4 h-4 mr-2" />
+                                  Rename
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onSelect={() => handleDeleteClick(pred.id)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                          
+                          {/* Prediction text - 2 lines max */}
+                          <p className="text-sm line-clamp-2 leading-snug">
+                            {pred.userInput}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         </ScrollArea>
