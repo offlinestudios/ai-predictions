@@ -249,12 +249,12 @@ export default function UnifiedSidebar({
       </div>
 
       {/* Prediction History - Timeline View */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-4 py-3">
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="px-4 py-3 flex-shrink-0">
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recent Predictions</h2>
         </div>
 
-        <ScrollArea className="flex-1">
+        <div className="flex-1 overflow-y-auto overscroll-contain">
           <div className="px-4 pb-4">
             {isLoading ? (
               <p className="text-sm text-muted-foreground py-2">Loading...</p>
@@ -322,13 +322,15 @@ export default function UnifiedSidebar({
                       ) : (
                         <div 
                           className={`rounded-lg p-2 cursor-pointer transition-colors ${
-                            isActive ? 'bg-accent' : 'hover:bg-accent/50'
+                            isActive ? 'bg-accent' : 'hover:bg-accent/50 active:bg-accent/50'
                           }`}
                           onClick={() => onSelectPrediction?.(pred)}
                         >
-                          {/* Date/Time */}
+                          {/* Date/Time and Actions */}
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-muted-foreground">
+                            <span className={`text-xs ${
+                              isActive ? 'text-foreground/70' : 'text-muted-foreground'
+                            }`}>
                               {dateStr} · {timeStr}
                             </span>
                             <DropdownMenu>
@@ -338,10 +340,12 @@ export default function UnifiedSidebar({
                                   variant="ghost"
                                   size="icon"
                                   aria-label="Prediction actions"
-                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                                  className="h-6 w-6 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                                  <MoreHorizontal className={`w-3.5 h-3.5 ${
+                                    isActive ? 'text-foreground/70' : 'text-muted-foreground'
+                                  }`} />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" sideOffset={5} className="w-48 z-50">
@@ -376,7 +380,7 @@ export default function UnifiedSidebar({
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Bottom Section */}
