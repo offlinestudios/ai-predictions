@@ -18,7 +18,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
-import PersonalityRadarChart, { PersonalityBars } from "./PersonalityRadarChart";
+import { PersonalityBars } from "./PersonalityRadarChart";
 import ShareablePsycheCard from "./ShareablePsycheCard";
 import { getPsycheMetadata, getCompatibleTypes } from "@/lib/psycheMetadata";
 import {
@@ -157,25 +157,12 @@ export default function PsycheProfileCard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
-            {/* Radar Chart */}
+            {/* Bar Chart for all screen sizes */}
             {profile.parameters && (
-              <div className="hidden sm:block">
-                <PersonalityRadarChart 
-                  data={profile.parameters} 
-                  size={200}
-                  color={metadata?.color || '#8b5cf6'}
-                />
-              </div>
-            )}
-            
-            {/* Bar Chart for mobile */}
-            {profile.parameters && (
-              <div className="sm:hidden">
-                <PersonalityBars 
-                  data={profile.parameters}
-                  color={metadata?.color || '#8b5cf6'}
-                />
-              </div>
+              <PersonalityBars 
+                data={profile.parameters}
+                color={metadata?.color || '#8b5cf6'}
+              />
             )}
 
             {/* Core Traits */}
@@ -184,17 +171,14 @@ export default function PsycheProfileCard() {
                 <Target className="w-4 h-4" />
                 Core Traits
               </h4>
-              <div className="flex flex-wrap gap-2">
+              <ul className="space-y-2">
                 {profile.coreTraits.map((trait: string, index: number) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary"
-                    className="text-xs"
-                  >
-                    {trait}
-                  </Badge>
+                  <li key={index} className="flex items-start gap-2 text-sm">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>{trait}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
             {/* Decision-Making Style */}
