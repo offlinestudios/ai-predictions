@@ -44,6 +44,12 @@ export default function DashboardChat() {
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState<number | null>(null);
+  const [currentPrediction, setCurrentPrediction] = useState<{
+    id: number;
+    userInput: string;
+    predictionResult: string;
+    shareToken: string | null;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -89,6 +95,17 @@ export default function DashboardChat() {
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsGenerating(false);
+
+      // Set current prediction for share modal
+      if (data.id) {
+        setCurrentPredictionId(data.id);
+        setCurrentPrediction({
+          id: data.id,
+          userInput: variables.userInput,
+          predictionResult: data.prediction,
+          shareToken: data.shareToken || null
+        });
+      }
 
       // Show paywall for free users after prediction
       if (subscription?.tier === "free") {
@@ -185,6 +202,12 @@ export default function DashboardChat() {
 
     setMessages([userMessage, assistantMessage]);
     setCurrentPredictionId(prediction.id);
+    setCurrentPrediction({
+      id: prediction.id,
+      userInput: prediction.userInput,
+      predictionResult: prediction.predictionResult,
+      shareToken: prediction.shareToken
+    });
     toast.success("Prediction loaded from history");
   };
 
@@ -192,6 +215,7 @@ export default function DashboardChat() {
   const handleNewPrediction = () => {
     setMessages([]);
     setCurrentPredictionId(null);
+    setCurrentPrediction(null);
     toast.success("Starting a new prediction");
   };
 
@@ -253,6 +277,7 @@ export default function DashboardChat() {
               messages={messages}
               onRefineRequest={handleRefineRequest}
               onFeedback={handleFeedback}
+              currentPrediction={currentPrediction}
             />
             <div ref={messagesEndRef} />
           </div>

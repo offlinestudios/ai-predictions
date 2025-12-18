@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { ShareModal } from "@/components/ShareModal";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X, Copy, Twitter, Facebook, Linkedin, Link2 } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -12,9 +13,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -71,6 +69,13 @@ export default function UnifiedSidebar({
   const [renameValue, setRenameValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [sharingPrediction, setSharingPrediction] = useState<{
+    id: number;
+    userInput: string;
+    predictionResult: string;
+    shareToken: string | null;
+  } | null>(null);
   const utils = trpc.useUtils();
   
   const handleCollapsedChange = (collapsed: boolean) => {
@@ -139,51 +144,6 @@ export default function UnifiedSidebar({
     pred.userInput.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getShareUrl = (pred: typeof predictions[0]) => {
-    if (pred.shareToken) {
-      return `${window.location.origin}/share/${pred.shareToken}`;
-    }
-    return null;
-  };
-
-  const handleCopyLink = (pred: typeof predictions[0]) => {
-    const shareUrl = getShareUrl(pred);
-    if (shareUrl) {
-      navigator.clipboard.writeText(shareUrl);
-      toast.success("Share link copied to clipboard!");
-    } else {
-      toast.error("Share link not available");
-    }
-  };
-
-  const handleShareTwitter = (pred: typeof predictions[0]) => {
-    const shareUrl = getShareUrl(pred);
-    if (shareUrl) {
-      const text = encodeURIComponent(`Check out my AI prediction: "${pred.userInput.substring(0, 100)}${pred.userInput.length > 100 ? '...' : ''}"`);
-      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-    } else {
-      toast.error("Share link not available");
-    }
-  };
-
-  const handleShareFacebook = (pred: typeof predictions[0]) => {
-    const shareUrl = getShareUrl(pred);
-    if (shareUrl) {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-    } else {
-      toast.error("Share link not available");
-    }
-  };
-
-  const handleShareLinkedIn = (pred: typeof predictions[0]) => {
-    const shareUrl = getShareUrl(pred);
-    if (shareUrl) {
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-    } else {
-      toast.error("Share link not available");
-    }
-  };
-
   const handleStartRename = (pred: typeof predictions[0]) => {
     setRenamingId(pred.id);
     setRenameValue(pred.userInput);
@@ -206,6 +166,16 @@ export default function UnifiedSidebar({
   const handleDeleteClick = (id: number) => {
     setDeletingId(id);
     setDeleteDialogOpen(true);
+  };
+
+  const handleOpenShareModal = (pred: typeof predictions[0]) => {
+    setSharingPrediction({
+      id: pred.id,
+      userInput: pred.userInput,
+      predictionResult: pred.predictionResult,
+      shareToken: pred.shareToken
+    });
+    setShareModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -399,32 +369,11 @@ export default function UnifiedSidebar({
                                 className="w-52 z-[100]"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                {/* Share submenu */}
-                                <DropdownMenuSub>
-                                  <DropdownMenuSubTrigger>
-                                    <Share2 className="w-4 h-4 mr-2" />
-                                    Share
-                                  </DropdownMenuSubTrigger>
-                                  <DropdownMenuSubContent className="w-48">
-                                    <DropdownMenuItem onSelect={() => handleCopyLink(pred)}>
-                                      <Copy className="w-4 h-4 mr-2" />
-                                      Copy Link
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => handleShareTwitter(pred)}>
-                                      <Twitter className="w-4 h-4 mr-2" />
-                                      Share on X
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleShareFacebook(pred)}>
-                                      <Facebook className="w-4 h-4 mr-2" />
-                                      Share on Facebook
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleShareLinkedIn(pred)}>
-                                      <Linkedin className="w-4 h-4 mr-2" />
-                                      Share on LinkedIn
-                                    </DropdownMenuItem>
-                                  </DropdownMenuSubContent>
-                                </DropdownMenuSub>
+                                {/* Share - opens modal */}
+                                <DropdownMenuItem onSelect={() => handleOpenShareModal(pred)}>
+                                  <Share2 className="w-4 h-4 mr-2" />
+                                  Share
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={() => handleStartRename(pred)}>
                                   <SquarePen className="w-4 h-4 mr-2" />
                                   Rename
@@ -501,6 +450,16 @@ export default function UnifiedSidebar({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => {
+          setShareModalOpen(false);
+          setSharingPrediction(null);
+        }}
+        prediction={sharingPrediction}
+      />
     </aside>
   );
 }

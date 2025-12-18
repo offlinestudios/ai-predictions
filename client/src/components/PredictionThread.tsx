@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown, Share2, Copy, RefreshCw, MoreHorizontal } from "lucide-react";
 import { Streamdown } from "streamdown";
 import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
 import TypingIndicator from "@/components/TypingIndicator";
+import { ShareModal } from "@/components/ShareModal";
 
 interface Message {
   id: string;
@@ -19,15 +21,27 @@ interface Message {
     potentialScore?: number;
     suggestedDetails?: string[];
   };
+  predictionId?: number;
+  shareToken?: string | null;
+  userInput?: string;
 }
 
 interface PredictionThreadProps {
   messages: Message[];
   onRefineRequest?: (messageId: string) => void;
   onFeedback?: (messageId: string, helpful: boolean) => void;
+  onRegenerate?: (messageId: string) => void;
+  currentPrediction?: {
+    id: number;
+    userInput: string;
+    predictionResult: string;
+    shareToken: string | null;
+  } | null;
 }
 
-export default function PredictionThread({ messages, onRefineRequest, onFeedback }: PredictionThreadProps) {
+export default function PredictionThread({ messages, onRefineRequest, onFeedback, onRegenerate, currentPrediction }: PredictionThreadProps) {
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
@@ -118,7 +132,29 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                         </>
                       )}
                     </div>
-                    {/* ShareButtons requires shareToken - will be added when implementing share functionality */}
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setShareModalOpen(true)}
+                        title="Share prediction"
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </Button>
+                      {onRegenerate && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => onRegenerate(message.id)}
+                          title="Regenerate prediction"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -135,6 +171,13 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
           </div>
         );
       })}
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        prediction={currentPrediction}
+      />
     </div>
   );
 }
