@@ -312,3 +312,76 @@
 .hover\:rotate-360:hover {
   transform: rotate(360deg);
 }
+
+/* Prediction prose styling - larger headers and better spacing */
+.prediction-prose h1,
+.prediction-prose h2,
+.prediction-prose h3,
+.prediction-prose h4,
+.prediction-prose h5,
+.prediction-prose h6 {
+  font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: oklch(0.95 0.01 270);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prediction-prose h3 {
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+
+.prediction-prose h4 {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.prediction-prose p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: oklch(0.85 0.01 270);
+}
+
+.prediction-prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Ensure proper spacing between sections */
+.prediction-prose > * + * {
+  margin-top: 1rem;
+}
+
+.prediction-prose strong {
+  color: oklch(0.95 0.01 270);
+  font-weight: 600;
+}
+
+.prediction-prose em {
+  color: oklch(0.75 0.15 290);
+  font-style: italic;
+}
+
+/* List styling */
+.prediction-prose ul,
+.prediction-prose ol {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prediction-prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Blockquote styling for oracle wisdom */
+.prediction-prose blockquote {
+  border-left: 3px solid oklch(0.65 0.25 290);
+  padding-left: 1rem;
+  margin: 1.25rem 0;
+  font-style: italic;
+  color: oklch(0.8 0.02 270);
+}

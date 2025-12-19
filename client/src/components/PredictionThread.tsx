@@ -9,6 +9,7 @@ import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
 import TypingIndicator from "@/components/TypingIndicator";
 import { ShareModal } from "@/components/ShareModal";
+import ImproveAccuracyCard from "@/components/ImproveAccuracyCard";
 
 interface Message {
   id: string;
@@ -19,6 +20,7 @@ interface Message {
     score: number;
     label: "High" | "Moderate" | "Low";
   };
+  missingFactors?: string[];
   predictionId?: number;
   shareToken?: string | null;
   userInput?: string;
@@ -29,6 +31,7 @@ interface PredictionThreadProps {
   onRefineRequest?: (messageId: string) => void;
   onFeedback?: (messageId: string, helpful: boolean) => void;
   onRegenerate?: (messageId: string) => void;
+  onProfileUpdated?: () => void;
   currentPrediction?: {
     id: number;
     userInput: string;
@@ -37,7 +40,14 @@ interface PredictionThreadProps {
   } | null;
 }
 
-export default function PredictionThread({ messages, onRefineRequest, onFeedback, onRegenerate, currentPrediction }: PredictionThreadProps) {
+export default function PredictionThread({ 
+  messages, 
+  onRefineRequest, 
+  onFeedback, 
+  onRegenerate, 
+  onProfileUpdated,
+  currentPrediction 
+}: PredictionThreadProps) {
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
   if (messages.length === 0) {
@@ -77,7 +87,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                       <img src="/logo.svg" alt="Predicsure" className="w-6 h-6 object-contain" />
                       Your Prediction
                     </h4>
-                    <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none">
+                    <div className="prediction-prose max-w-none">
                       <Streamdown>{message.content}</Streamdown>
                     </div>
                   </div>
@@ -101,7 +111,14 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                       </div>
                       <Progress value={message.accuracy.score} className="h-2 mb-2" />
                       
-                      {/* Dynamic Follow-up Questions - Removed generic improvement section */}
+                      {/* Improve Accuracy Card - Show when accuracy is below 75% and there are missing factors */}
+                      {message.accuracy.score < 75 && message.missingFactors && message.missingFactors.length > 0 && (
+                        <ImproveAccuracyCard
+                          missingFactors={message.missingFactors}
+                          currentScore={message.accuracy.score}
+                          onProfileUpdated={onProfileUpdated}
+                        />
+                      )}
                     </div>
                   )}
 
@@ -174,7 +191,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
       <ShareModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        prediction={currentPrediction}
+        prediction={currentPrediction || null}
       />
     </div>
   );

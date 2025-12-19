@@ -264,6 +264,58 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
 
         return { success: true };
       }),
+
+    updateProfileField: protectedProcedure
+      .input(z.object({
+        field: z.string(),
+        value: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+
+        // Map field names to database columns
+        const allowedFields: Record<string, string> = {
+          ageRange: "ageRange",
+          location: "location",
+          nickname: "nickname",
+          relationshipStatus: "relationshipStatus",
+          interests: "interests",
+          industry: "industry",
+          incomeRange: "incomeRange",
+          gender: "gender",
+        };
+
+        const dbColumn = allowedFields[input.field];
+        if (!dbColumn) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Invalid field: ${input.field}` });
+        }
+
+        // Build update object dynamically
+        const updateData: Record<string, any> = {
+          updatedAt: new Date(),
+        };
+
+        // Handle special case for interests (needs to be JSON array)
+        if (input.field === "interests") {
+          // Get existing interests and add new one
+          const existingUser = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1);
+          const existingInterests = existingUser[0]?.interests ? JSON.parse(existingUser[0].interests) : [];
+          if (!existingInterests.includes(input.value)) {
+            existingInterests.push(input.value);
+          }
+          updateData[dbColumn] = JSON.stringify(existingInterests);
+        } else {
+          updateData[dbColumn] = input.value;
+        }
+
+        await db
+          .update(users)
+          .set(updateData)
+          .where(eq(users.id, ctx.user.id));
+
+        return { success: true, field: input.field, value: input.value };
+      }),
   }),
 
   stats: router({
@@ -784,7 +836,7 @@ Start with 1-2 punchy sentences that reveal the core insight. This should feel l
 
 [BLANK LINE]
 
-Write 3-4 SHORT paragraphs (2-3 sentences each) with deep analysis. Add a BLANK LINE between each paragraph. Consider psychological, practical, and external factors.
+Write 3-4 SHORT paragraphs. MAXIMUM 2 sentences per paragraph. Each paragraph MUST be separated by a blank line. Consider psychological, practical, and external factors.
 
 [BLANK LINE]
 
@@ -794,19 +846,19 @@ Write 3-4 SHORT paragraphs (2-3 sentences each) with deep analysis. Add a BLANK 
 
 **Most likely — [Outcome] (≈XX%)**
 
-[2-3 sentence explanation with specific indicators]
+1-2 sentences only with specific indicators.
 
 [BLANK LINE]
 
 **Moderate — [Outcome] (≈XX%)**
 
-[2-3 sentence explanation with specific indicators]
+1-2 sentences only with specific indicators.
 
 [BLANK LINE]
 
 **Less likely — [Outcome] (≈XX%)**
 
-[2-3 sentence explanation with specific indicators]
+1-2 sentences only with specific indicators.
 
 [BLANK LINE]
 
@@ -848,16 +900,27 @@ Answering even a few of these questions can significantly sharpen the prediction
 
 • [Question about past patterns]
 
-**CRITICAL RULES:**
-- SHORT paragraphs (2-3 sentences max)
-- BLANK LINE between every paragraph and section
-- Each bullet on its OWN LINE with blank line between
-- NO numbered sections, NO labels like "Analysis:"
-- NO corporate jargon (avoid: "leverage", "synergy", "optimize")
-- Use oracle language: "the signal points to", "what emerges", "the pattern reveals"
-- Keep under 600 words
-- Percentages MUST add to ~100%
-- Use EXACT accuracy score from context`;
+**CRITICAL FORMATTING RULES (MUST FOLLOW):**
+1. EVERY paragraph is MAX 2 sentences. No exceptions.
+2. BLANK LINE (empty line) between EVERY paragraph
+3. BLANK LINE between EVERY section
+4. Each bullet point on its OWN LINE with blank line between
+5. NO numbered sections, NO labels like "Analysis:"
+6. NO corporate jargon (avoid: "leverage", "synergy", "optimize")
+7. Use oracle language: "the signal points to", "what emerges", "the pattern reveals"
+8. Keep under 500 words total
+9. Percentages MUST add to ~100%
+10. Use EXACT accuracy score from context
+
+**PARAGRAPH EXAMPLES (CORRECT):**
+The energy around this decision is shifting. Something unexpected will emerge by mid-January.
+
+[blank line]
+
+Your hesitation isn't weakness—it's wisdom. The pattern suggests waiting serves you better than rushing.
+
+**PARAGRAPH EXAMPLES (WRONG - TOO LONG):**
+The energy around this decision is shifting and you'll notice changes soon. Something unexpected will emerge by mid-January, possibly related to a conversation you've been avoiding. Your hesitation isn't weakness—it's wisdom, and the pattern suggests waiting serves you better than rushing forward.`;
         } else {
           systemPrompt = `You are a wise AI oracle who speaks with clarity and insight. You reveal what others cannot see, using language that feels like wisdom, not corporate jargon.
 
@@ -874,7 +937,7 @@ Start with 1-2 punchy sentences that reveal the core insight. This should feel l
 
 [BLANK LINE]
 
-Write 2-3 SHORT paragraphs (1-2 sentences each) explaining key factors. Add a blank line between each paragraph. Be specific to their situation.
+Write 2-3 VERY SHORT paragraphs. MAXIMUM 2 sentences per paragraph. Each paragraph MUST be separated by a blank line. Be specific to their situation.
 
 [BLANK LINE]
 
@@ -884,19 +947,19 @@ Write 2-3 SHORT paragraphs (1-2 sentences each) explaining key factors. Add a bl
 
 **Most likely — [Brief outcome] (≈XX%)**
 
-[1-2 sentence explanation]
+One sentence only.
 
 [BLANK LINE]
 
 **Moderate — [Brief outcome] (≈XX%)**
 
-[1-2 sentence explanation]
+One sentence only.
 
 [BLANK LINE]
 
 **Less likely — [Brief outcome] (≈XX%)**
 
-[1-2 sentence explanation]
+One sentence only.
 
 [BLANK LINE]
 
@@ -924,16 +987,27 @@ Answering even a few of these questions can significantly sharpen the prediction
 
 • [Question about their stance]
 
-**CRITICAL RULES:**
-- SHORT paragraphs only (1-2 sentences max)
-- BLANK LINE between every paragraph and section
-- Each bullet point on its OWN LINE with blank line between
-- NO numbered sections, NO labels like "Analysis:"
-- NO corporate jargon (avoid: "leverage", "synergy", "optimize", "stakeholders")
-- Use oracle language: "the signal points to", "what emerges is", "the pattern reveals"
-- Keep under 400 words
-- Percentages MUST add to ~100%
-- Use EXACT accuracy score from context`;
+**CRITICAL FORMATTING RULES (MUST FOLLOW):**
+1. EVERY paragraph is MAX 2 sentences. No exceptions.
+2. BLANK LINE (empty line) between EVERY paragraph
+3. BLANK LINE between EVERY section
+4. Each bullet point on its OWN LINE with blank line between
+5. NO numbered sections, NO labels like "Analysis:"
+6. NO corporate jargon (avoid: "leverage", "synergy", "optimize", "stakeholders")
+7. Use oracle language: "the signal points to", "what emerges is", "the pattern reveals"
+8. Keep under 350 words total
+9. Percentages MUST add to ~100%
+10. Use EXACT accuracy score from context
+
+**PARAGRAPH EXAMPLES (CORRECT):**
+The energy around this decision is shifting. Something unexpected will emerge by mid-January.
+
+[blank line]
+
+Your hesitation isn't weakness—it's wisdom. The pattern suggests waiting serves you better than rushing.
+
+**PARAGRAPH EXAMPLES (WRONG - TOO LONG):**
+The energy around this decision is shifting and you'll notice changes soon. Something unexpected will emerge by mid-January, possibly related to a conversation you've been avoiding. Your hesitation isn't weakness—it's wisdom, and the pattern suggests waiting serves you better than rushing forward.`;
         }
         
         // Add personalization based on user onboarding data
@@ -1234,6 +1308,8 @@ Answering even a few of these questions can significantly sharpen the prediction
           confidenceScore,
           deepMode: input.deepMode,
           isFollowUp: !!input.parentPredictionId, // Flag to indicate if this was a follow-up
+          missingFactors: accuracyResult.missingFactors, // Missing profile fields for improvement prompts
+          improvementSuggestions: accuracyResult.improvementSuggestions, // Suggestions for improving accuracy
         };
       }),
 

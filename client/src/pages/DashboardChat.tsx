@@ -29,6 +29,7 @@ interface Message {
     score: number;
     label: "High" | "Moderate" | "Low";
   };
+  missingFactors?: string[];
 }
 
 export default function DashboardChat() {
@@ -59,7 +60,7 @@ export default function DashboardChat() {
   }, [isMobile]);
 
   // Fetch subscription data
-  const { data: subscription } = trpc.subscription.getCurrent.useQuery(undefined, {
+  const { data: subscription, refetch: refetchSubscription } = trpc.subscription.getCurrent.useQuery(undefined, {
     enabled: isAuthenticated,
   });
 
@@ -80,7 +81,8 @@ export default function DashboardChat() {
         accuracy: {
           score: data.confidenceScore ?? 50, // Use calculated score from backend
           label: (data.confidenceScore ?? 50) >= 75 ? "High" : (data.confidenceScore ?? 50) >= 50 ? "Moderate" : "Low",
-        }
+        },
+        missingFactors: data.missingFactors || [],
       };
       
       setMessages(prev => [...prev, assistantMessage]);
@@ -218,6 +220,13 @@ export default function DashboardChat() {
     // TODO: Send feedback to backend
   };
 
+  // Handle profile update from ImproveAccuracyCard
+  const handleProfileUpdated = () => {
+    // Refetch subscription to update any cached user data
+    refetchSubscription();
+    // Optionally show a toast or update UI to indicate profile was updated
+  };
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -232,7 +241,7 @@ export default function DashboardChat() {
       <div className={`hidden lg:block h-screen sticky top-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
         {isAuthenticated && (
           <UnifiedSidebar
-            user={user}
+            user={user || undefined}
             subscription={subscription}
             onSelectPrediction={handleSelectPrediction}
             currentPredictionId={null}
@@ -264,6 +273,7 @@ export default function DashboardChat() {
               messages={messages}
               onRefineRequest={handleRefineRequest}
               onFeedback={handleFeedback}
+              onProfileUpdated={handleProfileUpdated}
               currentPrediction={currentPrediction}
             />
             <div ref={messagesEndRef} />
