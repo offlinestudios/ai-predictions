@@ -17,7 +17,7 @@ interface UserProfile {
   loveProfile?: string | null;
   healthProfile?: string | null;
   location?: string | null;
-  age?: number | null;
+  ageRange?: string | null;
   onboardingCompleted?: boolean | null;
 }
 
@@ -91,8 +91,8 @@ export function calculateAccuracy(
       improvementSuggestions.push("Where are you based?");
     }
 
-    // Age (5 points)
-    if (userProfile.age) {
+    // Age Range (5 points)
+    if (userProfile.ageRange) {
       profileScore += 5;
     } else {
       missingFactors.push("Your age range");

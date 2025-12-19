@@ -1231,6 +1231,7 @@ The signal hints at subtle fluctuations near the surface that may stir the water
             loveProfile: userProfile.loveProfile,
             healthProfile: userProfile.healthProfile,
             location: userProfile.location,
+            ageRange: userProfile.ageRange,
             onboardingCompleted: userProfile.onboardingCompleted ?? false,
           } : null,
           psycheProfile ? {

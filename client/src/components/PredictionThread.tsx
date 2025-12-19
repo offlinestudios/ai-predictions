@@ -83,10 +83,10 @@ export default function PredictionThread({
               <div className="w-full px-4 md:px-6 py-6">
                   {/* Prediction Content - Full Width */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <h3 className="font-semibold text-xl mb-4 flex items-center gap-2">
                       <img src="/logo.svg" alt="Predicsure" className="w-6 h-6 object-contain" />
                       Your Prediction
-                    </h4>
+                    </h3>
                     <div className="prediction-prose max-w-none">
                       <Streamdown>{message.content}</Streamdown>
                     </div>

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@source "../../node_modules/streamdown/dist/index.js";
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
@@ -340,8 +341,8 @@
 
 .prediction-prose p {
   font-size: 0.95rem;
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  margin-bottom: 1.75rem;
   color: oklch(0.85 0.01 270);
 }
 
@@ -349,23 +350,30 @@
   margin-bottom: 0;
 }
 
-/* Ensure proper spacing between sections */
+/* Ensure proper spacing between all elements */
 .prediction-prose > * + * {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 /* Add extra spacing after headers */
 .prediction-prose h3 + p,
-.prediction-prose h4 + p,
-.prediction-prose strong + p {
-  margin-top: 0.5rem;
+.prediction-prose h4 + p {
+  margin-top: 0.75rem;
+}
+
+/* Strong text that starts a line (like **Possible Outcome Paths**) should have spacing */
+.prediction-prose p > strong:first-child:only-child {
+  display: block;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 /* Ensure line breaks create visual separation */
 .prediction-prose br {
   display: block;
   content: "";
-  margin-top: 1rem;
+  margin-top: 1.25rem;
 }
 
 .prediction-prose strong {
