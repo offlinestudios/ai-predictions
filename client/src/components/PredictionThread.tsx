@@ -17,9 +17,7 @@ interface Message {
   timestamp: Date;
   accuracy?: {
     score: number;
-    label: string;
-    potentialScore?: number;
-    suggestedDetails?: string[];
+    label: "High" | "Moderate" | "Low";
   };
   predictionId?: number;
   shareToken?: string | null;

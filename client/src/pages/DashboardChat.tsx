@@ -27,9 +27,7 @@ interface Message {
   timestamp: Date;
   accuracy?: {
     score: number;
-    label: string;
-    potentialScore?: number;
-    suggestedDetails?: string[];
+    label: "High" | "Moderate" | "Low";
   };
 }
 
@@ -78,18 +76,10 @@ export default function DashboardChat() {
         content: data.prediction,
 
         timestamp: new Date(),
-        // All predictions now have real confidence scores based on question quality
+        // Accuracy score calculated based on profile completeness and question specificity
         accuracy: {
-          score: data.confidenceScore || 50, // Fallback to 50 if somehow missing
-          label: (data.confidenceScore || 50) >= 80 ? "High" : (data.confidenceScore || 50) >= 60 ? "Moderate" : "Low",
-          potentialScore: 95,
-          suggestedDetails: [
-            "Age Range",
-            "Location",
-            "Income Range",
-            "Relationship Status",
-            "Current Life Stage"
-          ]
+          score: data.confidenceScore ?? 50, // Use calculated score from backend
+          label: (data.confidenceScore ?? 50) >= 75 ? "High" : (data.confidenceScore ?? 50) >= 50 ? "Moderate" : "Low",
         }
       };
       
@@ -193,15 +183,7 @@ export default function DashboardChat() {
       // Show accuracy for all predictions (older ones without scores get 50 as fallback)
       accuracy: {
         score: prediction.confidenceScore || 50,
-        label: (prediction.confidenceScore || 50) >= 80 ? "High" : (prediction.confidenceScore || 50) >= 60 ? "Moderate" : "Low",
-        potentialScore: 95,
-        suggestedDetails: [
-          "Age Range",
-          "Location",
-          "Income Range",
-          "Relationship Status",
-          "Current Life Stage"
-        ]
+        label: (prediction.confidenceScore || 50) >= 75 ? "High" : (prediction.confidenceScore || 50) >= 50 ? "Moderate" : "Low",
       }
     };
 

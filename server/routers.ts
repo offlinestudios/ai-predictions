@@ -32,6 +32,7 @@ import { nanoid } from "nanoid";
 import { stripe } from "./_core/stripe";
 import { STRIPE_PRODUCTS } from "./products";
 import { sendWelcomeEmail } from "./email";
+import { calculateAccuracy, formatAccuracyForPrompt } from "./lib/accuracyCalculator";
 
 export const appRouter = router({
   system: systemRouter,
@@ -482,6 +483,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
             majorTransition: users.majorTransition,
             transitionType: users.transitionType,
             premiumDataCompleted: users.premiumDataCompleted,
+            onboardingCompleted: users.onboardingCompleted,
           })
           .from(users)
           .where(eq(users.id, ctx.user.id))
@@ -658,33 +660,34 @@ Answering these questions can sharpen your yearly forecast:
         } else if (input.deepMode) {
           systemPrompt = `You are an advanced AI oracle with deep analytical capabilities. Generate comprehensive predictions with detailed probability analysis.
 
-**DEEP ANALYSIS RESPONSE FORMAT (DO NOT include numbered sections or labels like "Opening Signal" or "Deep Analysis"):**
+**DEEP ANALYSIS RESPONSE FORMAT (FOLLOW EXACTLY):**
 
-Start with 1-2 sentences that directly state what the prediction reveals at this level of clarity.
+Start with 1-2 sentences that directly state what the prediction reveals at this level of clarity. Be direct and specific.
 
-Then write 3-4 paragraphs of deep analysis explaining the key factors in detail. Consider psychological, practical, and external factors. Identify what's known vs unknown. Include specific timeframes where relevant.
-
-Then include:
+Then write 3-4 paragraphs of deep analysis explaining the key factors in detail. Consider psychological, practical, and external factors. Identify what's known vs unknown. Include specific timeframes where relevant. Do NOT label these paragraphs.
 
 **Possible Outcome Paths**
 
 **Most likely — [Detailed outcome description] (≈XX%)**
-[2-3 sentence detailed explanation with specific indicators]
+[2-3 sentence detailed explanation with specific indicators on a NEW LINE]
 
 **Moderate — [Detailed outcome description] (≈XX%)**
-[2-3 sentence detailed explanation with specific indicators]
+[2-3 sentence detailed explanation with specific indicators on a NEW LINE]
 
 **Less likely — [Detailed outcome description] (≈XX%)**
-[2-3 sentence detailed explanation with specific indicators]
+[2-3 sentence detailed explanation with specific indicators on a NEW LINE]
 
 **Key Indicators to Watch**
+
 • [Specific sign that outcome A is manifesting]
+
 • [Specific sign that outcome B is manifesting]
+
 • [Warning sign to monitor]
 
-**Prediction Accuracy: XX% (High/Moderate/Low)**
+**Prediction Accuracy: [USE THE EXACT SCORE PROVIDED IN THE ACCURACY CONTEXT BELOW]**
 
-If accuracy is below 60%, add:
+If accuracy is below 60%, explain what context is missing:
 This is a [low/moderate]-clarity reading because important context is missing, including:
 • [Missing factor 1]
 • [Missing factor 2]
@@ -695,45 +698,49 @@ Without these, the prediction remains broad rather than precise.
 **Deepen Your Insight**
 
 Answering even a few of the questions below can significantly sharpen the prediction:
+
 • [Specific question about their situation]
+
 • [Question about timing/context]
+
 • [Question about their stance/feelings]
+
 • [Question about key relationships/factors]
+
 • [Question about past patterns]
 
-**CRITICAL RULES:**
+**CRITICAL FORMATTING RULES:**
 - DO NOT include numbered sections (1., 2., 3., etc.)
-- DO NOT write "Opening Signal:" or "Deep Analysis:" as visible labels
-- DO NOT write essay-style responses
+- DO NOT write labels like "Opening Signal:", "Deep Analysis:", or "Analysis:"
+- Each follow-up question MUST be on its own line with a blank line between them
+- Outcome path explanations MUST be on a separate line from the title
 - Keep total response under 600 words
 - Percentages in outcome paths MUST add up to ~100%
 - Be direct and analytical, not flowery
-- Focus on actionable insight and specific indicators`;
+- Use the EXACT accuracy score provided in the accuracy context section`;
         } else {
           systemPrompt = `You are an advanced AI oracle specializing in probability-based predictions. Generate structured, insightful predictions with clear outcome paths.
 
-**RESPONSE FORMAT (MUST FOLLOW EXACTLY - DO NOT include section numbers or labels like "Opening Statement" or "Analysis"):**
+**RESPONSE FORMAT (FOLLOW EXACTLY):**
 
-Start with 1-2 sentences that directly state what the prediction reveals. No fluff.
+Start with 1-2 sentences that directly state what the prediction reveals at this level of clarity. Be direct and specific.
 
-Then write 2-3 short paragraphs explaining the key factors. Be specific to their situation. Identify what's known vs unknown.
-
-Then include:
+Then write 2-3 short paragraphs explaining the key factors. Be specific to their situation. Identify what's known vs unknown. Do NOT label these paragraphs.
 
 **Possible Outcome Paths**
 
 **Most likely — [Brief outcome description] (≈XX%)**
-[1-2 sentence explanation]
+[1-2 sentence explanation on a NEW LINE]
 
 **Moderate — [Brief outcome description] (≈XX%)**
-[1-2 sentence explanation]
+[1-2 sentence explanation on a NEW LINE]
 
 **Less likely — [Brief outcome description] (≈XX%)**
-[1-2 sentence explanation]
+[1-2 sentence explanation on a NEW LINE]
 
-**Prediction Accuracy: XX% (High/Moderate/Low)**
+**Prediction Accuracy: [USE THE EXACT SCORE PROVIDED IN THE ACCURACY CONTEXT BELOW]**
 
-If accuracy is below 60%, add:
+If accuracy is below 60%, explain what context is missing:
 This is a [low/moderate]-clarity reading because important context is missing, including:
 • [Missing factor 1]
 • [Missing factor 2]
@@ -742,18 +749,22 @@ This is a [low/moderate]-clarity reading because important context is missing, i
 **Deepen Your Insight**
 
 Answering even a few of the questions below can significantly sharpen the prediction:
+
 • [Specific question about their situation]
+
 • [Question about timing/context]
+
 • [Question about their stance/feelings]
 
-**CRITICAL RULES:**
+**CRITICAL FORMATTING RULES:**
 - DO NOT include numbered sections (1., 2., 3., etc.)
-- DO NOT write "Opening Statement:" or "Analysis:" as visible labels
-- DO NOT write essay-style responses
+- DO NOT write labels like "Opening Statement:", "Analysis:", or "Opening Signal:"
+- Each follow-up question MUST be on its own line with a blank line between them
+- Outcome path explanations MUST be on a separate line from the title
 - Keep total response under 400 words
 - Percentages in outcome paths MUST add up to ~100%
-- Be direct and concise, not flowery
-- Focus on actionable insight, not generic encouragement`;
+- Be direct and concise, not flowery or generic
+- Use the EXACT accuracy score provided in the accuracy context section`;
         }
         
         // Add personalization based on user onboarding data
@@ -942,6 +953,30 @@ Answering even a few of the questions below can significantly sharpen the predic
           }
         }
         
+        // Calculate accuracy based on profile completeness
+        const accuracyResult = calculateAccuracy(
+          userProfile ? {
+            nickname: userProfile.nickname,
+            interests: userProfile.interests,
+            relationshipStatus: userProfile.relationshipStatus,
+            careerProfile: userProfile.careerProfile,
+            moneyProfile: userProfile.moneyProfile,
+            loveProfile: userProfile.loveProfile,
+            healthProfile: userProfile.healthProfile,
+            location: userProfile.location,
+            onboardingCompleted: userProfile.onboardingCompleted ?? false,
+          } : null,
+          psycheProfile ? {
+            psycheType: psycheProfile.psycheType,
+            psycheParams: psycheProfile.psycheParameters,
+          } : null,
+          input.userInput,
+          input.category || "general"
+        );
+        
+        // Add accuracy context to the prompt
+        systemPrompt += formatAccuracyForPrompt(accuracyResult);
+        
         // Build user message with text and file attachments
         type MessageContent = 
           | { type: "text"; text: string } 
@@ -987,15 +1022,12 @@ Answering even a few of the questions below can significantly sharpen the predic
           ? messageContent 
           : "Unable to generate prediction at this time.";
         
-        // Extract confidence score if present (for ALL predictions now)
-        let confidenceScore: number | null = null;
+        // Use the calculated accuracy score (not AI-generated)
+        const confidenceScore: number = accuracyResult.score;
+        
+        // Clean up any old-style confidence lines from the response if present
         if (typeof predictionResult === 'string') {
-          const confidenceMatch = predictionResult.match(/Confidence:\s*(\d+)%/i);
-          if (confidenceMatch) {
-            confidenceScore = parseInt(confidenceMatch[1], 10);
-            // Remove the confidence line from the displayed result
-            predictionResult = predictionResult.replace(/\n?Confidence:\s*\d+%/i, '').trim();
-          }
+          predictionResult = predictionResult.replace(/\n?Confidence:\s*\d+%/i, '').trim();
         }
 
         // Save prediction to database and get the ID
@@ -1575,7 +1607,7 @@ Answering even a few of the questions below can significantly sharpen the predic
         nickname: z.string(),
         interests: z.array(z.string()),
         relationshipStatus: z.string(),
-        categoryAnswers: z.record(z.record(z.string())),
+        categoryAnswers: z.record(z.string(), z.record(z.string(), z.string())),
         psycheResponses: z.array(z.object({
           questionId: z.number(),
           questionText: z.string(),
