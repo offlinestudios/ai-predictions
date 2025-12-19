@@ -560,53 +560,41 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
 
 Start with 1-2 punchy sentences revealing the overall 30-day arc.
 
-[BLANK LINE]
+---
 
 **Week 1 (Days 1-7) — [Phase Name]**
 
 [2-3 sentences about what to expect, key actions]
 
-[BLANK LINE]
-
 **Week 2 (Days 8-14) — [Phase Name]**
 
 [2-3 sentences about momentum shifts]
-
-[BLANK LINE]
 
 **Week 3 (Days 15-21) — [Phase Name]**
 
 [2-3 sentences about emerging opportunities]
 
-[BLANK LINE]
-
 **Week 4 (Days 22-30) — [Phase Name]**
 
 [2-3 sentences about culmination]
 
-[BLANK LINE]
+---
 
 **Possible 30-Day Outcomes**
-
-[BLANK LINE]
 
 **Most likely — [Outcome] (≈XX%)**
 
 [1-2 sentence explanation]
 
-[BLANK LINE]
-
 **Moderate — [Outcome] (≈XX%)**
 
 [1-2 sentence explanation]
-
-[BLANK LINE]
 
 **Less likely — [Outcome] (≈XX%)**
 
 [1-2 sentence explanation]
 
-[BLANK LINE]
+---
 
 **Key Milestones to Watch**
 
@@ -616,13 +604,13 @@ Start with 1-2 punchy sentences revealing the overall 30-day arc.
 
 • Day X: [Milestone]
 
-[BLANK LINE]
+---
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
 If below 60%, explain missing context with bullets on separate lines.
 
-[BLANK LINE]
+---
 
 **Deepen Your Insight**
 
@@ -633,7 +621,7 @@ If below 60%, explain missing context with bullets on separate lines.
 • [Question 3]
 
 **CRITICAL RULES:**
-- BLANK LINE between every section
+- Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 500 words
@@ -651,47 +639,37 @@ If below 60%, explain missing context with bullets on separate lines.
 
 Start with 1-2 punchy sentences revealing the overall 90-day arc.
 
-[BLANK LINE]
+---
 
 **Month 1 (Days 1-30) — [Phase Name]**
 
 [3-4 sentences about foundation and early signals]
 
-[BLANK LINE]
-
 **Month 2 (Days 31-60) — [Phase Name]**
 
 [3-4 sentences about momentum and turning points]
-
-[BLANK LINE]
 
 **Month 3 (Days 61-90) — [Phase Name]**
 
 [3-4 sentences about culmination and positioning]
 
-[BLANK LINE]
+---
 
 **Possible 90-Day Outcomes**
-
-[BLANK LINE]
 
 **Most likely — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
 
-[BLANK LINE]
-
 **Moderate — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
-
-[BLANK LINE]
 
 **Less likely — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
 
-[BLANK LINE]
+---
 
 **Critical Decision Points**
 
@@ -701,13 +679,13 @@ Start with 1-2 punchy sentences revealing the overall 90-day arc.
 
 • Around Day X: [Decision]
 
-[BLANK LINE]
+---
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
 If below 60%, explain missing context with bullets on separate lines.
 
-[BLANK LINE]
+---
 
 **Deepen Your Insight**
 
@@ -720,7 +698,7 @@ If below 60%, explain missing context with bullets on separate lines.
 • [Question 4]
 
 **CRITICAL RULES:**
-- BLANK LINE between every section
+- Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 600 words
@@ -738,53 +716,41 @@ If below 60%, explain missing context with bullets on separate lines.
 
 Start with 1-2 punchy sentences revealing the overall 12-month arc.
 
-[BLANK LINE]
+---
 
 **Q1 (Months 1-3) — [Phase Name]**
 
 [3-4 sentences about foundation and early momentum]
 
-[BLANK LINE]
-
 **Q2 (Months 4-6) — [Phase Name]**
 
 [3-4 sentences about growth and challenges]
-
-[BLANK LINE]
 
 **Q3 (Months 7-9) — [Phase Name]**
 
 [3-4 sentences about transformation]
 
-[BLANK LINE]
-
 **Q4 (Months 10-12) — [Phase Name]**
 
 [3-4 sentences about culmination]
 
-[BLANK LINE]
+---
 
 **Possible Year-End Outcomes**
-
-[BLANK LINE]
 
 **Most likely — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
 
-[BLANK LINE]
-
 **Moderate — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
-
-[BLANK LINE]
 
 **Less likely — [Outcome] (≈XX%)**
 
 [2-3 sentence explanation]
 
-[BLANK LINE]
+---
 
 **Major Turning Points**
 
@@ -796,13 +762,13 @@ Start with 1-2 punchy sentences revealing the overall 12-month arc.
 
 • Month X: [Milestone]
 
-[BLANK LINE]
+---
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
 If below 60%, explain missing context with bullets on separate lines.
 
-[BLANK LINE]
+---
 
 **Deepen Your Insight**
 
@@ -815,7 +781,7 @@ If below 60%, explain missing context with bullets on separate lines.
 • [Question 4]
 
 **CRITICAL RULES:**
-- BLANK LINE between every section
+- Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 700 words
@@ -846,29 +812,23 @@ Second analysis paragraph (1-2 sentences only).
 
 Third analysis paragraph (1-2 sentences only).
 
-[EMPTY LINE HERE]
+---
 
 **Possible Outcome Paths**
-
-[EMPTY LINE HERE]
 
 **Most likely — [Outcome] (≈XX%)**
 
 One sentence with specific indicators.
 
-[EMPTY LINE HERE]
-
 **Moderate — [Outcome] (≈XX%)**
 
 One sentence with specific indicators.
-
-[EMPTY LINE HERE]
 
 **Less likely — [Outcome] (≈XX%)**
 
 One sentence with specific indicators.
 
-[EMPTY LINE HERE]
+---
 
 **Key Indicators to Watch**
 
@@ -878,7 +838,7 @@ One sentence with specific indicators.
 
 • [Warning sign to monitor]
 
-[EMPTY LINE HERE]
+---
 
 **Prediction Accuracy: [USE EXACT SCORE FROM ACCURACY CONTEXT]**
 
@@ -890,7 +850,7 @@ This is a [low/moderate]-clarity reading because important context is missing:
 
 • [Missing factor 2]
 
-[EMPTY LINE HERE]
+---
 
 **Deepen Your Insight**
 
@@ -928,6 +888,14 @@ Your strategic eye for detail grants you the ability to foresee challenges. The 
 
 Embrace this phase of transition as a testing ground. Strategies aimed at securing long-term growth will serve you well.
 
+---
+
+**Possible Outcome Paths**
+
+**Most likely — Stability maintained (≈60%)**
+
+Your foresight and adaptability sustain your current path securely.
+
 **EXAMPLE OF WRONG FORMATTING (TOO DENSE):**
 
 The signal hints at subtle fluctuations near the surface that may stir the waters of your professional environment. Remember, Toronto's evolving market trends, coupled with global economic ripples, require vigilant observation for someone as financially astute as yourself. With self-employment's natural ebb and flow, the foundation you've built will provide shelter against transitory squalls.`;
@@ -953,29 +921,23 @@ First short paragraph (1-2 sentences only).
 
 Second short paragraph (1-2 sentences only).
 
-[EMPTY LINE HERE]
+---
 
 **Possible Outcome Paths**
-
-[EMPTY LINE HERE]
 
 **Most likely — [Brief outcome] (≈XX%)**
 
 One sentence only.
 
-[EMPTY LINE HERE]
-
 **Moderate — [Brief outcome] (≈XX%)**
 
 One sentence only.
-
-[EMPTY LINE HERE]
 
 **Less likely — [Brief outcome] (≈XX%)**
 
 One sentence only.
 
-[EMPTY LINE HERE]
+---
 
 **Prediction Accuracy: [USE EXACT SCORE FROM ACCURACY CONTEXT]**
 
@@ -987,7 +949,7 @@ This is a [low/moderate]-clarity reading because important context is missing:
 
 • [Missing factor 2]
 
-[EMPTY LINE HERE]
+---
 
 **Deepen Your Insight**
 
@@ -1022,6 +984,8 @@ Stability may soon be tested, but not lost. Lock into calculated maneuvers for r
 The signal hints at subtle fluctuations near the surface. Toronto's evolving market trends require vigilant observation.
 
 Your strategic eye for detail grants you the ability to foresee challenges. The foundation you've built will provide shelter.
+
+---
 
 **Possible Outcome Paths**
 

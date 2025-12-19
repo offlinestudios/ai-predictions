@@ -366,7 +366,14 @@
   display: block;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+}
+
+/* Horizontal rule styling for section dividers */
+.prediction-prose hr {
+  border: none;
+  border-top: 1px solid oklch(0.3 0.01 270);
+  margin: 2rem 0;
 }
 
 /* Ensure line breaks create visual separation */
