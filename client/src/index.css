@@ -362,7 +362,8 @@
 }
 
 /* Strong text that starts a line (like **Possible Outcome Paths**) should have spacing */
-.prediction-prose p > strong:first-child:only-child {
+.prediction-prose p > strong:first-child:only-child,
+.prediction-prose p > [data-streamdown="strong"]:first-child:only-child {
   display: block;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
@@ -383,9 +384,11 @@
   margin-top: 1.25rem;
 }
 
+/* Streamdown renders bold as <span data-streamdown="strong"> not <strong> */
+.prediction-prose [data-streamdown="strong"],
 .prediction-prose strong {
-  color: oklch(1 0 0); /* Pure white for maximum contrast */
-  font-weight: 700;
+  color: oklch(1 0 0) !important; /* Pure white for maximum contrast */
+  font-weight: 700 !important;
 }
 
 .prediction-prose em {

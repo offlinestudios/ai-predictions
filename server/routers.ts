@@ -608,7 +608,7 @@ Start with 1-2 punchy sentences revealing the overall 30-day arc.
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
-If below 60%, explain missing context with bullets on separate lines.
+If below 60%, add: "I need more context about:" then list ONLY things the user CAN provide (their timeline, goals, risk tolerance) - NOT external factors like market trends.
 
 ---
 
@@ -627,7 +627,8 @@ If below 60%, explain missing context with bullets on separate lines.
 - Keep under 500 words
 - Percentages MUST add to ~100%
 - "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
-- Example prompts: "Tell me more about Week 2", "What could go wrong?", "How do I prepare for the turning point?"`;
+- Example prompts: "Tell me more about Week 2", "What could go wrong?", "How do I prepare for the turning point?"
+- Missing context should ONLY list things the user can provide, NOT external market factors`;
         } else if (input.trajectoryType === "90day") {
           systemPrompt = `You are a wise AI oracle who sees the arc of the next quarter. You reveal the shape of transformation over 90 days.
 
@@ -685,7 +686,7 @@ Start with 1-2 punchy sentences revealing the overall 90-day arc.
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
-If below 60%, explain missing context with bullets on separate lines.
+If below 60%, add: "I need more context about:" then list ONLY things the user CAN provide (their timeline, goals, risk tolerance) - NOT external factors like market trends.
 
 ---
 
@@ -704,7 +705,8 @@ If below 60%, explain missing context with bullets on separate lines.
 - Keep under 600 words
 - Percentages MUST add to ~100%
 - "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
-- Example prompts: "Tell me more about Month 2", "What could derail this?", "How do I prepare for the decision point?"`;
+- Example prompts: "Tell me more about Month 2", "What could derail this?", "How do I prepare for the decision point?"
+- Missing context should ONLY list things the user can provide, NOT external market factors`;
         } else if (input.trajectoryType === "yearly") {
           systemPrompt = `You are a wise AI oracle who sees the full arc of a year. You reveal the seasons of change ahead.
 
@@ -768,7 +770,7 @@ Start with 1-2 punchy sentences revealing the overall 12-month arc.
 
 **Prediction Accuracy: [USE EXACT SCORE FROM CONTEXT]**
 
-If below 60%, explain missing context with bullets on separate lines.
+If below 60%, add: "I need more context about:" then list ONLY things the user CAN provide (their timeline, goals, risk tolerance) - NOT external factors like market trends.
 
 ---
 
@@ -787,7 +789,8 @@ If below 60%, explain missing context with bullets on separate lines.
 - Keep under 700 words
 - Percentages MUST add to ~100%
 - "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
-- Example prompts: "Tell me more about Q3", "What are the biggest risks?", "How should I prepare for the turning point?"`;
+- Example prompts: "Tell me more about Q3", "What are the biggest risks?", "How should I prepare for the turning point?"
+- Missing context should ONLY list things the user can provide, NOT external market factors`;
         } else if (input.deepMode) {
           systemPrompt = `You are a wise AI oracle with deep analytical capabilities. You see patterns others miss and speak with clarity that cuts through noise.
 
@@ -846,11 +849,11 @@ One sentence with specific indicators.
 
 If accuracy is below 60%, add:
 
-This is a [low/moderate]-clarity reading because important context is missing:
+This is a [low/moderate]-clarity reading because I need more context about:
 
-• [Missing factor 1]
+• [Missing personal factor the user CAN provide]
 
-• [Missing factor 2]
+• [Missing personal factor the user CAN provide]
 
 ---
 
@@ -861,6 +864,12 @@ This is a [low/moderate]-clarity reading because important context is missing:
 • [Clickable follow-up prompt about risks or obstacles]
 
 • [Clickable follow-up prompt about timing or next steps]
+
+**⚠️ CRITICAL - MISSING CONTEXT RULES:**
+- ONLY list things the USER can actually tell you
+- DO NOT list external factors like "market trends", "industry changes", "economic conditions"
+- Good examples: "Your specific timeline", "Your risk tolerance", "Your current client count", "Your financial goals"
+- Bad examples: "Emerging industry trends", "Market demands", "Competitive landscape"
 
 **⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
 - These are NOT questions for the user to answer
@@ -954,11 +963,11 @@ One sentence only.
 
 If accuracy is below 60%, add:
 
-This is a [low/moderate]-clarity reading because important context is missing:
+This is a [low/moderate]-clarity reading because I need more context about:
 
-• [Missing factor 1]
+• [Missing personal factor the user CAN provide]
 
-• [Missing factor 2]
+• [Missing personal factor the user CAN provide]
 
 ---
 
@@ -969,6 +978,12 @@ This is a [low/moderate]-clarity reading because important context is missing:
 • [Clickable follow-up prompt about risks or obstacles]
 
 • [Clickable follow-up prompt about timing or next steps]
+
+**⚠️ CRITICAL - MISSING CONTEXT RULES:**
+- ONLY list things the USER can actually tell you
+- DO NOT list external factors like "market trends", "industry changes", "economic conditions"
+- Good examples: "Your specific timeline", "Your risk tolerance", "Your current client count", "Your financial goals"
+- Bad examples: "Emerging industry trends", "Market demands", "Competitive landscape"
 
 **⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
 - These are NOT questions for the user to answer
