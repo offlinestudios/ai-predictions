@@ -102,6 +102,15 @@ export default function PsycheProfileCard() {
             <CardTitle className="flex items-center gap-2">
               {profile.displayName}
             </CardTitle>
+            {/* Rarity Badge - Below personality type name */}
+            {metadata && (
+              <div className="mt-2">
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 cursor-default">
+                  <Star className="w-3 h-3 mr-1" />
+                  {metadata.rarityLabel} • Only {metadata.rarity}% of users
+                </Badge>
+              </div>
+            )}
           </div>
           
           {/* Share Button - Updated to Upload icon */}
@@ -139,22 +148,6 @@ export default function PsycheProfileCard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
-            {/* Rarity Info - Moved here with better visual design */}
-            {metadata && (
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">{metadata.rarityLabel}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Only {metadata.rarity}% of users</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Bar Chart for all screen sizes */}
             {profile.parameters && (
               <PersonalityBars 
