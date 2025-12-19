@@ -7,13 +7,17 @@ import {
   Sparkles, 
   Brain, 
   Loader2, 
-  Share2, 
+  Upload,
   ChevronRight,
   Users,
   Lightbulb,
   Target,
   TrendingUp,
-  Zap
+  Zap,
+  Check,
+  AlertTriangle,
+  Star,
+  BarChart3
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
@@ -94,39 +98,17 @@ export default function PsycheProfileCard() {
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            {/* Icon */}
-            <div 
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-              style={{ backgroundColor: `${metadata?.color || '#8b5cf6'}20` }}
-            >
-              {metadata?.icon || '✨'}
-            </div>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                {profile.displayName}
-              </CardTitle>
-              {/* Rarity Badge */}
-              {metadata && (
-                <Badge 
-                  variant="outline" 
-                  className="mt-1 text-xs"
-                  style={{ 
-                    borderColor: metadata.color,
-                    color: metadata.color
-                  }}
-                >
-                  {metadata.rarityLabel} • Only {metadata.rarity}% of users
-                </Badge>
-              )}
-            </div>
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              {profile.displayName}
+            </CardTitle>
           </div>
           
-          {/* Share Button */}
+          {/* Share Button - Updated to Upload icon */}
           <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon" className="shrink-0">
-                <Share2 className="w-4 h-4" />
+                <Upload className="w-4 h-4" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -157,6 +139,22 @@ export default function PsycheProfileCard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
+            {/* Rarity Info - Moved here with better visual design */}
+            {metadata && (
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">{metadata.rarityLabel}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Only {metadata.rarity}% of users</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Bar Chart for all screen sizes */}
             {profile.parameters && (
               <PersonalityBars 
@@ -226,7 +224,7 @@ export default function PsycheProfileCard() {
             {metadata?.predictionInsight && (
               <div className="p-4 rounded-xl bg-muted/50 border border-border">
                 <h4 className="font-semibold mb-2 text-sm uppercase tracking-wide flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-yellow-500" />
+                  <Lightbulb className="w-4 h-4 text-primary" />
                   Prediction Insight
                 </h4>
                 <p className="text-sm text-muted-foreground">{metadata.predictionInsight}</p>
@@ -247,14 +245,14 @@ export default function PsycheProfileCard() {
             {/* Growth Edge */}
             <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
               <h4 className="font-semibold mb-2 text-sm uppercase tracking-wide flex items-center gap-2">
-                <img src="/logo.svg" alt="" className="w-4 h-4" />
+                <TrendingUp className="w-4 h-4 text-primary" />
                 Your Growth Edge
               </h4>
               <p className="text-sm text-muted-foreground">{profile.growthEdge}</p>
             </div>
           </TabsContent>
 
-          {/* Compatibility Tab */}
+          {/* Compatibility Tab - Updated to purple color scheme */}
           <TabsContent value="compatibility" className="space-y-4">
             {/* Famous Examples */}
             {metadata?.famousExamples && (
@@ -273,7 +271,7 @@ export default function PsycheProfileCard() {
               </div>
             )}
 
-            {/* Compatible Types */}
+            {/* Compatible Types - Purple color scheme with Lucide icons */}
             {metadata?.compatibleWith && (
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">
@@ -283,9 +281,9 @@ export default function PsycheProfileCard() {
                   {getCompatibleTypes(metadata.compatibleWith).map((type, index) => (
                     <div 
                       key={index}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-primary/10 border border-primary/20"
                     >
-                      <span className="text-green-500">✓</span>
+                      <Check className="w-4 h-4 text-primary" />
                       <span className="text-sm">{type}</span>
                     </div>
                   ))}
@@ -293,7 +291,7 @@ export default function PsycheProfileCard() {
               </div>
             )}
 
-            {/* Tension Types */}
+            {/* Tension Types - Purple color scheme with Lucide icons */}
             {metadata?.tensionWith && (
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">
@@ -303,9 +301,9 @@ export default function PsycheProfileCard() {
                   {getCompatibleTypes(metadata.tensionWith).map((type, index) => (
                     <div 
                       key={index}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10 border border-orange-500/20"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10"
                     >
-                      <span className="text-orange-500">⚡</span>
+                      <AlertTriangle className="w-4 h-4 text-primary/70" />
                       <span className="text-sm">{type}</span>
                     </div>
                   ))}
@@ -324,7 +322,7 @@ export default function PsycheProfileCard() {
                 variant="outline"
                 onClick={() => setShowShareModal(true)}
               >
-                <Share2 className="w-4 h-4 mr-2" />
+                <Upload className="w-4 h-4 mr-2" />
                 Share to Compare
               </Button>
             </div>

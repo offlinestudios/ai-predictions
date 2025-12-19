@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
-  Share2, 
+  Upload, 
   Download, 
   Twitter, 
   Linkedin, 
@@ -260,7 +260,7 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
           onClick={handleNativeShare}
           className="flex-1 min-w-[100px]"
         >
-          <Share2 className="w-4 h-4 mr-2" />
+          <Upload className="w-4 h-4 mr-2" />
           Share
         </Button>
         

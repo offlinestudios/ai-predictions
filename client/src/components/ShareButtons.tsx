@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Share2, Copy, Check } from "lucide-react";
+import { Upload, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -57,7 +57,7 @@ export default function ShareButtons({ shareToken, predictionText, category }: S
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm text-muted-foreground flex items-center gap-1">
-        <Share2 className="w-4 h-4" />
+        <Upload className="w-4 h-4" />
         Share:
       </span>
       

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ShareModal } from "@/components/ShareModal";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Share2, Trash2, Check, X } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Upload, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -371,7 +371,7 @@ export default function UnifiedSidebar({
                               >
                                 {/* Share - opens modal */}
                                 <DropdownMenuItem onSelect={() => handleOpenShareModal(pred)}>
-                                  <Share2 className="w-4 h-4 mr-2" />
+                                  <Upload className="w-4 h-4 mr-2" />
                                   Share
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={() => handleStartRename(pred)}>

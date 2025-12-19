@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown, Share2, Copy, RefreshCw, MoreHorizontal } from "lucide-react";
+import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown, Upload, Copy, RefreshCw, MoreHorizontal } from "lucide-react";
 import { Streamdown } from "streamdown";
 import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
@@ -141,7 +141,7 @@ export default function PredictionThread({ messages, onRefineRequest, onFeedback
                         onClick={() => setShareModalOpen(true)}
                         title="Share prediction"
                       >
-                        <Share2 className="w-4 h-4" />
+                        <Upload className="w-4 h-4" />
                       </Button>
                       {onRegenerate && (
                         <Button
