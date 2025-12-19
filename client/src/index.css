@@ -341,7 +341,7 @@
 .prediction-prose p {
   font-size: 0.95rem;
   line-height: 1.7;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: oklch(0.85 0.01 270);
 }
 
@@ -351,6 +351,20 @@
 
 /* Ensure proper spacing between sections */
 .prediction-prose > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Add extra spacing after headers */
+.prediction-prose h3 + p,
+.prediction-prose h4 + p,
+.prediction-prose strong + p {
+  margin-top: 0.5rem;
+}
+
+/* Ensure line breaks create visual separation */
+.prediction-prose br {
+  display: block;
+  content: "";
   margin-top: 1rem;
 }
 
