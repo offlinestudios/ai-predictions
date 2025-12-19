@@ -384,8 +384,8 @@
 }
 
 .prediction-prose strong {
-  color: oklch(0.95 0.01 270);
-  font-weight: 600;
+  color: oklch(1 0 0); /* Pure white for maximum contrast */
+  font-weight: 700;
 }
 
 .prediction-prose em {

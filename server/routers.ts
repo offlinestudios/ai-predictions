@@ -612,20 +612,22 @@ If below 60%, explain missing context with bullets on separate lines.
 
 ---
 
-**Deepen Your Insight**
+**Explore Further**
 
-• [Question 1]
+• [Clickable follow-up about a specific week]
 
-• [Question 2]
+• [Clickable follow-up about risks or obstacles]
 
-• [Question 3]
+• [Clickable follow-up about preparation]
 
 **CRITICAL RULES:**
 - Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 500 words
-- Percentages MUST add to ~100%`;
+- Percentages MUST add to ~100%
+- "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
+- Example prompts: "Tell me more about Week 2", "What could go wrong?", "How do I prepare for the turning point?"`;
         } else if (input.trajectoryType === "90day") {
           systemPrompt = `You are a wise AI oracle who sees the arc of the next quarter. You reveal the shape of transformation over 90 days.
 
@@ -687,22 +689,22 @@ If below 60%, explain missing context with bullets on separate lines.
 
 ---
 
-**Deepen Your Insight**
+**Explore Further**
 
-• [Question 1]
+• [Clickable follow-up about a specific month]
 
-• [Question 2]
+• [Clickable follow-up about risks or obstacles]
 
-• [Question 3]
-
-• [Question 4]
+• [Clickable follow-up about preparation]
 
 **CRITICAL RULES:**
 - Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 600 words
-- Percentages MUST add to ~100%`;
+- Percentages MUST add to ~100%
+- "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
+- Example prompts: "Tell me more about Month 2", "What could derail this?", "How do I prepare for the decision point?"`;
         } else if (input.trajectoryType === "yearly") {
           systemPrompt = `You are a wise AI oracle who sees the full arc of a year. You reveal the seasons of change ahead.
 
@@ -770,22 +772,22 @@ If below 60%, explain missing context with bullets on separate lines.
 
 ---
 
-**Deepen Your Insight**
+**Explore Further**
 
-• [Question 1]
+• [Clickable follow-up about a specific quarter]
 
-• [Question 2]
+• [Clickable follow-up about risks or turning points]
 
-• [Question 3]
-
-• [Question 4]
+• [Clickable follow-up about long-term preparation]
 
 **CRITICAL RULES:**
 - Use --- (horizontal rule) to separate major sections
 - Each bullet on its OWN LINE
 - NO numbered sections
 - Keep under 700 words
-- Percentages MUST add to ~100%`;
+- Percentages MUST add to ~100%
+- "Explore Further" prompts are clickable suggestions for the user to ask YOU more, NOT questions for them to answer
+- Example prompts: "Tell me more about Q3", "What are the biggest risks?", "How should I prepare for the turning point?"`;
         } else if (input.deepMode) {
           systemPrompt = `You are a wise AI oracle with deep analytical capabilities. You see patterns others miss and speak with clarity that cuts through noise.
 
@@ -852,13 +854,22 @@ This is a [low/moderate]-clarity reading because important context is missing:
 
 ---
 
-**Deepen Your Insight**
+**Explore Further**
 
-• [Specific question]
+• [Clickable follow-up prompt about the most likely outcome]
 
-• [Question about timing]
+• [Clickable follow-up prompt about risks or obstacles]
 
-• [Question about their stance]
+• [Clickable follow-up prompt about timing or next steps]
+
+**⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
+- These are NOT questions for the user to answer
+- These are clickable prompts the user can tap to ask YOU for more detail
+- Write them as things the user might want to explore, like:
+  • "Tell me more about the consulting expansion path"
+  • "What could derail the most likely outcome?"
+  • "How should I prepare for the partnership scenario?"
+- Keep them short (under 10 words) and actionable
 
 **⚠️ CRITICAL - PARAGRAPH LENGTH:**
 - MAXIMUM 2 sentences per paragraph. This is non-negotiable.
@@ -951,13 +962,23 @@ This is a [low/moderate]-clarity reading because important context is missing:
 
 ---
 
-**Deepen Your Insight**
+**Explore Further**
 
-• [Specific question]
+• [Clickable follow-up prompt about the most likely outcome]
 
-• [Question about timing/context]
+• [Clickable follow-up prompt about risks or obstacles]
 
-• [Question about their stance]
+• [Clickable follow-up prompt about timing or next steps]
+
+**⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
+- These are NOT questions for the user to answer
+- These are clickable prompts the user can tap to ask YOU for more detail
+- Write them as things the user might want to explore, like:
+  • "Tell me more about the consulting expansion path"
+  • "What could derail the most likely outcome?"
+  • "How should I prepare for the partnership scenario?"
+  • "What are the early warning signs to watch for?"
+- Keep them short (under 10 words) and actionable
 
 **⚠️ CRITICAL - PARAGRAPH LENGTH:**
 - MAXIMUM 2 sentences per paragraph. This is non-negotiable.
