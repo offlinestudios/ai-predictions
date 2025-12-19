@@ -10,6 +10,7 @@ import ShareButtons from "@/components/ShareButtons";
 import TypingIndicator from "@/components/TypingIndicator";
 import { ShareModal } from "@/components/ShareModal";
 import ImproveAccuracyCard from "@/components/ImproveAccuracyCard";
+import { FollowUpQuestion } from "@/components/FollowUpQuestion";
 
 interface Message {
   id: string;
@@ -24,6 +25,11 @@ interface Message {
   predictionId?: number;
   shareToken?: string | null;
   userInput?: string;
+  questionType?: "oracle" | "decision" | "timeline" | "quick" | "compatibility" | "risk";
+  followUpQuestion?: {
+    question: string;
+    options: string[];
+  } | null;
 }
 
 interface PredictionThreadProps {
@@ -32,6 +38,8 @@ interface PredictionThreadProps {
   onFeedback?: (messageId: string, helpful: boolean) => void;
   onRegenerate?: (messageId: string) => void;
   onProfileUpdated?: () => void;
+  onFollowUpSelect?: (option: string, originalQuestion: string) => void;
+  isGenerating?: boolean;
   currentPrediction?: {
     id: number;
     userInput: string;
@@ -46,6 +54,8 @@ export default function PredictionThread({
   onFeedback, 
   onRegenerate, 
   onProfileUpdated,
+  onFollowUpSelect,
+  isGenerating,
   currentPrediction 
 }: PredictionThreadProps) {
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -61,7 +71,7 @@ export default function PredictionThread({
 
   return (
     <div className="space-y-4 pb-4">
-      {messages.map((message) => {
+      {messages.map((message, index) => {
         if (message.type === "user") {
           return (
             <div key={message.id} className="flex justify-end">
@@ -120,6 +130,19 @@ export default function PredictionThread({
                         />
                       )}
                     </div>
+                  )}
+
+                  {/* Follow-up Question - Show for the last assistant message when not generating */}
+                  {message.followUpQuestion && 
+                   index === messages.length - 1 && 
+                   !isGenerating && 
+                   onFollowUpSelect && (
+                    <FollowUpQuestion
+                      question={message.followUpQuestion.question}
+                      options={message.followUpQuestion.options}
+                      onOptionSelect={(option) => onFollowUpSelect(option, message.userInput || "")}
+                      isLoading={isGenerating}
+                    />
                   )}
 
                   {/* Feedback & Share */}

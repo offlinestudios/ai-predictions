@@ -30,6 +30,14 @@ interface Message {
     label: "High" | "Moderate" | "Low";
   };
   missingFactors?: string[];
+  predictionId?: number;
+  shareToken?: string | null;
+  userInput?: string;
+  questionType?: "oracle" | "decision" | "timeline" | "quick" | "compatibility" | "risk";
+  followUpQuestion?: {
+    question: string;
+    options: string[];
+  } | null;
 }
 
 export default function DashboardChat() {
@@ -75,7 +83,6 @@ export default function DashboardChat() {
         id: `msg-${Date.now()}-assistant`,
         type: "assistant",
         content: data.prediction,
-
         timestamp: new Date(),
         // Accuracy score calculated based on profile completeness and question specificity
         accuracy: {
@@ -83,6 +90,11 @@ export default function DashboardChat() {
           label: (data.confidenceScore ?? 50) >= 75 ? "High" : (data.confidenceScore ?? 50) >= 50 ? "Moderate" : "Low",
         },
         missingFactors: data.missingFactors || [],
+        predictionId: data.id,
+        shareToken: data.shareToken,
+        userInput: variables.userInput,
+        questionType: data.questionType,
+        followUpQuestion: data.followUpQuestion,
       };
       
       setMessages(prev => [...prev, assistantMessage]);
@@ -227,6 +239,24 @@ export default function DashboardChat() {
     // Optionally show a toast or update UI to indicate profile was updated
   };
 
+  // Handle follow-up question selection
+  const handleFollowUpSelect = (option: string, originalQuestion: string) => {
+    // Create a follow-up message that includes the user's answer
+    const followUpMessage = `Based on my previous question about "${originalQuestion}", here's more context: ${option}`;
+    
+    // Add user message for the follow-up
+    const userMessage: Message = {
+      id: `msg-${Date.now()}-user`,
+      type: "user",
+      content: option,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Submit as a follow-up prediction
+    handleSubmit(followUpMessage, [], false, "instant");
+  };
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -274,6 +304,8 @@ export default function DashboardChat() {
               onRefineRequest={handleRefineRequest}
               onFeedback={handleFeedback}
               onProfileUpdated={handleProfileUpdated}
+              onFollowUpSelect={handleFollowUpSelect}
+              isGenerating={isGenerating}
               currentPrediction={currentPrediction}
             />
             <div ref={messagesEndRef} />

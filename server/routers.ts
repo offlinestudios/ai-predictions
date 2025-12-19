@@ -34,6 +34,396 @@ import { STRIPE_PRODUCTS } from "./products";
 import { sendWelcomeEmail } from "./email";
 import { calculateAccuracy, formatAccuracyForPrompt } from "./lib/accuracyCalculator";
 
+// Question type detection for layout selection
+type QuestionType = "oracle" | "decision" | "timeline" | "quick" | "compatibility" | "risk";
+
+function detectQuestionType(question: string): QuestionType {
+  const q = question.toLowerCase();
+  
+  // Decision questions - either/or choices
+  if (
+    q.includes(" or ") ||
+    q.includes("should i") ||
+    q.includes("which one") ||
+    q.includes("better to") ||
+    q.includes("choose between")
+  ) {
+    return "decision";
+  }
+  
+  // Timeline questions - when/timing focused
+  if (
+    q.includes("when will") ||
+    q.includes("how long") ||
+    q.includes("what time") ||
+    q.includes("by when") ||
+    q.includes("how soon")
+  ) {
+    return "timeline";
+  }
+  
+  // Quick yes/no questions
+  if (
+    q.startsWith("will ") ||
+    q.startsWith("is ") ||
+    q.startsWith("are ") ||
+    q.startsWith("does ") ||
+    q.startsWith("do ") ||
+    q.startsWith("can ") ||
+    q.startsWith("am i ")
+  ) {
+    return "quick";
+  }
+  
+  // Compatibility questions - relationships
+  if (
+    q.includes("compatible") ||
+    q.includes("meant to be") ||
+    q.includes("right for me") ||
+    q.includes("good match") ||
+    q.includes("soulmate")
+  ) {
+    return "compatibility";
+  }
+  
+  // Risk assessment questions
+  if (
+    q.includes("safe") ||
+    q.includes("risky") ||
+    q.includes("danger") ||
+    q.includes("risk") ||
+    q.includes("worth it")
+  ) {
+    return "risk";
+  }
+  
+  // Default to oracle reading for open-ended questions
+  return "oracle";
+}
+
+// Generate a follow-up question with tappable options based on context
+interface FollowUpQuestion {
+  question: string;
+  options: string[];
+}
+
+function generateFollowUpQuestion(
+  userQuestion: string,
+  questionType: QuestionType,
+  missingFactors: string[],
+  category: string
+): FollowUpQuestion | null {
+  const q = userQuestion.toLowerCase();
+  
+  // Career-related follow-ups
+  if (category === "career" || q.includes("job") || q.includes("career") || q.includes("work") || q.includes("boss") || q.includes("promotion")) {
+    if (q.includes("boss") || q.includes("manager") || q.includes("coworker")) {
+      return {
+        question: "Do you have allies at work who support you?",
+        options: ["Yes, a few trusted ones", "No, I'm mostly alone", "It's complicated"]
+      };
+    }
+    if (q.includes("promotion") || q.includes("raise") || q.includes("advance")) {
+      return {
+        question: "How long have you been in your current role?",
+        options: ["Less than 1 year", "1-3 years", "3+ years"]
+      };
+    }
+    if (q.includes("quit") || q.includes("leave") || q.includes("new job")) {
+      return {
+        question: "Do you have savings to cover 3+ months without income?",
+        options: ["Yes, I'm prepared", "Partially", "No, not yet"]
+      };
+    }
+    return {
+      question: "What's your main career goal right now?",
+      options: ["Growth & promotion", "Better work-life balance", "Higher income", "New direction entirely"]
+    };
+  }
+  
+  // Love/relationship follow-ups
+  if (category === "love" || q.includes("love") || q.includes("relationship") || q.includes("partner") || q.includes("dating") || q.includes("ex") || q.includes("she") || q.includes("he")) {
+    if (q.includes("ex") || q.includes("come back") || q.includes("return")) {
+      return {
+        question: "How did the relationship end?",
+        options: ["Mutual decision", "They ended it", "I ended it", "It just faded"]
+      };
+    }
+    if (q.includes("single") || q.includes("find love") || q.includes("meet someone")) {
+      return {
+        question: "Are you actively dating or open to meeting people?",
+        options: ["Yes, actively looking", "Open but not trying hard", "Taking a break"]
+      };
+    }
+    return {
+      question: "What matters most to you in a relationship?",
+      options: ["Deep emotional connection", "Stability & security", "Passion & excitement", "Shared goals & values"]
+    };
+  }
+  
+  // Finance follow-ups
+  if (category === "finance" || q.includes("money") || q.includes("invest") || q.includes("financial") || q.includes("income") || q.includes("debt")) {
+    if (q.includes("invest") || q.includes("stock") || q.includes("crypto")) {
+      return {
+        question: "What's your risk tolerance for investments?",
+        options: ["Conservative - safety first", "Moderate - balanced approach", "Aggressive - high risk, high reward"]
+      };
+    }
+    return {
+      question: "What's your primary financial goal?",
+      options: ["Build emergency savings", "Pay off debt", "Grow investments", "Increase income"]
+    };
+  }
+  
+  // Health follow-ups
+  if (category === "health" || q.includes("health") || q.includes("weight") || q.includes("exercise") || q.includes("sick")) {
+    return {
+      question: "What's your current approach to health?",
+      options: ["Very active & disciplined", "Trying to improve", "Struggling to stay consistent", "Just starting out"]
+    };
+  }
+  
+  // Decision-type questions
+  if (questionType === "decision") {
+    return {
+      question: "What's holding you back from deciding?",
+      options: ["Fear of making the wrong choice", "Need more information", "Waiting for the right timing", "Others' opinions"]
+    };
+  }
+  
+  // Timeline questions
+  if (questionType === "timeline") {
+    return {
+      question: "How patient are you willing to be?",
+      options: ["I need this soon", "A few months is okay", "I can wait a year+", "However long it takes"]
+    };
+  }
+  
+  // Default general follow-up
+  return {
+    question: "What outcome would make you happiest?",
+    options: ["Things work out as I hope", "Clarity on what to do next", "Peace of mind either way", "A surprising positive turn"]
+  };
+}
+
+// Get layout-specific instructions based on question type
+function getLayoutInstructions(questionType: QuestionType): string {
+  switch (questionType) {
+    case "decision":
+      return `
+
+**📊 LAYOUT: DECISION MATRIX**
+This is a decision question. Use this special format:
+
+1. Start with a brief oracle insight (1-2 sentences)
+2. Then present a comparison of the two options:
+
+---
+
+**Option A: [First Choice]**
+
+*Strengths:* [2-3 bullet points]
+
+*Risks:* [2-3 bullet points]
+
+*Best if:* [One sentence describing ideal scenario]
+
+**Option B: [Second Choice]**
+
+*Strengths:* [2-3 bullet points]
+
+*Risks:* [2-3 bullet points]
+
+*Best if:* [One sentence describing ideal scenario]
+
+---
+
+**The Signal Points To:** [Your recommendation with brief reasoning]
+
+---
+
+**Prediction Accuracy: [X]% ([Label])**
+[Brief explanation of what context is missing]
+
+---
+
+**Explore Further**
+• [Follow-up suggestion 1]
+• [Follow-up suggestion 2]
+• [Follow-up suggestion 3]
+`;
+
+    case "timeline":
+      return `
+
+**📅 LAYOUT: TIMELINE VIEW**
+This is a timing/when question. Use this special format:
+
+1. Start with a brief oracle insight about timing (1-2 sentences)
+2. Then present a timeline:
+
+---
+
+**Timeline Forecast**
+
+**Near Term (1-3 months):** [What to expect]
+
+**Medium Term (3-6 months):** [What to expect]
+
+**Longer Horizon (6-12 months):** [What to expect]
+
+---
+
+**Key Timing Factors**
+• [Factor 1 that affects timing]
+• [Factor 2 that affects timing]
+• [Factor 3 that affects timing]
+
+---
+
+**The Signal Points To:** [Your timing prediction]
+
+---
+
+**Prediction Accuracy: [X]% ([Label])**
+[Brief explanation of what context is missing]
+
+---
+
+**Explore Further**
+• [Follow-up suggestion 1]
+• [Follow-up suggestion 2]
+• [Follow-up suggestion 3]
+`;
+
+    case "quick":
+      return `
+
+**⚡ LAYOUT: QUICK ANSWER**
+This is a yes/no style question. Use this concise format:
+
+1. Start with a direct, bold answer:
+
+**The Short Answer:** [Yes/No/Likely/Unlikely] — [One sentence explanation]
+
+2. Then provide brief context:
+
+[2-3 short paragraphs explaining the reasoning]
+
+---
+
+**Confidence Level**
+• Likelihood: [High/Moderate/Low]
+• Key Factor: [The main thing that determines this]
+
+---
+
+**Prediction Accuracy: [X]% ([Label])**
+[Brief explanation of what context is missing]
+
+---
+
+**Explore Further**
+• [Follow-up suggestion 1]
+• [Follow-up suggestion 2]
+• [Follow-up suggestion 3]
+`;
+
+    case "compatibility":
+      return `
+
+**💫 LAYOUT: COMPATIBILITY READING**
+This is a compatibility/relationship question. Use this format:
+
+1. Start with an oracle insight about the connection (1-2 sentences)
+
+---
+
+**Compatibility Assessment**
+
+**Emotional Connection:** [★★★★☆] [Brief description]
+
+**Values Alignment:** [★★★☆☆] [Brief description]
+
+**Long-term Potential:** [★★★★☆] [Brief description]
+
+**Growth Together:** [★★★☆☆] [Brief description]
+
+---
+
+**The Dynamic**
+[2-3 paragraphs about how these energies interact]
+
+---
+
+**The Signal Points To:** [Overall compatibility assessment]
+
+---
+
+**Prediction Accuracy: [X]% ([Label])**
+[Brief explanation of what context is missing]
+
+---
+
+**Explore Further**
+• [Follow-up suggestion 1]
+• [Follow-up suggestion 2]
+• [Follow-up suggestion 3]
+`;
+
+    case "risk":
+      return `
+
+**⚠️ LAYOUT: RISK ASSESSMENT**
+This is a risk/safety question. Use this format:
+
+1. Start with an oracle insight about the risk (1-2 sentences)
+
+---
+
+**Risk Analysis**
+
+**Overall Risk Level:** [🟢 Low / 🟡 Moderate / 🔴 High]
+
+**Potential Upsides:**
+• [Upside 1]
+• [Upside 2]
+• [Upside 3]
+
+**Potential Downsides:**
+• [Downside 1]
+• [Downside 2]
+• [Downside 3]
+
+**Mitigation Strategies:**
+• [Strategy 1]
+• [Strategy 2]
+
+---
+
+**The Signal Points To:** [Your risk assessment and recommendation]
+
+---
+
+**Prediction Accuracy: [X]% ([Label])**
+[Brief explanation of what context is missing]
+
+---
+
+**Explore Further**
+• [Follow-up suggestion 1]
+• [Follow-up suggestion 2]
+• [Follow-up suggestion 3]
+`;
+
+    case "oracle":
+    default:
+      // Default oracle layout - no additional instructions needed
+      // The base prompt already handles this format
+      return "";
+  }
+}
+
 export const appRouter = router({
   system: systemRouter,
   admin: adminRouter,
@@ -1245,6 +1635,10 @@ The signal hints at subtle fluctuations near the surface that may stir the water
         // Add accuracy context to the prompt
         systemPrompt += formatAccuracyForPrompt(accuracyResult);
         
+        // Add layout-specific instructions based on question type
+        const questionType = detectQuestionType(input.userInput);
+        systemPrompt += getLayoutInstructions(questionType);
+        
         // Build user message with text and file attachments
         type MessageContent = 
           | { type: "text"; text: string } 
@@ -1324,6 +1718,15 @@ The signal hints at subtle fluctuations near the surface that may stir the water
           }
         }
 
+        // Generate follow-up question based on missing context and question type
+        // (questionType was already detected earlier for layout instructions)
+        const followUpQuestion = generateFollowUpQuestion(
+          input.userInput,
+          questionType,
+          accuracyResult.missingFactors,
+          input.category || "general"
+        );
+        
         return {
           prediction: predictionResult,
           predictionId: newPrediction.id,
@@ -1335,6 +1738,8 @@ The signal hints at subtle fluctuations near the surface that may stir the water
           isFollowUp: !!input.parentPredictionId, // Flag to indicate if this was a follow-up
           missingFactors: accuracyResult.missingFactors, // Missing profile fields for improvement prompts
           improvementSuggestions: accuracyResult.improvementSuggestions, // Suggestions for improving accuracy
+          questionType, // Type of question for layout selection
+          followUpQuestion, // Single follow-up question with tappable options
         };
       }),
 
