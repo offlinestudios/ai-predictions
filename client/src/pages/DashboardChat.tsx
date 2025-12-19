@@ -7,6 +7,7 @@ import { useLocation } from "wouter";
 import { toast } from "sonner";
 import ChatComposer from "@/components/ChatComposer";
 import PredictionThread from "@/components/PredictionThread";
+import { ClarificationQuestion } from "@/components/ClarificationQuestion";
 import MobileHeader from "@/components/MobileHeader";
 
 import PredictionHistorySidebar from "@/components/PredictionHistorySidebar";
@@ -59,6 +60,15 @@ export default function DashboardChat() {
   } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  
+  // Clarification state for ambiguous questions
+  const [pendingClarification, setPendingClarification] = useState<{
+    originalQuestion: string;
+    question: string;
+    options: { label: string; icon: string; contextToAdd: string }[];
+    deepMode: boolean;
+    trajectoryType: string;
+  } | null>(null);
 
   // Set initial sidebar state - closed by default on mobile
   useEffect(() => {
@@ -70,6 +80,40 @@ export default function DashboardChat() {
   // Fetch subscription data
   const { data: subscription, refetch: refetchSubscription } = trpc.subscription.getCurrent.useQuery(undefined, {
     enabled: isAuthenticated,
+  });
+
+  // Analyze question for ambiguity
+  const analyzeQuestionMutation = trpc.prediction.analyzeQuestion.useMutation({
+    onSuccess: (data, variables) => {
+      if (data.isAmbiguous && data.clarification) {
+        // Question is ambiguous - show clarification UI
+        setIsGenerating(false);
+        // Remove loading message
+        setMessages(prev => prev.filter(m => m.type !== "system"));
+        
+        // Store pending clarification
+        setPendingClarification({
+          originalQuestion: variables.userInput,
+          question: data.clarification.question,
+          options: data.clarification.options,
+          deepMode: (variables as any).deepMode || false,
+          trajectoryType: (variables as any).trajectoryType || "instant",
+        });
+      } else {
+        // Question is clear - proceed with prediction generation
+        generateMutation.mutate({
+          userInput: variables.userInput,
+          category: data.detectedDomain as any || "general",
+          deepMode: (variables as any).deepMode || false,
+          trajectoryType: ((variables as any).trajectoryType || "instant") as "instant" | "30day" | "90day" | "yearly",
+          parentPredictionId: currentPredictionId || undefined,
+        });
+      }
+    },
+    onError: (error) => {
+      // If analysis fails, proceed with generation anyway
+      console.error("Analysis failed, proceeding with generation:", error);
+    }
   });
 
   // Generate prediction mutation
@@ -163,18 +207,32 @@ export default function DashboardChat() {
     setMessages(prev => [...prev, loadingMessage]);
 
     setIsGenerating(true);
+    
+    // Clear any pending clarification
+    setPendingClarification(null);
 
     // TODO: Handle file uploads if needed
 
-    // If there's an existing prediction in the thread, this is a follow-up
-    // Pass the parent prediction ID so it doesn't create a new sidebar entry
-    generateMutation.mutate({
-      userInput: question,
-      category: "general", // Always use general category
-      deepMode: deepMode,
-      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
-      parentPredictionId: currentPredictionId || undefined, // Link follow-ups to the root prediction
-    });
+    // If there's an existing prediction in the thread, this is a follow-up - skip analysis
+    // Also skip analysis if this is a trajectory prediction (more specific by nature)
+    if (currentPredictionId || trajectoryType !== "instant") {
+      // Skip analysis for follow-ups and trajectory predictions
+      generateMutation.mutate({
+        userInput: question,
+        category: "general",
+        deepMode: deepMode,
+        trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
+        parentPredictionId: currentPredictionId || undefined,
+      });
+    } else {
+      // Analyze question for ambiguity first
+      (analyzeQuestionMutation.mutate as any)({
+        userInput: question,
+        category: "general",
+        deepMode: deepMode,
+        trajectoryType: trajectoryType,
+      });
+    }
   };
 
   // Handle selecting a prediction from history
@@ -257,6 +315,37 @@ export default function DashboardChat() {
     handleSubmit(followUpMessage, [], false, "instant");
   };
 
+  // Handle clarification option selection
+  const handleClarificationSelect = (option: { label: string; icon: string; contextToAdd: string }) => {
+    if (!pendingClarification) return;
+    
+    // Create clarified question by appending context
+    const clarifiedQuestion = `${pendingClarification.originalQuestion} (${option.contextToAdd})`;
+    
+    // Clear pending clarification
+    setPendingClarification(null);
+    
+    // Add loading message
+    const loadingMessage: Message = {
+      id: `msg-${Date.now()}-system`,
+      type: "system",
+      content: "Analyzing your question and generating prediction...",
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+    
+    setIsGenerating(true);
+    
+    // Generate prediction with clarified question
+    generateMutation.mutate({
+      userInput: clarifiedQuestion,
+      category: "general",
+      deepMode: pendingClarification.deepMode,
+      trajectoryType: pendingClarification.trajectoryType as "instant" | "30day" | "90day" | "yearly",
+      parentPredictionId: currentPredictionId || undefined,
+    });
+  };
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -308,6 +397,19 @@ export default function DashboardChat() {
               isGenerating={isGenerating}
               currentPrediction={currentPrediction}
             />
+            
+            {/* Clarification Question - Show when question is ambiguous */}
+            {pendingClarification && (
+              <div className="mt-4">
+                <ClarificationQuestion
+                  question={pendingClarification.question}
+                  options={pendingClarification.options}
+                  onOptionSelect={handleClarificationSelect}
+                  isLoading={isGenerating}
+                />
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         </main>

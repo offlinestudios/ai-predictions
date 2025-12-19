@@ -848,6 +848,91 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
   }),
 
   prediction: router({
+    // Analyze question for ambiguity before generating prediction
+    analyzeQuestion: protectedProcedure
+      .input(z.object({
+        userInput: z.string().min(1).max(1000),
+        category: z.enum(["career", "love", "finance", "health", "general"]).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Quick LLM call to analyze if the question is too vague
+        const analysisPrompt = `You are an AI assistant that analyzes questions for ambiguity.
+
+Analyze this question: "${input.userInput}"
+${input.category ? `Category hint: ${input.category}` : ''}
+
+Determine if this question is too VAGUE to give a meaningful prediction.
+
+A question is VAGUE if it lacks:
+1. A clear DOMAIN (career, relationship, finances, health, or specific life area)
+2. Enough CONTEXT to understand what the person is actually asking about
+3. Any SPECIFICITY that would allow for actionable insight
+
+Examples of VAGUE questions:
+- "Am I settling for less than I deserve?" (No domain - could be career, relationship, finances, self-worth)
+- "Will things get better?" (No specificity - what things?)
+- "What should I do?" (No context - about what?)
+- "Is this the right path?" (No specificity - what path?)
+
+Examples of CLEAR questions:
+- "Will I get the promotion at my current job?" (Clear domain: career, specific goal)
+- "Should I break up with my partner?" (Clear domain: relationship, specific decision)
+- "Will my business be profitable this year?" (Clear domain: finances, specific outcome)
+- "Am I settling for less in my career?" (Domain specified: career)
+
+Respond in this exact JSON format:
+{
+  "isAmbiguous": true/false,
+  "detectedDomain": "career" | "love" | "finance" | "health" | "general" | "unclear",
+  "ambiguityReason": "Brief explanation of why it's ambiguous (or null if clear)",
+  "clarificationQuestion": "Question to ask user (or null if clear)",
+  "clarificationOptions": [
+    { "label": "Option text", "icon": "emoji", "contextToAdd": "Context that will be appended to original question" }
+  ]
+}
+
+IMPORTANT:
+- If the question mentions a specific domain (career, job, relationship, partner, money, health), it's NOT ambiguous about domain
+- Only mark as ambiguous if genuinely unclear what life area they're asking about
+- Provide 3-4 clarification options that cover the most likely interpretations
+- The contextToAdd should be a phrase that clarifies the domain when appended`;
+
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: "You are a JSON-only response bot. Output valid JSON only, no markdown." },
+              { role: "user", content: analysisPrompt }
+            ],
+            maxTokens: 500,
+          });
+
+          // Parse the JSON response - extract text content from response
+          const responseText = response.choices[0]?.message?.content;
+          const textContent = typeof responseText === 'string' ? responseText : (responseText as any)?.[0]?.text || '';
+          const cleanedResponse = textContent.replace(/```json\n?|```\n?/g, '').trim();
+          const analysis = JSON.parse(cleanedResponse);
+
+          return {
+            isAmbiguous: analysis.isAmbiguous,
+            detectedDomain: analysis.detectedDomain,
+            ambiguityReason: analysis.ambiguityReason,
+            clarification: analysis.isAmbiguous ? {
+              question: analysis.clarificationQuestion,
+              options: analysis.clarificationOptions || [],
+            } : null,
+          };
+        } catch (error) {
+          console.error("Error analyzing question:", error);
+          // If analysis fails, assume question is clear and proceed
+          return {
+            isAmbiguous: false,
+            detectedDomain: input.category || "general",
+            ambiguityReason: null,
+            clarification: null,
+          };
+        }
+      }),
+
     generate: protectedProcedure
       .input(z.object({
         userInput: z.string().min(1).max(1000),
