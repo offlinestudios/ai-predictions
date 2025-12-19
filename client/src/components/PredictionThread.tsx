@@ -132,19 +132,6 @@ export default function PredictionThread({
                     </div>
                   )}
 
-                  {/* Follow-up Question - Show for the last assistant message when not generating */}
-                  {message.followUpQuestion && 
-                   index === messages.length - 1 && 
-                   !isGenerating && 
-                   onFollowUpSelect && (
-                    <FollowUpQuestion
-                      question={message.followUpQuestion.question}
-                      options={message.followUpQuestion.options}
-                      onOptionSelect={(option) => onFollowUpSelect(option, message.userInput || "")}
-                      isLoading={isGenerating}
-                    />
-                  )}
-
                   {/* Feedback & Share */}
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/30">
                     <div className="flex items-center gap-2">
@@ -197,6 +184,19 @@ export default function PredictionThread({
                 <p className="text-xs text-muted-foreground mt-2">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
+                
+                {/* Follow-up Question - Show for the last assistant message when not generating */}
+                {message.followUpQuestion && 
+                 index === messages.length - 1 && 
+                 !isGenerating && 
+                 onFollowUpSelect && (
+                  <FollowUpQuestion
+                    question={message.followUpQuestion.question}
+                    options={message.followUpQuestion.options}
+                    onOptionSelect={(option) => onFollowUpSelect(option, message.userInput || "")}
+                    isLoading={isGenerating || false}
+                  />
+                )}
               </div>
             </div>
           );

@@ -384,10 +384,18 @@
   margin-top: 1.25rem;
 }
 
-/* Streamdown renders bold as <span data-streamdown="strong"> not <strong> */
+/* Streamdown renders bold as <span data-streamdown="strong" class="font-semibold"> */
+/* We need to override the Tailwind font-semibold (600) with bold (700) and make text white */
 .prediction-prose [data-streamdown="strong"],
+.prediction-prose .font-semibold,
 .prediction-prose strong {
   color: oklch(1 0 0) !important; /* Pure white for maximum contrast */
+  font-weight: 700 !important;
+}
+
+/* Also target any span with font-semibold inside prediction-prose */
+.prediction-prose span.font-semibold {
+  color: #ffffff !important;
   font-weight: 700 !important;
 }
 

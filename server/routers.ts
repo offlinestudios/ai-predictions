@@ -332,31 +332,32 @@ This is a yes/no style question. Use this concise format:
     case "compatibility":
       return `
 
-**💫 LAYOUT: COMPATIBILITY READING**
-This is a compatibility/relationship question. Use this format:
+⚠️ **CRITICAL: USE COMPATIBILITY LAYOUT - DO NOT USE STANDARD FORMAT**
 
-1. Start with an oracle insight about the connection (1-2 sentences)
+You MUST use this exact format for this compatibility question:
 
----
-
-**Compatibility Assessment**
-
-**Emotional Connection:** [★★★★☆] [Brief description]
-
-**Values Alignment:** [★★★☆☆] [Brief description]
-
-**Long-term Potential:** [★★★★☆] [Brief description]
-
-**Growth Together:** [★★★☆☆] [Brief description]
+[Opening oracle insight - 1-2 sentences about the type of partner]
 
 ---
 
-**The Dynamic**
-[2-3 paragraphs about how these energies interact]
+**Compatibility Profile**
+
+**Emotional Connection:** ★★★★☆ [What emotional qualities to seek]
+
+**Values Alignment:** ★★★☆☆ [What values matter most]
+
+**Long-term Potential:** ★★★★☆ [What supports lasting connection]
+
+**Growth Together:** ★★★☆☆ [How you'll evolve together]
 
 ---
 
-**The Signal Points To:** [Overall compatibility assessment]
+**The Ideal Partner Dynamic**
+[2-3 short paragraphs about the type of person who complements them]
+
+---
+
+**The Signal Points To:** [Summary of ideal partner type]
 
 ---
 
