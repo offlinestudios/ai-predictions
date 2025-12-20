@@ -82,6 +82,15 @@ export default function DashboardChat() {
     enabled: isAuthenticated,
   });
 
+  // Fetch prediction history to get accurate count of root predictions (not follow-ups)
+  const { data: historyData } = trpc.prediction.getHistory.useQuery(
+    { limit: 1 }, // We only need the total count, not the actual predictions
+    { enabled: isAuthenticated }
+  );
+  
+  // Use actual root prediction count for limit checking (more accurate than totalUsed which may include follow-ups)
+  const actualPredictionCount = historyData?.total ?? 0;
+
   // Question analysis removed - AI handles ambiguity naturally in its response
 
   // Generate prediction mutation
@@ -131,7 +140,8 @@ export default function DashboardChat() {
       
       // Show post-prediction paywall only when user has used all 3 free predictions
       // (not for depth ladder - that's handled separately)
-      if (subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3) {
+      // Use actualPredictionCount which counts root predictions only (not follow-ups)
+      if (subscription?.tier === "free" && actualPredictionCount >= 3) {
         setTimeout(() => setShowPostPredictionPaywall(true), 2000);
       }
     },
@@ -155,7 +165,7 @@ export default function DashboardChat() {
         toast.error("You've reached the free trial limit. Sign up to continue!");
         return;
       }
-    } else if (subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3) {
+    } else if (subscription?.tier === "free" && actualPredictionCount >= 3) {
       toast.error("You've used all 3 free predictions. Upgrade to continue!");
       setShowPostPredictionPaywall(true);
       return;
@@ -334,7 +344,8 @@ export default function DashboardChat() {
 
   // Check if composer should be disabled
   // Disable for: unauthenticated users after 3 messages, OR free users who hit their 3 prediction limit
-  const hasReachedFreeLimit = subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3;
+  // Use actualPredictionCount which counts root predictions only (not follow-ups)
+  const hasReachedFreeLimit = subscription?.tier === "free" && actualPredictionCount >= 3;
   const isComposerDisabled = (!isAuthenticated && messages.length >= 3) || hasReachedFreeLimit;
 
   return (
@@ -404,6 +415,7 @@ export default function DashboardChat() {
           sidebarCollapsed={sidebarCollapsed}
           subscription={subscription}
           onUpgradeClick={() => setShowPostPredictionPaywall(true)}
+          actualPredictionCount={actualPredictionCount}
         />
 
         {/* Modals */}
