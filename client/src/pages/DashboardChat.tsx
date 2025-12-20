@@ -428,7 +428,23 @@ export default function DashboardChat() {
           open={showDepthPaywall}
           onOpenChange={setShowDepthPaywall}
           onContinueFree={() => {
-            // User chose to continue with free tier - don't process the follow-up
+            // User chose to continue with free tier - process at surface level (Level 2)
+            if (pendingFollowUp && rootQuestion) {
+              // Keep at Level 2 (surface level) instead of advancing to Level 3
+              const followUpMessage = `Regarding my question "${rootQuestion}": ${pendingFollowUp}`;
+              
+              // Add user message for the follow-up
+              const userMessage: Message = {
+                id: `msg-${Date.now()}-user`,
+                type: "user",
+                content: pendingFollowUp,
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, userMessage]);
+              
+              // Submit at Level 2 (surface level) - don't advance depth
+              handleSubmitWithDepth(followUpMessage, [], false, "instant", 2);
+            }
             setPendingFollowUp(null);
           }}
           rootQuestion={rootQuestion}
