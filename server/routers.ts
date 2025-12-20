@@ -1522,8 +1522,11 @@ They should feel complete but also transformed.
           parentPredictionId: input.parentPredictionId || null, // Track follow-ups
         });
 
-        // Increment usage counter
-        await incrementPredictionUsage(ctx.user.id);
+        // Increment usage counter ONLY for root predictions, not follow-ups
+        // Follow-ups are part of the same conversation thread and shouldn't count against the limit
+        if (!input.parentPredictionId) {
+          await incrementPredictionUsage(ctx.user.id);
+        }
         
         // Send welcome email on first prediction
         if (subscription.totalUsed === 0) {
