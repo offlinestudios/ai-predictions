@@ -19,6 +19,7 @@ import { ArrowLeft, Settings, LogOut, History } from "lucide-react";
 import { TierBadge } from "@/components/Badge";
 import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
+import DepthPaywall from "@/components/DepthPaywall";
 import { getLoginUrl } from "@/const";
 
 interface Message {
@@ -60,10 +61,14 @@ export default function DashboardChat() {
   } | null>(null);
   // Track the original root question for follow-ups (prevents nested context strings)
   const [rootQuestion, setRootQuestion] = useState<string | null>(null);
+  
+  // Depth Ladder: Track conversation depth (1=Surface, 2=Pattern, 3=Differentiation, 4=Forecast)
+  const [conversationDepth, setConversationDepth] = useState<1 | 2 | 3 | 4>(1);
+  const [showDepthPaywall, setShowDepthPaywall] = useState(false);
+  const [pendingFollowUp, setPendingFollowUp] = useState<string | null>(null); // Store follow-up for after payment
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  
-  // Clarification state removed - AI handles ambiguity naturally
 
   // Set initial sidebar state - closed by default on mobile
   useEffect(() => {
@@ -120,8 +125,13 @@ export default function DashboardChat() {
         });
       }
 
-      // Show paywall for free users only when approaching or at limit (2+ predictions used)
-      if (subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 2) {
+      // Depth Ladder: Update depth level after successful prediction
+      // Depth is tracked per conversation thread and increases with follow-ups
+      // Note: Depth paywall is handled in handleFollowUpSelect before submission
+      
+      // Show post-prediction paywall only when user has used all 3 free predictions
+      // (not for depth ladder - that's handled separately)
+      if (subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3) {
         setTimeout(() => setShowPostPredictionPaywall(true), 2000);
       }
     },
@@ -185,6 +195,33 @@ export default function DashboardChat() {
       deepMode: deepMode,
       trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
       parentPredictionId: currentPredictionId || undefined,
+      depthLevel: conversationDepth, // Pass current depth level
+    });
+  };
+
+  // Handle prediction submission with explicit depth level (for follow-ups)
+  const handleSubmitWithDepth = async (question: string, files: File[], deepMode: boolean, trajectoryType: string, depth: 1 | 2 | 3 | 4) => {
+    if (!question.trim()) return;
+
+    // Add loading message
+    const loadingMessage: Message = {
+      id: `msg-${Date.now()}-system`,
+      type: "system",
+      content: "Going deeper...",
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+
+    setIsGenerating(true);
+
+    // Generate prediction with specified depth level
+    generateMutation.mutate({
+      userInput: question,
+      category: "general",
+      deepMode: deepMode,
+      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
+      parentPredictionId: currentPredictionId || undefined,
+      depthLevel: depth,
     });
   };
 
@@ -229,6 +266,8 @@ export default function DashboardChat() {
     setCurrentPredictionId(null);
     setCurrentPrediction(null);
     setRootQuestion(null); // Reset root question for new thread
+    setConversationDepth(1); // Reset depth ladder for new thread
+    setPendingFollowUp(null);
     toast.success("Starting a new prediction");
   };
 
@@ -251,10 +290,24 @@ export default function DashboardChat() {
     // Optionally show a toast or update UI to indicate profile was updated
   };
 
-  // Handle follow-up question selection
+  // Handle follow-up question selection - implements Depth Ladder
   const handleFollowUpSelect = (option: string, _originalQuestion: string) => {
     // Use the root question (first question in thread) to avoid nested context strings
     const questionContext = rootQuestion || _originalQuestion;
+    
+    // Calculate next depth level
+    const nextDepth = Math.min(conversationDepth + 1, 4) as 1 | 2 | 3 | 4;
+    
+    // DEPTH LADDER: Free users hit paywall at Level 3
+    if (nextDepth >= 3 && subscription?.tier === "free") {
+      // Store the pending follow-up for after payment
+      setPendingFollowUp(option);
+      setShowDepthPaywall(true);
+      return;
+    }
+    
+    // Update depth level
+    setConversationDepth(nextDepth);
     
     // Create a follow-up message that includes the user's answer
     const followUpMessage = `Regarding my question "${questionContext}": ${option}`;
@@ -268,8 +321,8 @@ export default function DashboardChat() {
     };
     setMessages(prev => [...prev, userMessage]);
     
-    // Submit as a follow-up prediction
-    handleSubmit(followUpMessage, [], false, "instant");
+    // Submit as a follow-up prediction with depth level
+    handleSubmitWithDepth(followUpMessage, [], false, "instant", nextDepth);
   };
 
   // Clarification handling removed - AI handles ambiguity naturally
@@ -367,6 +420,17 @@ export default function DashboardChat() {
             onComplete={() => setShowPremiumUnlock(false)}
           />
         )}
+
+        {/* Depth Ladder Paywall - Shows at Level 3 for free users */}
+        <DepthPaywall
+          open={showDepthPaywall}
+          onOpenChange={setShowDepthPaywall}
+          onContinueFree={() => {
+            // User chose to continue with free tier - don't process the follow-up
+            setPendingFollowUp(null);
+          }}
+          rootQuestion={rootQuestion}
+        />
       </div>
     </div>
   );
