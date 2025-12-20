@@ -7,6 +7,8 @@ export interface OnboardingQuestion {
   }[];
 }
 
+// 12 core psychological questions for personality assessment
+// Removed sports/stocks-specific questions, kept universal decision-making patterns
 export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
   {
     id: 1,
@@ -54,17 +56,6 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
   },
   {
     id: 5,
-    question: "When watching sports or following markets, what do you focus on most?",
-    options: [
-      { value: "A", label: "Patterns, stats, trends" },
-      { value: "B", label: "Emotional energy, momentum, hype" },
-      { value: "C", label: "Long-term story or thesis" },
-      { value: "D", label: "How the outcome makes me feel personally" },
-      { value: "E", label: "Risk levels, volatility, safety windows" },
-    ],
-  },
-  {
-    id: 6,
     question: "What best describes your risk tolerance?",
     options: [
       { value: "A", label: "High — I enjoy volatility and swings" },
@@ -75,7 +66,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 7,
+    id: 6,
     question: "In relationships, you tend to…",
     options: [
       { value: "A", label: "Analyze before opening up" },
@@ -86,7 +77,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 8,
+    id: 7,
     question: "What frustrates you the most about predictions?",
     options: [
       { value: "A", label: "When they're too vague or emotional" },
@@ -97,29 +88,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 9,
-    question: "When a stock drops 10%, what do you do?",
-    options: [
-      { value: "A", label: "Buy more (opportunity)" },
-      { value: "B", label: "Panic and consider selling" },
-      { value: "C", label: "Wait and analyze patterns" },
-      { value: "D", label: "React emotionally — depends on the day" },
-      { value: "E", label: "Increase position because I like volatility" },
-    ],
-  },
-  {
-    id: 10,
-    question: "When your team loses or your parlay fails, what's your instinct?",
-    options: [
-      { value: "A", label: "Place another bet immediately" },
-      { value: "B", label: "Step back and cool off" },
-      { value: "C", label: "Get emotional and fixate on the loss" },
-      { value: "D", label: "Try to understand the momentum shift" },
-      { value: "E", label: "Increase my next bet to 'correct the universe'" },
-    ],
-  },
-  {
-    id: 11,
+    id: 8,
     question: "What motivates you to seek predictions?",
     options: [
       { value: "A", label: "To optimize and improve outcomes" },
@@ -130,7 +99,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 12,
+    id: 9,
     question: "Your timing style is…",
     options: [
       { value: "A", label: "I prefer early entry (anticipatory)" },
@@ -141,7 +110,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 13,
+    id: 10,
     question: "Which statement describes you best?",
     options: [
       { value: "A", label: "\"I avoid losses.\"" },
@@ -152,7 +121,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 14,
+    id: 11,
     question: "How do you handle information overload?",
     options: [
       { value: "A", label: "Break it into logic and structure" },
@@ -163,18 +132,7 @@ export const ONBOARDING_QUESTIONS: OnboardingQuestion[] = [
     ],
   },
   {
-    id: 15,
-    question: "Which environment makes you make the WORST decisions?",
-    options: [
-      { value: "A", label: "High volatility" },
-      { value: "B", label: "Emotional stress" },
-      { value: "C", label: "Time pressure" },
-      { value: "D", label: "When bored or under-stimulated" },
-      { value: "E", label: "When required to change routine" },
-    ],
-  },
-  {
-    id: 16,
+    id: 12,
     question: "When life becomes uncertain, you typically…",
     options: [
       { value: "A", label: "Retreat and analyze" },

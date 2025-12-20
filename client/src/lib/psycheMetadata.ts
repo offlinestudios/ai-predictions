@@ -10,6 +10,8 @@ export interface PsycheMetadata {
   superpower: string; // Their unique superpower
   strengthsTitle: string; // Title for strengths section
   strengths: string[]; // List of strengths
+  growthAreas: string[]; // Areas for growth/improvement
+  relationshipInsights: string[]; // Insights for relationships
   predictionInsight: string; // How their personality affects predictions
   dailyInsight: string; // Daily tip for this type
   color: string; // Primary color for the type (hex)
@@ -31,6 +33,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Thriving in chaos",
       "Inspiring leadership"
     ],
+    growthAreas: [
+      "May overlook important details",
+      "Can struggle with patience",
+      "Risk of burnout from constant action",
+      "May dismiss others' concerns too quickly"
+    ],
+    relationshipInsights: [
+      "Your intensity can be magnetic but overwhelming.",
+      "Partners need to match your energy or feel left behind.",
+      "Learn to slow down for deeper connection."
+    ],
     predictionInsight: "Your predictions are bold and instinct-driven. Verify your gut with one data point for best results.",
     dailyInsight: "Trust your instincts today, but verify with one fact before you leap.",
     color: "#f97316"
@@ -48,6 +61,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Calm under pressure",
       "Long-term vision",
       "Disciplined execution"
+    ],
+    growthAreas: [
+      "Can overthink and delay action",
+      "May miss emotional nuances",
+      "Risk of analysis paralysis",
+      "Can seem distant or cold"
+    ],
+    relationshipInsights: [
+      "You show love through planning and problem-solving.",
+      "Partners may need more emotional expression from you.",
+      "Balance logic with spontaneous moments of connection."
     ],
     predictionInsight: "Your predictions benefit from careful analysis. You excel at long-term forecasts but may miss fast-moving opportunities.",
     dailyInsight: "Trust your analysis, but don't wait for perfect information—good enough is often good enough.",
@@ -67,6 +91,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Inspiring others",
       "Strategic ambition"
     ],
+    growthAreas: [
+      "May neglect present for future",
+      "Can be impatient with details",
+      "Risk of overcommitting",
+      "May struggle with follow-through"
+    ],
+    relationshipInsights: [
+      "You inspire partners with your vision and ambition.",
+      "Remember to be present, not just future-focused.",
+      "Share your dreams but also your daily moments."
+    ],
     predictionInsight: "Your predictions are bold yet calculated. Balance your vision with practical checkpoints.",
     dailyInsight: "Your vision is your compass—but check the map occasionally.",
     color: "#8b5cf6"
@@ -84,6 +119,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Risk management",
       "Reliable execution",
       "Protective instincts"
+    ],
+    growthAreas: [
+      "May resist necessary change",
+      "Can be overly cautious",
+      "Risk of missing opportunities",
+      "May struggle with spontaneity"
+    ],
+    relationshipInsights: [
+      "You provide stability and security in relationships.",
+      "Partners feel safe with you but may crave more adventure.",
+      "Balance protection with allowing room for growth."
     ],
     predictionInsight: "Your predictions favor safety. Consider that calculated risks sometimes offer the best risk-adjusted returns.",
     dailyInsight: "Stability is your strength—but one small stretch today could unlock new possibilities.",
@@ -103,6 +149,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Emotional stability",
       "Disciplined patience"
     ],
+    growthAreas: [
+      "May miss short-term opportunities",
+      "Can be too rigid in approach",
+      "Risk of stubbornness",
+      "May undervalue quick wins"
+    ],
+    relationshipInsights: [
+      "You're in it for the long haul and deeply loyal.",
+      "Partners appreciate your steadiness but may want more excitement.",
+      "Celebrate small milestones, not just the big ones."
+    ],
     predictionInsight: "Your predictions favor long horizons. You may underestimate short-term volatility.",
     dailyInsight: "Today's small action compounds into tomorrow's big result. Stay the course.",
     color: "#059669"
@@ -120,6 +177,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Practical problem-solving",
       "Systematic thinking",
       "Objective analysis"
+    ],
+    growthAreas: [
+      "May dismiss emotional factors",
+      "Can be overly skeptical",
+      "Risk of missing intuitive insights",
+      "May struggle with ambiguity"
+    ],
+    relationshipInsights: [
+      "You bring clarity and rationality to relationships.",
+      "Partners may need more emotional validation from you.",
+      "Not everything needs to be solved—sometimes just listen."
     ],
     predictionInsight: "Your predictions are data-driven and reliable. Add emotional context to catch human-driven shifts.",
     dailyInsight: "The patterns are speaking—but remember, humans don't always follow the script.",
@@ -139,6 +207,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Quick adaptation",
       "Trend spotting"
     ],
+    growthAreas: [
+      "May chase too many opportunities",
+      "Can struggle with commitment",
+      "Risk of burnout from constant motion",
+      "May confuse hype with substance"
+    ],
+    relationshipInsights: [
+      "You bring excitement and energy to relationships.",
+      "Partners may struggle to keep up with your pace.",
+      "Learn to be still sometimes—presence is a gift."
+    ],
     predictionInsight: "You're great at catching trends early. Distinguish real momentum from hype by checking fundamentals.",
     dailyInsight: "The wave is building—make sure you're paddling in the right direction.",
     color: "#f59e0b"
@@ -156,6 +235,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Strong gut instincts",
       "Empathetic understanding",
       "Flexible approach"
+    ],
+    growthAreas: [
+      "May lack clear identity",
+      "Can struggle with commitment",
+      "May be indecisive at times",
+      "Risk of spreading too thin"
+    ],
+    relationshipInsights: [
+      "Your flexibility makes you a supportive, understanding partner.",
+      "Look for relationships where you can be your authentic self, not just adaptive.",
+      "Define your own needs clearly—don't lose yourself in accommodation."
     ],
     predictionInsight: "Your intuition often catches what data misses. Trust your feelings, but verify with one objective data point.",
     dailyInsight: "Your gut is talking—listen to it, but ask 'why' before you act.",
@@ -178,6 +268,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Long-term vision",
       "Disciplined execution"
     ],
+    growthAreas: [
+      "Can overthink and delay action",
+      "May miss emotional nuances",
+      "Risk of analysis paralysis",
+      "Can seem distant or cold"
+    ],
+    relationshipInsights: [
+      "You show love through planning and problem-solving.",
+      "Partners may need more emotional expression from you.",
+      "Balance logic with spontaneous moments of connection."
+    ],
     predictionInsight: "Your predictions benefit from careful analysis. You excel at long-term forecasts but may miss fast-moving opportunities.",
     dailyInsight: "Trust your analysis, but don't wait for perfect information—good enough is often good enough.",
     color: "#6366f1"
@@ -195,6 +296,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Instinct-driven action",
       "Thriving in chaos",
       "Inspiring leadership"
+    ],
+    growthAreas: [
+      "May overlook important details",
+      "Can struggle with patience",
+      "Risk of burnout from constant action",
+      "May dismiss others' concerns too quickly"
+    ],
+    relationshipInsights: [
+      "Your intensity can be magnetic but overwhelming.",
+      "Partners need to match your energy or feel left behind.",
+      "Learn to slow down for deeper connection."
     ],
     predictionInsight: "Your predictions are bold and instinct-driven. Verify your gut with one data point for best results.",
     dailyInsight: "Trust your instincts today, but verify with one fact before you leap.",
@@ -214,6 +326,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Inspiring others",
       "Strategic ambition"
     ],
+    growthAreas: [
+      "May neglect present for future",
+      "Can be impatient with details",
+      "Risk of overcommitting",
+      "May struggle with follow-through"
+    ],
+    relationshipInsights: [
+      "You inspire partners with your vision and ambition.",
+      "Remember to be present, not just future-focused.",
+      "Share your dreams but also your daily moments."
+    ],
     predictionInsight: "Your predictions are bold yet calculated. Balance your vision with practical checkpoints.",
     dailyInsight: "Your vision is your compass—but check the map occasionally.",
     color: "#8b5cf6"
@@ -231,6 +354,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Risk management",
       "Reliable execution",
       "Protective instincts"
+    ],
+    growthAreas: [
+      "May resist necessary change",
+      "Can be overly cautious",
+      "Risk of missing opportunities",
+      "May struggle with spontaneity"
+    ],
+    relationshipInsights: [
+      "You provide stability and security in relationships.",
+      "Partners feel safe with you but may crave more adventure.",
+      "Balance protection with allowing room for growth."
     ],
     predictionInsight: "Your predictions favor safety. Consider that calculated risks sometimes offer the best risk-adjusted returns.",
     dailyInsight: "Stability is your strength—but one small stretch today could unlock new possibilities.",
@@ -250,6 +384,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Emotional stability",
       "Disciplined patience"
     ],
+    growthAreas: [
+      "May miss short-term opportunities",
+      "Can be too rigid in approach",
+      "Risk of stubbornness",
+      "May undervalue quick wins"
+    ],
+    relationshipInsights: [
+      "You're in it for the long haul and deeply loyal.",
+      "Partners appreciate your steadiness but may want more excitement.",
+      "Celebrate small milestones, not just the big ones."
+    ],
     predictionInsight: "Your predictions favor long horizons. You may underestimate short-term volatility.",
     dailyInsight: "Today's small action compounds into tomorrow's big result. Stay the course.",
     color: "#059669"
@@ -267,6 +412,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Practical problem-solving",
       "Systematic thinking",
       "Objective analysis"
+    ],
+    growthAreas: [
+      "May dismiss emotional factors",
+      "Can be overly skeptical",
+      "Risk of missing intuitive insights",
+      "May struggle with ambiguity"
+    ],
+    relationshipInsights: [
+      "You bring clarity and rationality to relationships.",
+      "Partners may need more emotional validation from you.",
+      "Not everything needs to be solved—sometimes just listen."
     ],
     predictionInsight: "Your predictions are data-driven and reliable. Add emotional context to catch human-driven shifts.",
     dailyInsight: "The patterns are speaking—but remember, humans don't always follow the script.",
@@ -286,6 +442,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Quick adaptation",
       "Trend spotting"
     ],
+    growthAreas: [
+      "May chase too many opportunities",
+      "Can struggle with commitment",
+      "Risk of burnout from constant motion",
+      "May confuse hype with substance"
+    ],
+    relationshipInsights: [
+      "You bring excitement and energy to relationships.",
+      "Partners may struggle to keep up with your pace.",
+      "Learn to be still sometimes—presence is a gift."
+    ],
     predictionInsight: "You're great at catching trends early. Distinguish real momentum from hype by checking fundamentals.",
     dailyInsight: "The wave is building—make sure you're paddling in the right direction.",
     color: "#f59e0b"
@@ -303,6 +470,17 @@ export const PSYCHE_METADATA: Record<string, PsycheMetadata> = {
       "Strong gut instincts",
       "Empathetic understanding",
       "Flexible approach"
+    ],
+    growthAreas: [
+      "May lack clear identity",
+      "Can struggle with commitment",
+      "May be indecisive at times",
+      "Risk of spreading too thin"
+    ],
+    relationshipInsights: [
+      "Your flexibility makes you a supportive, understanding partner.",
+      "Look for relationships where you can be your authentic self, not just adaptive.",
+      "Define your own needs clearly—don't lose yourself in accommodation."
     ],
     predictionInsight: "Your intuition often catches what data misses. Trust your feelings, but verify with one objective data point.",
     dailyInsight: "Your gut is talking—listen to it, but ask 'why' before you act.",
