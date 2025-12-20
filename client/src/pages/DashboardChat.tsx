@@ -7,7 +7,7 @@ import { useLocation } from "wouter";
 import { toast } from "sonner";
 import ChatComposer from "@/components/ChatComposer";
 import PredictionThread from "@/components/PredictionThread";
-import { ClarificationQuestion } from "@/components/ClarificationQuestion";
+// ClarificationQuestion removed - AI handles ambiguity naturally
 import MobileHeader from "@/components/MobileHeader";
 
 import PredictionHistorySidebar from "@/components/PredictionHistorySidebar";
@@ -61,14 +61,7 @@ export default function DashboardChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
-  // Clarification state for ambiguous questions
-  const [pendingClarification, setPendingClarification] = useState<{
-    originalQuestion: string;
-    question: string;
-    options: { label: string; icon: string; contextToAdd: string }[];
-    deepMode: boolean;
-    trajectoryType: string;
-  } | null>(null);
+  // Clarification state removed - AI handles ambiguity naturally
 
   // Set initial sidebar state - closed by default on mobile
   useEffect(() => {
@@ -82,39 +75,7 @@ export default function DashboardChat() {
     enabled: isAuthenticated,
   });
 
-  // Analyze question for ambiguity
-  const analyzeQuestionMutation = trpc.prediction.analyzeQuestion.useMutation({
-    onSuccess: (data, variables) => {
-      if (data.isAmbiguous && data.clarification) {
-        // Question is ambiguous - show clarification UI
-        setIsGenerating(false);
-        // Remove loading message
-        setMessages(prev => prev.filter(m => m.type !== "system"));
-        
-        // Store pending clarification
-        setPendingClarification({
-          originalQuestion: variables.userInput,
-          question: data.clarification.question,
-          options: data.clarification.options,
-          deepMode: (variables as any).deepMode || false,
-          trajectoryType: (variables as any).trajectoryType || "instant",
-        });
-      } else {
-        // Question is clear - proceed with prediction generation
-        generateMutation.mutate({
-          userInput: variables.userInput,
-          category: data.detectedDomain as any || "general",
-          deepMode: (variables as any).deepMode || false,
-          trajectoryType: ((variables as any).trajectoryType || "instant") as "instant" | "30day" | "90day" | "yearly",
-          parentPredictionId: currentPredictionId || undefined,
-        });
-      }
-    },
-    onError: (error) => {
-      // If analysis fails, proceed with generation anyway
-      console.error("Analysis failed, proceeding with generation:", error);
-    }
-  });
+  // Question analysis removed - AI handles ambiguity naturally in its response
 
   // Generate prediction mutation
   const generateMutation = trpc.prediction.generate.useMutation({
@@ -208,31 +169,16 @@ export default function DashboardChat() {
 
     setIsGenerating(true);
     
-    // Clear any pending clarification
-    setPendingClarification(null);
-
     // TODO: Handle file uploads if needed
 
-    // If there's an existing prediction in the thread, this is a follow-up - skip analysis
-    // Also skip analysis if this is a trajectory prediction (more specific by nature)
-    if (currentPredictionId || trajectoryType !== "instant") {
-      // Skip analysis for follow-ups and trajectory predictions
-      generateMutation.mutate({
-        userInput: question,
-        category: "general",
-        deepMode: deepMode,
-        trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
-        parentPredictionId: currentPredictionId || undefined,
-      });
-    } else {
-      // Analyze question for ambiguity first
-      (analyzeQuestionMutation.mutate as any)({
-        userInput: question,
-        category: "general",
-        deepMode: deepMode,
-        trajectoryType: trajectoryType,
-      });
-    }
+    // Generate prediction directly - AI handles any ambiguity naturally
+    generateMutation.mutate({
+      userInput: question,
+      category: "general",
+      deepMode: deepMode,
+      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
+      parentPredictionId: currentPredictionId || undefined,
+    });
   };
 
   // Handle selecting a prediction from history
@@ -315,36 +261,7 @@ export default function DashboardChat() {
     handleSubmit(followUpMessage, [], false, "instant");
   };
 
-  // Handle clarification option selection
-  const handleClarificationSelect = (option: { label: string; icon: string; contextToAdd: string }) => {
-    if (!pendingClarification) return;
-    
-    // Create clarified question by appending context
-    const clarifiedQuestion = `${pendingClarification.originalQuestion} (${option.contextToAdd})`;
-    
-    // Clear pending clarification
-    setPendingClarification(null);
-    
-    // Add loading message
-    const loadingMessage: Message = {
-      id: `msg-${Date.now()}-system`,
-      type: "system",
-      content: "Analyzing your question and generating prediction...",
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, loadingMessage]);
-    
-    setIsGenerating(true);
-    
-    // Generate prediction with clarified question
-    generateMutation.mutate({
-      userInput: clarifiedQuestion,
-      category: "general",
-      deepMode: pendingClarification.deepMode,
-      trajectoryType: pendingClarification.trajectoryType as "instant" | "30day" | "90day" | "yearly",
-      parentPredictionId: currentPredictionId || undefined,
-    });
-  };
+  // Clarification handling removed - AI handles ambiguity naturally
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -398,17 +315,7 @@ export default function DashboardChat() {
               currentPrediction={currentPrediction}
             />
             
-            {/* Clarification Question - Show when question is ambiguous */}
-            {pendingClarification && (
-              <div className="mt-4">
-                <ClarificationQuestion
-                  question={pendingClarification.question}
-                  options={pendingClarification.options}
-                  onOptionSelect={handleClarificationSelect}
-                  isLoading={isGenerating}
-                />
-              </div>
-            )}
+            {/* Clarification popup removed - AI handles ambiguity naturally */}
             
             <div ref={messagesEndRef} />
           </div>
