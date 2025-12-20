@@ -333,7 +333,9 @@ export default function DashboardChat() {
   }, [messages]);
 
   // Check if composer should be disabled
-  const isComposerDisabled = !isAuthenticated && messages.length >= 3;
+  // Disable for: unauthenticated users after 3 messages, OR free users who hit their 3 prediction limit
+  const hasReachedFreeLimit = subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3;
+  const isComposerDisabled = (!isAuthenticated && messages.length >= 3) || hasReachedFreeLimit;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">

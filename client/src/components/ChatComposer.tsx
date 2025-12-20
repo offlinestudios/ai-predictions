@@ -130,10 +130,29 @@ export default function ChatComposer({
   };
 
   const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
+  
+  // Check if free tier limit reached
+  const hasReachedFreeLimit = subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 3;
 
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       <div className="container max-w-4xl py-3 md:py-4">
+        {/* Free Limit Reached Message */}
+        {hasReachedFreeLimit && (
+          <div className="mb-3 p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
+            <p className="text-sm text-muted-foreground mb-2">
+              You've used all 3 free predictions
+            </p>
+            <Button
+              onClick={onUpgradeClick}
+              size="sm"
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              Unlock Unlimited Predictions
+            </Button>
+          </div>
+        )}
         {/* File Previews */}
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">

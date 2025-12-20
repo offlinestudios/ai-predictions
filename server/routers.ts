@@ -107,94 +107,84 @@ interface FollowUpQuestion {
   options: string[];
 }
 
-function generateFollowUpQuestion(
+// AI-powered follow-up question generation
+// This generates contextually relevant narrowing questions based on the actual question and response
+async function generateAIFollowUpQuestion(
   userQuestion: string,
-  questionType: QuestionType,
-  missingFactors: string[],
-  category: string
-): FollowUpQuestion | null {
-  const q = userQuestion.toLowerCase();
-  
-  // NARROWING questions - psychological, not exploratory
-  // These help differentiate which pattern applies to the user
-  
-  // Career-related narrowing
-  if (category === "career" || q.includes("job") || q.includes("career") || q.includes("work") || q.includes("boss") || q.includes("promotion")) {
-    if (q.includes("boss") || q.includes("manager") || q.includes("coworker")) {
+  predictionResponse: string
+): Promise<FollowUpQuestion | null> {
+  try {
+    const response = await invokeLLM({
+      messages: [
+        {
+          role: "system",
+          content: `You generate ONE psychological narrowing question with exactly 3 options.
+
+**PURPOSE:**
+The question should help differentiate which psychological pattern applies to this specific user.
+It should feel like a therapist asking a clarifying question, not a survey.
+
+**RULES:**
+- Question must be SHORT (under 15 words)
+- Options must be SHORT (under 8 words each)
+- Question must be SPECIFIC to their question, not generic
+- Options should represent different psychological positions, not just "yes/no/maybe"
+- Never ask about external facts - only internal states
+- Format: "Which feels closer?" or "Is this about X or Y?"
+
+**BAD EXAMPLES (too generic):**
+- "Would you like to know more?" 
+- "Is this important to you?"
+- "Do you want to go deeper?"
+
+**GOOD EXAMPLES:**
+- "Is this about readiness or about timing?" ["I'm not ready", "The timing is wrong", "Something else"]
+- "Is the longing about them or about being chosen?" ["I miss them specifically", "I want to be wanted", "Both"]
+- "Does this fear come from experience or imagination?" ["It happened before", "I'm imagining the worst", "I'm not sure"]
+
+**RESPOND IN EXACTLY THIS JSON FORMAT:**
+{"question": "your question here", "options": ["option 1", "option 2", "option 3"]}`
+        },
+        {
+          role: "user",
+          content: `User's question: "${userQuestion}"
+
+Prediction given: "${predictionResponse.substring(0, 500)}..."
+
+Generate a narrowing follow-up question that helps differentiate which pattern applies to this specific user.`
+        }
+      ],
+      maxTokens: 200, // Keep responses short
+    });
+
+    const messageContent = response.choices[0]?.message?.content;
+    if (!messageContent) return null;
+    
+    // Handle both string and array content types
+    const content = typeof messageContent === 'string' 
+      ? messageContent 
+      : JSON.stringify(messageContent);
+
+    // Parse JSON response
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (parsed.question && Array.isArray(parsed.options) && parsed.options.length === 3) {
       return {
-        question: "Is this about respect or about safety?",
-        options: ["I need to feel respected", "I need to feel secure", "Both equally"]
+        question: parsed.question,
+        options: parsed.options
       };
     }
-    if (q.includes("quit") || q.includes("leave") || q.includes("new job") || q.includes("stay")) {
-      return {
-        question: "Is the hesitation about timing or trust?",
-        options: ["The timing feels wrong", "I don't trust the outcome", "Something else entirely"]
-      };
-    }
+    return null;
+  } catch (error) {
+    console.error("Error generating AI follow-up:", error);
+    // Fallback to a generic but still psychological question
     return {
-      question: "Does this repeat a pattern from your past?",
-      options: ["Yes, I've been here before", "No, this feels new", "I'm not sure"]
+      question: "Which feels more true right now?",
+      options: ["I know but I'm afraid", "I genuinely don't know", "I need permission"]
     };
   }
-  
-  // Love/relationship narrowing
-  if (category === "love" || q.includes("love") || q.includes("relationship") || q.includes("partner") || q.includes("dating") || q.includes("ex") || q.includes("she") || q.includes("he")) {
-    if (q.includes("ex") || q.includes("come back") || q.includes("return")) {
-      return {
-        question: "Is this about them, or about closure for you?",
-        options: ["I want them back", "I need closure", "I'm not sure which"]
-      };
-    }
-    if (q.includes("settling") || q.includes("enough") || q.includes("right person")) {
-      return {
-        question: "Is the doubt about them or about yourself?",
-        options: ["Something's missing in them", "Something's missing in me", "The relationship itself"]
-      };
-    }
-    return {
-      question: "Is this about fear of loss or fear of the wrong choice?",
-      options: ["I'm afraid to lose them", "I'm afraid I'm choosing wrong", "Both feel true"]
-    };
-  }
-  
-  // Finance narrowing
-  if (category === "finance" || q.includes("money") || q.includes("invest") || q.includes("financial") || q.includes("income") || q.includes("debt")) {
-    return {
-      question: "Is this about survival or about growth?",
-      options: ["I need to feel safe first", "I'm ready to take risks", "Somewhere in between"]
-    };
-  }
-  
-  // Health narrowing
-  if (category === "health" || q.includes("health") || q.includes("weight") || q.includes("exercise") || q.includes("sick")) {
-    return {
-      question: "Is this about control or about acceptance?",
-      options: ["I want to change something", "I want to accept something", "I'm not sure"]
-    };
-  }
-  
-  // Decision-type narrowing
-  if (questionType === "decision") {
-    return {
-      question: "Do you already know the answer?",
-      options: ["Yes, but I'm afraid to act", "No, I genuinely don't know", "I know but need permission"]
-    };
-  }
-  
-  // Timeline narrowing
-  if (questionType === "timeline") {
-    return {
-      question: "Is the waiting about readiness or about circumstances?",
-      options: ["I'm not ready yet", "The situation isn't ready", "Both"]
-    };
-  }
-  
-  // Default psychological narrowing
-  return {
-    question: "Is the uncertainty about the outcome or about yourself?",
-    options: ["I don't know what will happen", "I don't know what I want", "Both feel true"]
-  };
 }
 
 // Get layout-specific instructions based on question type
@@ -1545,13 +1535,11 @@ They should feel complete but also transformed.
           }
         }
 
-        // Generate follow-up question based on missing context and question type
-        // (questionType was already detected earlier for layout instructions)
-        const followUpQuestion = generateFollowUpQuestion(
+        // Generate AI-powered follow-up question based on the actual question and response
+        // This creates contextually relevant narrowing questions
+        const followUpQuestion = await generateAIFollowUpQuestion(
           input.userInput,
-          questionType,
-          accuracyResult.missingFactors,
-          input.category || "general"
+          predictionResult
         );
         
         return {
