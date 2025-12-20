@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Sparkles, TrendingUp, ThumbsUp, ThumbsDown, Upload, Copy, RefreshCw, MoreHorizontal } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Upload, RefreshCw } from "lucide-react";
 import { Streamdown } from "streamdown";
-import PredictionAccuracy from "@/components/PredictionAccuracy";
 import ShareButtons from "@/components/ShareButtons";
 import TypingIndicator from "@/components/TypingIndicator";
 import { ShareModal } from "@/components/ShareModal";
-import ImproveAccuracyCard from "@/components/ImproveAccuracyCard";
 import { FollowUpQuestion } from "@/components/FollowUpQuestion";
 
 interface Message {
@@ -17,11 +13,6 @@ interface Message {
   type: "user" | "assistant" | "system";
   content: string;
   timestamp: Date;
-  accuracy?: {
-    score: number;
-    label: "High" | "Moderate" | "Low";
-  };
-  missingFactors?: string[];
   predictionId?: number;
   shareToken?: string | null;
   userInput?: string;
@@ -101,36 +92,6 @@ export default function PredictionThread({
                       <Streamdown>{message.content}</Streamdown>
                     </div>
                   </div>
-
-                  {/* Accuracy Score */}
-                  {message.accuracy && (
-                    <div className="mt-6 pt-6 border-t border-border/30">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-primary" />
-                          <span className="text-sm font-medium">Prediction Accuracy</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-primary">
-                            {message.accuracy.score}%
-                          </span>
-                          <Badge variant="secondary" className="text-xs">
-                            {message.accuracy.label}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Progress value={message.accuracy.score} className="h-2 mb-2" />
-                      
-                      {/* Improve Accuracy Card - Show when accuracy is below 75% and there are missing factors */}
-                      {message.accuracy.score < 75 && message.missingFactors && message.missingFactors.length > 0 && (
-                        <ImproveAccuracyCard
-                          missingFactors={message.missingFactors}
-                          currentScore={message.accuracy.score}
-                          onProfileUpdated={onProfileUpdated}
-                        />
-                      )}
-                    </div>
-                  )}
 
                   {/* Feedback & Share */}
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/30">

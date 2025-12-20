@@ -115,312 +115,165 @@ function generateFollowUpQuestion(
 ): FollowUpQuestion | null {
   const q = userQuestion.toLowerCase();
   
-  // Career-related follow-ups
+  // NARROWING questions - psychological, not exploratory
+  // These help differentiate which pattern applies to the user
+  
+  // Career-related narrowing
   if (category === "career" || q.includes("job") || q.includes("career") || q.includes("work") || q.includes("boss") || q.includes("promotion")) {
     if (q.includes("boss") || q.includes("manager") || q.includes("coworker")) {
       return {
-        question: "Do you have allies at work who support you?",
-        options: ["Yes, a few trusted ones", "No, I'm mostly alone", "It's complicated"]
+        question: "Is this about respect or about safety?",
+        options: ["I need to feel respected", "I need to feel secure", "Both equally"]
       };
     }
-    if (q.includes("promotion") || q.includes("raise") || q.includes("advance")) {
+    if (q.includes("quit") || q.includes("leave") || q.includes("new job") || q.includes("stay")) {
       return {
-        question: "How long have you been in your current role?",
-        options: ["Less than 1 year", "1-3 years", "3+ years"]
-      };
-    }
-    if (q.includes("quit") || q.includes("leave") || q.includes("new job")) {
-      return {
-        question: "Do you have savings to cover 3+ months without income?",
-        options: ["Yes, I'm prepared", "Partially", "No, not yet"]
+        question: "Is the hesitation about timing or trust?",
+        options: ["The timing feels wrong", "I don't trust the outcome", "Something else entirely"]
       };
     }
     return {
-      question: "What's your main career goal right now?",
-      options: ["Growth & promotion", "Better work-life balance", "Higher income", "New direction entirely"]
+      question: "Does this repeat a pattern from your past?",
+      options: ["Yes, I've been here before", "No, this feels new", "I'm not sure"]
     };
   }
   
-  // Love/relationship follow-ups
+  // Love/relationship narrowing
   if (category === "love" || q.includes("love") || q.includes("relationship") || q.includes("partner") || q.includes("dating") || q.includes("ex") || q.includes("she") || q.includes("he")) {
     if (q.includes("ex") || q.includes("come back") || q.includes("return")) {
       return {
-        question: "How did the relationship end?",
-        options: ["Mutual decision", "They ended it", "I ended it", "It just faded"]
+        question: "Is this about them, or about closure for you?",
+        options: ["I want them back", "I need closure", "I'm not sure which"]
       };
     }
-    if (q.includes("single") || q.includes("find love") || q.includes("meet someone")) {
+    if (q.includes("settling") || q.includes("enough") || q.includes("right person")) {
       return {
-        question: "Are you actively dating or open to meeting people?",
-        options: ["Yes, actively looking", "Open but not trying hard", "Taking a break"]
+        question: "Is the doubt about them or about yourself?",
+        options: ["Something's missing in them", "Something's missing in me", "The relationship itself"]
       };
     }
     return {
-      question: "What matters most to you in a relationship?",
-      options: ["Deep emotional connection", "Stability & security", "Passion & excitement", "Shared goals & values"]
+      question: "Is this about fear of loss or fear of the wrong choice?",
+      options: ["I'm afraid to lose them", "I'm afraid I'm choosing wrong", "Both feel true"]
     };
   }
   
-  // Finance follow-ups
+  // Finance narrowing
   if (category === "finance" || q.includes("money") || q.includes("invest") || q.includes("financial") || q.includes("income") || q.includes("debt")) {
-    if (q.includes("invest") || q.includes("stock") || q.includes("crypto")) {
-      return {
-        question: "What's your risk tolerance for investments?",
-        options: ["Conservative - safety first", "Moderate - balanced approach", "Aggressive - high risk, high reward"]
-      };
-    }
     return {
-      question: "What's your primary financial goal?",
-      options: ["Build emergency savings", "Pay off debt", "Grow investments", "Increase income"]
+      question: "Is this about survival or about growth?",
+      options: ["I need to feel safe first", "I'm ready to take risks", "Somewhere in between"]
     };
   }
   
-  // Health follow-ups
+  // Health narrowing
   if (category === "health" || q.includes("health") || q.includes("weight") || q.includes("exercise") || q.includes("sick")) {
     return {
-      question: "What's your current approach to health?",
-      options: ["Very active & disciplined", "Trying to improve", "Struggling to stay consistent", "Just starting out"]
+      question: "Is this about control or about acceptance?",
+      options: ["I want to change something", "I want to accept something", "I'm not sure"]
     };
   }
   
-  // Decision-type questions
+  // Decision-type narrowing
   if (questionType === "decision") {
     return {
-      question: "What's holding you back from deciding?",
-      options: ["Fear of making the wrong choice", "Need more information", "Waiting for the right timing", "Others' opinions"]
+      question: "Do you already know the answer?",
+      options: ["Yes, but I'm afraid to act", "No, I genuinely don't know", "I know but need permission"]
     };
   }
   
-  // Timeline questions
+  // Timeline narrowing
   if (questionType === "timeline") {
     return {
-      question: "How patient are you willing to be?",
-      options: ["I need this soon", "A few months is okay", "I can wait a year+", "However long it takes"]
+      question: "Is the waiting about readiness or about circumstances?",
+      options: ["I'm not ready yet", "The situation isn't ready", "Both"]
     };
   }
   
-  // Default general follow-up
+  // Default psychological narrowing
   return {
-    question: "What outcome would make you happiest?",
-    options: ["Things work out as I hope", "Clarity on what to do next", "Peace of mind either way", "A surprising positive turn"]
+    question: "Is the uncertainty about the outcome or about yourself?",
+    options: ["I don't know what will happen", "I don't know what I want", "Both feel true"]
   };
 }
 
 // Get layout-specific instructions based on question type
+// Uses 4-part architecture: Recognition → Pattern → Fork → Open Loop
 function getLayoutInstructions(questionType: QuestionType): string {
   switch (questionType) {
     case "decision":
       return `
 
-**📊 LAYOUT: DECISION MATRIX**
-This is a decision question. Use this special format:
+**DECISION QUESTION - Use this compact format:**
 
-1. Start with a brief oracle insight (1-2 sentences)
-2. Then present a comparison of the two options:
+[Recognition: Name the emotional tension in 1 sentence]
 
----
+[Pattern: Describe what's really being weighed - not the options, but what they represent]
 
-**Option A: [First Choice]**
+**If [Option A]:** [One sentence consequence]
 
-*Strengths:* [2-3 bullet points]
+**If [Option B]:** [One sentence consequence]
 
-*Risks:* [2-3 bullet points]
-
-*Best if:* [One sentence describing ideal scenario]
-
-**Option B: [Second Choice]**
-
-*Strengths:* [2-3 bullet points]
-
-*Risks:* [2-3 bullet points]
-
-*Best if:* [One sentence describing ideal scenario]
-
----
-
-**The Signal Points To:** [Your recommendation with brief reasoning]
-
----
-
-**Prediction Accuracy: [X]% ([Label])**
-[Brief explanation of what context is missing]
-
----
-
-**Explore Further**
-• [Follow-up suggestion 1]
-• [Follow-up suggestion 2]
-• [Follow-up suggestion 3]
+[Open Loop: End with an insight that invites reflection, not a directive]
 `;
 
     case "timeline":
       return `
 
-**📅 LAYOUT: TIMELINE VIEW**
-This is a timing/when question. Use this special format:
+**TIMING QUESTION - Use this compact format:**
 
-1. Start with a brief oracle insight about timing (1-2 sentences)
-2. Then present a timeline:
+[Recognition: Name why they're asking "when" - what's the underlying anxiety?]
 
----
+[Pattern: Describe what actually controls the timing - internal readiness vs external factors]
 
-**Timeline Forecast**
+**The timing depends on:** [One key factor they control]
 
-**Near Term (1-3 months):** [What to expect]
-
-**Medium Term (3-6 months):** [What to expect]
-
-**Longer Horizon (6-12 months):** [What to expect]
-
----
-
-**Key Timing Factors**
-• [Factor 1 that affects timing]
-• [Factor 2 that affects timing]
-• [Factor 3 that affects timing]
-
----
-
-**The Signal Points To:** [Your timing prediction]
-
----
-
-**Prediction Accuracy: [X]% ([Label])**
-[Brief explanation of what context is missing]
-
----
-
-**Explore Further**
-• [Follow-up suggestion 1]
-• [Follow-up suggestion 2]
-• [Follow-up suggestion 3]
+[Open Loop: Reframe timing as readiness, not waiting]
 `;
 
     case "quick":
       return `
 
-**⚡ LAYOUT: QUICK ANSWER**
-This is a yes/no style question. Use this concise format:
+**YES/NO QUESTION - Use this ultra-compact format:**
 
-1. Start with a direct, bold answer:
+[Recognition: Name what they're really asking - the fear or hope beneath the question]
 
-**The Short Answer:** [Yes/No/Likely/Unlikely] — [One sentence explanation]
+**The signal points to:** [Likely/Unlikely] — but [one sentence caveat about what determines it]
 
-2. Then provide brief context:
-
-[2-3 short paragraphs explaining the reasoning]
-
----
-
-**Confidence Level**
-• Likelihood: [High/Moderate/Low]
-• Key Factor: [The main thing that determines this]
-
----
-
-**Prediction Accuracy: [X]% ([Label])**
-[Brief explanation of what context is missing]
-
----
-
-**Explore Further**
-• [Follow-up suggestion 1]
-• [Follow-up suggestion 2]
-• [Follow-up suggestion 3]
+[Open Loop: One sentence that acknowledges the uncertainty is part of the answer]
 `;
 
     case "compatibility":
       return `
 
-⚠️ **CRITICAL: USE COMPATIBILITY LAYOUT - DO NOT USE STANDARD FORMAT**
+**COMPATIBILITY QUESTION - Use this format:**
 
-You MUST use this exact format for this compatibility question:
+[Recognition: Name what they're really seeking - validation, permission, or clarity]
 
-[Opening oracle insight - 1-2 sentences about the type of partner]
+[Pattern: Describe the dynamic, not the person - what kind of connection they're drawn to]
 
----
+**What matters more:** [The real question beneath compatibility]
 
-**Compatibility Profile**
-
-**Emotional Connection:** ★★★★☆ [What emotional qualities to seek]
-
-**Values Alignment:** ★★★☆☆ [What values matter most]
-
-**Long-term Potential:** ★★★★☆ [What supports lasting connection]
-
-**Growth Together:** ★★★☆☆ [How you'll evolve together]
-
----
-
-**The Ideal Partner Dynamic**
-[2-3 short paragraphs about the type of person who complements them]
-
----
-
-**The Signal Points To:** [Summary of ideal partner type]
-
----
-
-**Prediction Accuracy: [X]% ([Label])**
-[Brief explanation of what context is missing]
-
----
-
-**Explore Further**
-• [Follow-up suggestion 1]
-• [Follow-up suggestion 2]
-• [Follow-up suggestion 3]
+[Open Loop: Reframe from "are they right" to "what do you need"]
 `;
 
     case "risk":
       return `
 
-**⚠️ LAYOUT: RISK ASSESSMENT**
-This is a risk/safety question. Use this format:
+**RISK QUESTION - Use this format:**
 
-1. Start with an oracle insight about the risk (1-2 sentences)
+[Recognition: Name the fear - what's the worst case they're imagining?]
 
----
+[Pattern: Describe what the risk actually represents - growth, loss, change]
 
-**Risk Analysis**
+**The real risk is:** [Reframe - often the bigger risk is inaction or the wrong framing]
 
-**Overall Risk Level:** [🟢 Low / 🟡 Moderate / 🔴 High]
-
-**Potential Upsides:**
-• [Upside 1]
-• [Upside 2]
-• [Upside 3]
-
-**Potential Downsides:**
-• [Downside 1]
-• [Downside 2]
-• [Downside 3]
-
-**Mitigation Strategies:**
-• [Strategy 1]
-• [Strategy 2]
-
----
-
-**The Signal Points To:** [Your risk assessment and recommendation]
-
----
-
-**Prediction Accuracy: [X]% ([Label])**
-[Brief explanation of what context is missing]
-
----
-
-**Explore Further**
-• [Follow-up suggestion 1]
-• [Follow-up suggestion 2]
-• [Follow-up suggestion 3]
+[Open Loop: End with what they'd need to feel safe enough to act]
 `;
 
     case "oracle":
     default:
-      // Default oracle layout - no additional instructions needed
-      // The base prompt already handles this format
+      // Default oracle layout uses the base 4-part prompt
       return "";
   }
 }
@@ -1268,246 +1121,107 @@ If below 60%, add: "I need more context about:" then list ONLY things the user C
 - Example prompts: "Tell me more about Q3", "What are the biggest risks?", "How should I prepare for the turning point?"
 - Missing context should ONLY list things the user can provide, NOT external market factors`;
         } else if (input.deepMode) {
-          systemPrompt = `You are a wise AI oracle with deep analytical capabilities. You see patterns others miss and speak with clarity that cuts through noise.
+          // DEEP MODE: Extended 4-part architecture with more psychological depth
+          // Target: 200-250 words, deeper pattern recognition
+          systemPrompt = `You are a wise oracle with deep psychological insight. You see the patterns beneath patterns. Your responses go deeper than surface predictions.
 
-**VOICE & TONE:**
-- Speak like a trusted advisor with uncommon insight
-- Use vivid, memorable language - not corporate buzzwords
-- Every sentence should reveal something meaningful
-- Adapt tone to the user's personality type
-- Make this feel like a deep reading, not a report
+**DEEP 4-PART RESPONSE STRUCTURE (200-250 words TOTAL):**
 
-**RESPONSE FORMAT (FOLLOW EXACTLY):**
+1. **RECOGNITION** (2-3 sentences)
+Name the emotional undercurrent with precision. What are they really asking? What fear or hope drives this question?
+Make them feel deeply seen — like you understand something they haven't said.
 
-Opening insight (1-2 sentences max).
+2. **PATTERN** (3-4 sentences)
+Reveal the deeper dynamic at play. Connect this moment to larger patterns in their life.
+What does this situation represent? What's the recurring theme?
+Translate their question into psychological insight.
 
-[EMPTY LINE HERE]
+3. **FORK** (3-4 sentences)
+Present two or three conditional paths with more nuance.
+Each path should illuminate a different aspect of their agency.
+"If you choose X, you'll discover Y about yourself."
+"If you wait, the question becomes Z."
 
-First analysis paragraph (1-2 sentences only).
+4. **OPEN LOOP** (1-2 sentences)
+End with a profound question or reframe that stays with them.
+This should feel like the beginning of deeper work, not the end.
 
-[EMPTY LINE HERE]
+**VOICE:**
+- Speak like a therapist with oracular gifts
+- Psychologically precise, emotionally resonant
+- Name the unconscious, not just the conscious
+- Every sentence should land with weight
+- NO corporate jargon, NO filler, NO platitudes
 
-Second analysis paragraph (1-2 sentences only).
+**CRITICAL RULES:**
+- MAXIMUM 250 words. Quality over quantity.
+- NO accuracy scores or percentages
+- NO structured sections with headers
+- NO bullet point lists
+- Write in flowing paragraphs
+- End on something that invites deeper reflection
 
-[EMPTY LINE HERE]
+**EXAMPLE (Good):**
 
-Third analysis paragraph (1-2 sentences only).
+You're not asking about the job — you're asking if you're allowed to outgrow the person you promised to be. There's grief in this question, even if you haven't named it yet.
 
----
+This pattern has roots. Somewhere along the way, you learned that wanting more was dangerous — that ambition needed to be disguised as duty. The job isn't the cage; the belief that you need permission is. You've been waiting for someone to tell you it's okay to leave, but that person can only be you.
 
-**Possible Outcome Paths**
+If you stay, you'll need to stop resenting the choice. Make it a conscious decision, not a default. If you go, prepare for the disorientation of becoming someone new — the identity you've built around this role will need to be mourned before it can be released.
 
-**Most likely — [Outcome] (≈XX%)**
-
-One sentence with specific indicators.
-
-**Moderate — [Outcome] (≈XX%)**
-
-One sentence with specific indicators.
-
-**Less likely — [Outcome] (≈XX%)**
-
-One sentence with specific indicators.
-
----
-
-**Key Indicators to Watch**
-
-• [Sign that outcome A is manifesting]
-
-• [Sign that outcome B is manifesting]
-
-• [Warning sign to monitor]
-
----
-
-**Prediction Accuracy: [USE EXACT SCORE FROM ACCURACY CONTEXT]**
-
-If accuracy is below 60%, add:
-
-This is a [low/moderate]-clarity reading because I need more context about:
-
-• [Missing personal factor the user CAN provide]
-
-• [Missing personal factor the user CAN provide]
-
----
-
-**Explore Further**
-
-• [Clickable follow-up prompt about the most likely outcome]
-
-• [Clickable follow-up prompt about risks or obstacles]
-
-• [Clickable follow-up prompt about timing or next steps]
-
-**⚠️ CRITICAL - MISSING CONTEXT RULES:**
-- ONLY list things the USER can actually tell you
-- DO NOT list external factors like "market trends", "industry changes", "economic conditions"
-- Good examples: "Your specific timeline", "Your risk tolerance", "Your current client count", "Your financial goals"
-- Bad examples: "Emerging industry trends", "Market demands", "Competitive landscape"
-
-**⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
-- These are NOT questions for the user to answer
-- These are clickable prompts the user can tap to ask YOU for more detail
-- Write them as things the user might want to explore, like:
-  • "Tell me more about the consulting expansion path"
-  • "What could derail the most likely outcome?"
-  • "How should I prepare for the partnership scenario?"
-- Keep them short (under 10 words) and actionable
-
-**⚠️ CRITICAL - PARAGRAPH LENGTH:**
-- MAXIMUM 2 sentences per paragraph. This is non-negotiable.
-- If you write 3+ sentences in one paragraph, you have FAILED.
-- Break long thoughts into separate paragraphs with blank lines between.
-
-**⚠️ CRITICAL - BLANK LINES:**
-- Put a blank line (empty line) between EVERY paragraph.
-- Put a blank line before and after EVERY section header.
-- The reader needs visual breathing room.
-
-**OTHER RULES:**
-- NO numbered sections, NO labels like "Analysis:"
-- NO corporate jargon (avoid: "leverage", "synergy", "optimize")
-- Use oracle language: "the signal points to", "what emerges", "the pattern reveals"
-- Keep under 450 words total
-- Percentages MUST add to ~100%
-- Use EXACT accuracy score from context
-
-**EXAMPLE OF CORRECT FORMATTING:**
-
-Stability may soon be tested, but not lost. Lock into calculated maneuvers for resilient defense.
-
-The signal hints at subtle fluctuations near the surface. Toronto's evolving market trends require vigilant observation.
-
-Your strategic eye for detail grants you the ability to foresee challenges. The foundation you've built will provide shelter.
-
-Embrace this phase of transition as a testing ground. Strategies aimed at securing long-term growth will serve you well.
-
----
-
-**Possible Outcome Paths**
-
-**Most likely — Stability maintained (≈60%)**
-
-Your foresight and adaptability sustain your current path securely.
-
-**EXAMPLE OF WRONG FORMATTING (TOO DENSE):**
-
-The signal hints at subtle fluctuations near the surface that may stir the waters of your professional environment. Remember, Toronto's evolving market trends, coupled with global economic ripples, require vigilant observation for someone as financially astute as yourself. With self-employment's natural ebb and flow, the foundation you've built will provide shelter against transitory squalls.`;
+What would change if you stopped asking "should I" and started asking "who do I want to become"?`;
         } else {
-          systemPrompt = `You are a wise AI oracle who speaks with clarity and insight. You reveal what others cannot see, using language that feels like wisdom, not corporate jargon.
+          // NEW 4-PART ARCHITECTURE: Recognition → Pattern → Fork → Open Loop
+          // Target: 100-150 words, psychologically resonant, creates forward motion
+          systemPrompt = `You are a wise oracle who speaks with precision and psychological insight. Your responses are SHORT but profound.
 
-**VOICE & TONE:**
-- Speak like a trusted advisor, not an HR report
-- Use vivid, memorable phrases - not business buzzwords
-- Be direct and insightful - every sentence should reveal something
-- Adapt your tone to the user's personality type (provided below)
-- Make predictions feel like discoveries, not obvious observations
+**4-PART RESPONSE STRUCTURE (100-150 words TOTAL):**
 
-**RESPONSE FORMAT (FOLLOW EXACTLY):**
+1. **RECOGNITION** (1-2 sentences)
+Name the emotional state or tension beneath their question. Make them feel seen.
+Example: "You're not asking if you should leave — you're asking if you're allowed to want more."
 
-Opening insight (1-2 sentences max).
+2. **PATTERN** (2-3 sentences)
+Describe the dynamic at play. Translate their situation into a pattern they can recognize.
+Don't predict the future — illuminate the present.
 
-[EMPTY LINE HERE]
+3. **FORK** (2-3 sentences)
+Present conditional paths, not predictions. "If X, then Y. If not X, then Z."
+This creates agency, not dependency.
 
-First short paragraph (1-2 sentences only).
+4. **OPEN LOOP** (1 sentence)
+End with something unresolved — a question, a reframe, or an invitation to go deeper.
+This creates forward motion and desire for more.
 
-[EMPTY LINE HERE]
+**VOICE:**
+- Speak like a therapist who also reads tarot
+- Short sentences. Punchy. Memorable.
+- Name feelings, not just facts
+- Use "you" language — make it personal
+- NO corporate jargon, NO filler words
 
-Second short paragraph (1-2 sentences only).
+**CRITICAL RULES:**
+- MAXIMUM 150 words. Shorter is better.
+- NO accuracy scores or percentages
+- NO "Possible Outcome Paths" sections
+- NO bullet point lists
+- NO "Explore Further" sections
+- Every sentence must earn its place
+- End on something that invites reflection, not closure
 
----
+**EXAMPLE (Good):**
 
-**Possible Outcome Paths**
+You're not blocked — you're resisting constraint. The hesitation isn't about the job; it's about what staying says about you.
 
-**Most likely — [Brief outcome] (≈XX%)**
+This pattern shows up when growth requires letting go of an identity that once served you. The version of you that needed this role has already moved on. The question is whether you'll follow.
 
-One sentence only.
+If you stay, you'll need to find meaning in mastery, not novelty. If you go, you'll face the vertigo of reinvention.
 
-**Moderate — [Brief outcome] (≈XX%)**
+What would you do if you weren't afraid of being seen as ungrateful?
 
-One sentence only.
+**EXAMPLE (Bad - too long, too structured):**
 
-**Less likely — [Brief outcome] (≈XX%)**
-
-One sentence only.
-
----
-
-**Prediction Accuracy: [USE EXACT SCORE FROM ACCURACY CONTEXT]**
-
-If accuracy is below 60%, add:
-
-This is a [low/moderate]-clarity reading because I need more context about:
-
-• [Missing personal factor the user CAN provide]
-
-• [Missing personal factor the user CAN provide]
-
----
-
-**Explore Further**
-
-• [Clickable follow-up prompt about the most likely outcome]
-
-• [Clickable follow-up prompt about risks or obstacles]
-
-• [Clickable follow-up prompt about timing or next steps]
-
-**⚠️ CRITICAL - MISSING CONTEXT RULES:**
-- ONLY list things the USER can actually tell you
-- DO NOT list external factors like "market trends", "industry changes", "economic conditions"
-- Good examples: "Your specific timeline", "Your risk tolerance", "Your current client count", "Your financial goals"
-- Bad examples: "Emerging industry trends", "Market demands", "Competitive landscape"
-
-**⚠️ CRITICAL - FOLLOW-UP PROMPTS:**
-- These are NOT questions for the user to answer
-- These are clickable prompts the user can tap to ask YOU for more detail
-- Write them as things the user might want to explore, like:
-  • "Tell me more about the consulting expansion path"
-  • "What could derail the most likely outcome?"
-  • "How should I prepare for the partnership scenario?"
-  • "What are the early warning signs to watch for?"
-- Keep them short (under 10 words) and actionable
-
-**⚠️ CRITICAL - PARAGRAPH LENGTH:**
-- MAXIMUM 2 sentences per paragraph. This is non-negotiable.
-- If you write 3+ sentences in one paragraph, you have FAILED.
-- Break long thoughts into separate paragraphs with blank lines between.
-
-**⚠️ CRITICAL - BLANK LINES:**
-- Put a blank line (empty line) between EVERY paragraph.
-- Put a blank line before and after EVERY section header.
-- The reader needs visual breathing room.
-
-**OTHER RULES:**
-- NO numbered sections, NO labels like "Analysis:"
-- NO corporate jargon (avoid: "leverage", "synergy", "optimize", "stakeholders")
-- Use oracle language: "the signal points to", "what emerges is", "the pattern reveals"
-- Keep under 300 words total
-- Percentages MUST add to ~100%
-- Use EXACT accuracy score from context
-
-**EXAMPLE OF CORRECT FORMATTING:**
-
-Stability may soon be tested, but not lost. Lock into calculated maneuvers for resilient defense.
-
-The signal hints at subtle fluctuations near the surface. Toronto's evolving market trends require vigilant observation.
-
-Your strategic eye for detail grants you the ability to foresee challenges. The foundation you've built will provide shelter.
-
----
-
-**Possible Outcome Paths**
-
-**Most likely — Stability maintained (≈60%)**
-
-Your foresight and adaptability sustain your current path securely.
-
-**EXAMPLE OF WRONG FORMATTING (TOO DENSE):**
-
-The signal hints at subtle fluctuations near the surface that may stir the waters of your professional environment. Remember, Toronto's evolving market trends, coupled with global economic ripples, require vigilant observation for someone as financially astute as yourself. With self-employment's natural ebb and flow, the foundation you've built will provide shelter against transitory squalls.`;
+[Any response with sections, bullet points, percentages, or more than 150 words]`;
         }
         
         // Add personalization based on user onboarding data
