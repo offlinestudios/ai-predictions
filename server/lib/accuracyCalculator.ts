@@ -262,19 +262,10 @@ export function calculateAccuracy(
 
 /**
  * Format accuracy info for inclusion in the AI prompt
+ * NOTE: Accuracy scores have been removed from the UI and prompts.
+ * This function now returns empty string to prevent accuracy from appearing in responses.
  */
 export function formatAccuracyForPrompt(accuracy: AccuracyResult): string {
-  let prompt = `\n\n**PREDICTION ACCURACY CONTEXT:**\n`;
-  prompt += `Based on available information, this prediction has a calculated accuracy of ${accuracy.score}% (${accuracy.label}).\n`;
-  
-  if (accuracy.missingFactors.length > 0) {
-    prompt += `\nMissing context that would improve accuracy:\n`;
-    for (const factor of accuracy.missingFactors) {
-      prompt += `• ${factor}\n`;
-    }
-  }
-  
-  prompt += `\n**IMPORTANT:** Use EXACTLY "${accuracy.score}% (${accuracy.label})" as the Prediction Accuracy in your response. Do not make up a different number.\n`;
-  
-  return prompt;
+  // Accuracy scores removed from predictions - return empty string
+  return "";
 }

@@ -50,7 +50,7 @@ export default function PostPredictionPaywall({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -91,9 +91,9 @@ export default function PostPredictionPaywall({
           {/* Upgrade Options */}
           <div className="grid md:grid-cols-2 gap-4 pt-4">
             {/* Plus Tier */}
-            <Card className="p-6 border-2 border-amber-500/30 bg-amber-500/5 hover:border-amber-500/50 transition-all">
+            <Card className="p-6 border-2 border-purple-400/30 bg-purple-400/5 hover:border-purple-400/50 transition-all">
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-6 h-6 text-amber-500" />
+                <Zap className="w-6 h-6 text-purple-400" />
                 <h3 className="text-xl font-bold">Plus</h3>
               </div>
               <div className="mb-4">
@@ -102,19 +102,19 @@ export default function PostPredictionPaywall({
               </div>
               <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-start gap-2">
-                  <TrendingUp className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <TrendingUp className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
                   <span>Unlimited predictions</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <TrendingUp className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <TrendingUp className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
                   <span>30-day trajectory forecasts</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <TrendingUp className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <TrendingUp className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
                   <span>Deep prediction mode</span>
                 </li>
               </ul>
-              <Button asChild className="w-full bg-amber-500 hover:bg-amber-600">
+              <Button asChild className="w-full bg-purple-500 hover:bg-purple-600">
                 <Link href="/dashboard?upgrade=plus">
                   Unlock 30-Day Path
                   <ArrowRight className="ml-2 w-4 h-4" />

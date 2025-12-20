@@ -58,6 +58,8 @@ export default function DashboardChat() {
     predictionResult: string;
     shareToken: string | null;
   } | null>(null);
+  // Track the original root question for follow-ups (prevents nested context strings)
+  const [rootQuestion, setRootQuestion] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
@@ -118,8 +120,8 @@ export default function DashboardChat() {
         });
       }
 
-      // Show paywall for free users after prediction
-      if (subscription?.tier === "free") {
+      // Show paywall for free users only when approaching or at limit (2+ predictions used)
+      if (subscription?.tier === "free" && (subscription?.totalUsed || 0) >= 2) {
         setTimeout(() => setShowPostPredictionPaywall(true), 2000);
       }
     },
@@ -147,6 +149,11 @@ export default function DashboardChat() {
       toast.error("You've used all 3 free predictions. Upgrade to continue!");
       setShowPostPredictionPaywall(true);
       return;
+    }
+
+    // Set root question if this is the first prediction in the thread
+    if (!rootQuestion && !currentPredictionId) {
+      setRootQuestion(question);
     }
 
     // Add user message
@@ -221,6 +228,7 @@ export default function DashboardChat() {
     setMessages([]);
     setCurrentPredictionId(null);
     setCurrentPrediction(null);
+    setRootQuestion(null); // Reset root question for new thread
     toast.success("Starting a new prediction");
   };
 
@@ -244,11 +252,14 @@ export default function DashboardChat() {
   };
 
   // Handle follow-up question selection
-  const handleFollowUpSelect = (option: string, originalQuestion: string) => {
-    // Create a follow-up message that includes the user's answer
-    const followUpMessage = `Based on my previous question about "${originalQuestion}", here's more context: ${option}`;
+  const handleFollowUpSelect = (option: string, _originalQuestion: string) => {
+    // Use the root question (first question in thread) to avoid nested context strings
+    const questionContext = rootQuestion || _originalQuestion;
     
-    // Add user message for the follow-up
+    // Create a follow-up message that includes the user's answer
+    const followUpMessage = `Regarding my question "${questionContext}": ${option}`;
+    
+    // Add user message for the follow-up (show just the option selected)
     const userMessage: Message = {
       id: `msg-${Date.now()}-user`,
       type: "user",
