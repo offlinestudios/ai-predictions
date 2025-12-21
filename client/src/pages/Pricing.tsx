@@ -220,7 +220,7 @@ export default function Pricing() {
         </div>
 
         {/* Simple FAQ */}
-        <div className="max-w-2xl mx-auto pt-8">
+        <div className="max-w-2xl mx-auto">
           <div className="space-y-6 text-center">
             <div>
               <h3 className="text-lg font-semibold mb-2">Can I cancel anytime?</h3>
@@ -239,7 +239,7 @@ export default function Pricing() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center pt-8">
+        <div className="text-center">
           <p className="text-muted-foreground mb-6">
             Not sure yet? Start free and see how it feels.
           </p>
