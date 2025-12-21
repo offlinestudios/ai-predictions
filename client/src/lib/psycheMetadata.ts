@@ -238,7 +238,12 @@ export const LEGACY_TYPE_MAPPING: Record<string, string> = {
 };
 
 // Helper function to get metadata for a psyche type
-export function getPsycheMetadata(psycheType: string): PsycheMetadata | null {
+export function getPsycheMetadata(psycheType: string | null | undefined): PsycheMetadata | null {
+  // Handle null/undefined/non-string values
+  if (!psycheType || typeof psycheType !== 'string') {
+    return PSYCHE_METADATA.strategist;
+  }
+  
   // Normalize the type name (handle various formats)
   const normalizedType = psycheType
     .toLowerCase()
@@ -266,7 +271,12 @@ export function getPsycheMetadata(psycheType: string): PsycheMetadata | null {
 }
 
 // Get the new display name for any psyche type (including legacy)
-export function getDisplayName(psycheType: string): string {
+export function getDisplayName(psycheType: string | null | undefined): string {
+  // Handle null/undefined/non-string values
+  if (!psycheType || typeof psycheType !== 'string') {
+    return "The Strategist";
+  }
+  
   const normalizedType = psycheType
     .toLowerCase()
     .replace(/^the\s+/i, '')
