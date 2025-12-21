@@ -304,19 +304,19 @@ export default function PsycheOnboardingNew() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-background to-primary/5">
-      {/* Progress Bar */}
-      {currentStep !== "welcome" && (
-        <div className="w-full max-w-md mx-auto px-4 pt-8">
-          <Progress value={getProgress()} className="h-2" />
-          <p className="text-center text-sm text-muted-foreground mt-2">
-            {Math.round(getProgress())}% complete
-          </p>
-        </div>
-      )}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background via-background to-primary/5 p-4">
+      <div className="w-full max-w-md">
+        {/* Progress Bar - directly above card */}
+        {currentStep !== "welcome" && (
+          <div className="mb-4">
+            <Progress value={getProgress()} className="h-2" />
+            <p className="text-center text-sm text-muted-foreground mt-2">
+              {Math.round(getProgress())}% complete
+            </p>
+          </div>
+        )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
+        {/* Main Content */}
         <AnimatePresence mode="wait">
           {/* Welcome Screen */}
           {currentStep === "welcome" && (
@@ -325,7 +325,6 @@ export default function PsycheOnboardingNew() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-md"
             >
               <Card className="border-primary/20 shadow-2xl">
                 <CardHeader className="text-center space-y-4">
@@ -356,7 +355,6 @@ export default function PsycheOnboardingNew() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="w-full max-w-md"
             >
               <Card className="border-primary/20 shadow-xl">
                 <CardHeader>
@@ -399,7 +397,6 @@ export default function PsycheOnboardingNew() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="w-full max-w-md"
             >
               <Card className="border-primary/20 shadow-xl">
                 <CardHeader>
