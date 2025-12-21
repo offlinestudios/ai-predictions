@@ -228,6 +228,19 @@ export default function PsycheOnboardingNew() {
 
   // Profile reveal screen
   if (currentStep === "profile-reveal" && profile) {
+    // Parse parameters if they're a string
+    const params = typeof profile.parameters === 'string' 
+      ? JSON.parse(profile.parameters) 
+      : (profile.parameters || {});
+    
+    const traits = [
+      { label: "Risk Appetite", value: (params.risk_appetite || 0.5) * 100 },
+      { label: "Emotional Intensity", value: (params.emotional_reactivity || 0.5) * 100 },
+      { label: "Consistency", value: (params.time_consistency || 0.5) * 100 },
+      { label: "Data-Driven", value: (params.data_orientation || 0.5) * 100 },
+      { label: "Volatility Comfort", value: (params.volatility_tolerance || 0.5) * 100 },
+    ];
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background via-background to-primary/5 p-4">
         <motion.div
@@ -241,35 +254,38 @@ export default function PsycheOnboardingNew() {
                 <Sparkles className="w-8 h-8 text-primary" />
               </div>
               <CardTitle className="text-2xl font-bold">
-                Welcome, {nickname}
+                {profile.displayName || "Your Profile"}
               </CardTitle>
               <CardDescription className="text-base">
-                Your profile has been created. You're ready to start.
+                {profile.description || "Your profile has been created. You're ready to start."}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Profile Summary */}
-              <div className="space-y-4 p-4 rounded-lg bg-muted/30">
-                <h3 className="font-semibold text-center">Your Psyche Profile</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="text-center">
-                    <p className="text-muted-foreground">Risk Tolerance</p>
-                    <p className="font-medium">{profile.riskTolerance || "Balanced"}</p>
+              {/* Progress Bars */}
+              <div className="space-y-4">
+                {traits.map((trait) => (
+                  <div key={trait.label} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{trait.label}</span>
+                      <span className="font-medium">{Math.round(trait.value)}%</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all duration-500"
+                        style={{ width: `${trait.value}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-muted-foreground">Decision Style</p>
-                    <p className="font-medium">{profile.decisionStyle || "Adaptive"}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-muted-foreground">Time Horizon</p>
-                    <p className="font-medium">{profile.timeHorizon || "Medium-term"}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-muted-foreground">Emotional Style</p>
-                    <p className="font-medium">{profile.emotionalStyle || "Balanced"}</p>
-                  </div>
-                </div>
+                ))}
               </div>
+
+              {/* Decision Making Style */}
+              {profile.decisionMakingStyle && (
+                <div className="p-4 rounded-lg bg-muted/30 space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Decision-Making Style</h4>
+                  <p className="text-sm">{profile.decisionMakingStyle}</p>
+                </div>
+              )}
 
               <Button
                 onClick={() => navigate("/dashboard")}
