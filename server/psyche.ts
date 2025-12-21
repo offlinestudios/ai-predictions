@@ -243,10 +243,16 @@ export async function getPsycheProfile(userId: number) {
   const normalizedType = normalizeTypeKey(profile.psycheType);
   const typeData = PSYCHE_TYPES[normalizedType as keyof typeof PSYCHE_TYPES] || PSYCHE_TYPES.adapter;
 
+  // Return the database record with normalized type and fallback to typeData for missing fields
   return {
-    ...typeData,
+    ...profile,
     psycheType: normalizedType,
-    parameters: profile.parameters || typeData.parameters
+    displayName: typeData.displayName, // Always use new display name
+    description: profile.description || typeData.description,
+    coreTraits: profile.coreTraits || JSON.stringify(typeData.coreTraits),
+    decisionMakingStyle: profile.decisionMakingStyle || typeData.decisionMakingStyle,
+    growthEdge: profile.growthEdge || typeData.growthEdge,
+    psycheParameters: profile.psycheParameters || JSON.stringify(typeData.parameters),
   };
 }
 

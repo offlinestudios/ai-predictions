@@ -24,6 +24,7 @@ interface ChatComposerProps {
     totalUsed: number;
   } | null;
   onUpgradeClick?: () => void;
+  hasActiveThread?: boolean; // Whether there are messages in the current thread
 }
 
 export default function ChatComposer({ 
@@ -33,6 +34,7 @@ export default function ChatComposer({
   sidebarCollapsed = false,
   subscription,
   onUpgradeClick,
+  hasActiveThread = false,
 }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -83,8 +85,9 @@ export default function ChatComposer({
   };
 
   // Check if free tier limit reached - use totalUsed from subscription
+  // Only show inline paywall when user has an active thread AND has reached the limit
   const totalUsed = subscription?.totalUsed ?? 0;
-  const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3;
+  const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3 && hasActiveThread;
 
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>

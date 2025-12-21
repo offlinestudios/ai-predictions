@@ -363,6 +363,7 @@ export default function DashboardChat() {
           sidebarCollapsed={sidebarCollapsed}
           subscription={subscription}
           onUpgradeClick={() => setShowPostPredictionPaywall(true)}
+          hasActiveThread={messages.length > 0}
         />
 
         {/* Modals */}
