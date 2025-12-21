@@ -15,16 +15,14 @@ import {
   TrendingUp,
   Zap,
   Check,
-  AlertTriangle,
-  Star,
-  BarChart3
+  AlertTriangle
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { PersonalityBars } from "./PersonalityRadarChart";
 import ShareablePsycheCard from "./ShareablePsycheCard";
-import { getPsycheMetadata, getCompatibleTypes } from "@/lib/psycheMetadata";
+import { getPsycheMetadata, getCompatibleTypes, getDisplayName } from "@/lib/psycheMetadata";
 import {
   Dialog,
   DialogContent,
@@ -93,6 +91,7 @@ export default function PsycheProfileCard() {
   // Get metadata for this psyche type
   const psycheType = profile.psycheType || profile.displayName.toLowerCase().replace(/^the\s+/i, '').replace(/\s+/g, '_');
   const metadata = getPsycheMetadata(psycheType);
+  const displayName = getDisplayName(psycheType);
 
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
@@ -100,17 +99,8 @@ export default function PsycheProfileCard() {
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              {profile.displayName}
+              {displayName}
             </CardTitle>
-            {/* Rarity Badge - Below personality type name */}
-            {metadata && (
-              <div className="mt-2">
-                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 cursor-default">
-                  <Star className="w-3 h-3 mr-1" />
-                  {metadata.rarityLabel} • Only {metadata.rarity}% of users
-                </Badge>
-              </div>
-            )}
           </div>
           
           {/* Share Button - Updated to Upload icon */}
@@ -152,7 +142,7 @@ export default function PsycheProfileCard() {
             {profile.parameters && (
               <PersonalityBars 
                 data={profile.parameters}
-                color={metadata?.color || '#8b5cf6'}
+                color="#8b5cf6"
               />
             )}
 
@@ -252,7 +242,7 @@ export default function PsycheProfileCard() {
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  Famous {profile.displayName.replace('The ', '')}s
+                  Famous {displayName.replace('The ', '')}s
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {metadata.famousExamples.map((name, index) => (

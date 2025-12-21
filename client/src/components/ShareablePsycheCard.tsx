@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import PersonalityRadarChart from "./PersonalityRadarChart";
-import { getPsycheMetadata, getCompatibleTypes } from "@/lib/psycheMetadata";
+import { getPsycheMetadata, getCompatibleTypes, getDisplayName } from "@/lib/psycheMetadata";
 
 interface ShareablePsycheCardProps {
   profile: {
@@ -38,9 +38,10 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
   // Get metadata for this psyche type
   const psycheType = profile.psycheType || profile.displayName.toLowerCase().replace(/^the\s+/i, '').replace(/\s+/g, '_');
   const metadata = getPsycheMetadata(psycheType);
+  const displayName = getDisplayName(psycheType);
 
   const shareUrl = `${window.location.origin}?ref=psyche`;
-  const shareText = `I'm ${profile.displayName} ${metadata?.icon || '✨'} - ${profile.description.split('.')[0]}. Discover your prediction personality at`;
+  const shareText = `I'm ${displayName} ✨ - ${profile.description.split('.')[0]}. Discover your prediction personality at`;
 
   // Generate image from card
   const generateImage = async (): Promise<Blob | null> => {
@@ -121,7 +122,7 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
         const files = blob ? [new File([blob], 'psyche-profile.png', { type: 'image/png' })] : [];
         
         await navigator.share({
-          title: `My Psyche Profile: ${profile.displayName}`,
+          title: `My Psyche Profile: ${displayName}`,
           text: shareText,
           url: shareUrl,
           ...(files.length > 0 && navigator.canShare?.({ files }) ? { files } : {})
@@ -147,8 +148,8 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, ${metadata?.color || '#8b5cf6'} 0%, transparent 50%),
-                             radial-gradient(circle at 75% 75%, ${metadata?.color || '#8b5cf6'} 0%, transparent 50%)`
+            backgroundImage: `radial-gradient(circle at 25% 25%, #8b5cf6 0%, transparent 50%),
+                             radial-gradient(circle at 75% 75%, #8b5cf6 0%, transparent 50%)`
           }} />
         </div>
 
@@ -157,31 +158,18 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                style={{ backgroundColor: `${metadata?.color || '#8b5cf6'}20` }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: '#8b5cf620' }}
               >
-                {metadata?.icon || '✨'}
+                <img src="/logo.svg" alt="Predicsure" className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">{profile.displayName}</h3>
+                <h3 className="text-xl font-bold text-white">{displayName}</h3>
                 {userName && (
                   <p className="text-sm text-muted-foreground">{userName}'s Psyche</p>
                 )}
               </div>
             </div>
-            
-            {/* Rarity badge */}
-            {metadata && (
-              <div 
-                className="px-3 py-1 rounded-full text-xs font-semibold"
-                style={{ 
-                  backgroundColor: `${metadata.color}20`,
-                  color: metadata.color
-                }}
-              >
-                {metadata.rarityLabel} • {metadata.rarity}%
-              </div>
-            )}
           </div>
 
           {/* Description */}
@@ -195,7 +183,7 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
               <PersonalityRadarChart 
                 data={profile.parameters} 
                 size={180}
-                color={metadata?.color || '#8b5cf6'}
+                color="#8b5cf6"
               />
             </div>
           )}
@@ -216,7 +204,7 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
           {metadata?.superpower && (
             <div className="p-3 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-4 h-4" style={{ color: metadata.color }} />
+                <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Your Superpower
                 </span>
@@ -236,7 +224,7 @@ export default function ShareablePsycheCard({ profile, userName }: ShareablePsyc
           {/* Famous examples */}
           {metadata?.famousExamples && (
             <div className="text-xs text-muted-foreground">
-              <span className="font-medium">Famous {profile.displayName.replace('The ', '')}s: </span>
+              <span className="font-medium">Famous {displayName.replace('The ', '')}s: </span>
               {metadata.famousExamples.slice(0, 3).join(', ')}
             </div>
           )}

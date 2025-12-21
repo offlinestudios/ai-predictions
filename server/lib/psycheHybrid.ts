@@ -7,22 +7,22 @@
  */
 
 /**
- * Map new psyche type names to database-compatible values
- * Database expects: quiet_strategist, intuitive_empath, ambitious_builder, etc.
+ * Map display type names to database-compatible values
+ * Database now uses new type names: maverick, strategist, visionary, etc.
  */
 function mapPsycheTypeToDatabase(displayType: string): string {
   const mapping: Record<string, string> = {
-    "The Maverick": "risk_addict",
-    "The Strategist": "quiet_strategist",
-    "The Visionary": "ambitious_builder",
-    "The Guardian": "stabilizer",
-    "The Pioneer": "long_term_builder",
-    "The Pragmatist": "pattern_analyst",
-    "The Catalyst": "momentum_chaser",
-    "The Adapter": "intuitive_empath"
+    "The Maverick": "maverick",
+    "The Strategist": "strategist",
+    "The Visionary": "visionary",
+    "The Guardian": "guardian",
+    "The Pioneer": "pioneer",
+    "The Pragmatist": "pragmatist",
+    "The Catalyst": "catalyst",
+    "The Adapter": "adapter"
   };
   
-  return mapping[displayType] || "intuitive_empath";
+  return mapping[displayType] || "adapter";
 }
 
 export interface HybridResponse {
