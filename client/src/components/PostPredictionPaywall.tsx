@@ -1,9 +1,11 @@
 import { Dialog, DialogDescription, DialogHeader, DialogTitle, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, X } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, X, Loader2 } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface PostPredictionPaywallProps {
   open: boolean;
@@ -20,11 +22,34 @@ export default function PostPredictionPaywall({
   predictionCategory = "general",
   sidebarCollapsed = false
 }: PostPredictionPaywallProps) {
-  // Sidebar is w-64 (256px) when expanded, w-16 (64px) when collapsed
-  // We offset by half the sidebar width to center in the remaining space
-  // 256px / 2 = 128px offset when expanded
-  // 64px / 2 = 32px offset when collapsed
-  const sidebarOffset = sidebarCollapsed ? 32 : 128;
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  
+  const createCheckoutMutation = trpc.subscription.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to create checkout session: " + error.message);
+      setLoadingTier(null);
+    },
+  });
+
+  const handleUpgrade = (tier: "plus" | "premium") => {
+    setLoadingTier(tier);
+    
+    // Map tier to the correct format for the API
+    // Plus uses "pro" tier in API with monthly billing
+    // Premium uses "premium" tier in API with yearly billing
+    const apiTier = tier === "plus" ? "pro" : "premium";
+    const interval = tier === "premium" ? "year" : "month";
+    
+    createCheckoutMutation.mutate({
+      tier: apiTier as "pro" | "premium",
+      interval,
+    });
+  };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,11 +95,23 @@ export default function PostPredictionPaywall({
 
             {/* Single Clear CTA - Plus Only */}
             <div className="space-y-3">
-              <Button asChild className="w-full h-12 text-base" size="lg">
-                <Link href="/pricing?plan=plus">
-                  Continue with Plus
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
+              <Button 
+                className="w-full h-12 text-base" 
+                size="lg"
+                onClick={() => handleUpgrade("plus")}
+                disabled={loadingTier === "plus"}
+              >
+                {loadingTier === "plus" ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    Continue with Plus
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </>
+                )}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
                 $9.99/month · Unlimited clarity · Cancel anytime
@@ -86,10 +123,21 @@ export default function PostPredictionPaywall({
               <p className="text-xs text-muted-foreground mb-2">
                 Prefer not to carry this uncertainty forward?
               </p>
-              <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                <Link href="/pricing?plan=premium">
-                  Get Premium for $59/year →
-                </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary hover:text-primary/80"
+                onClick={() => handleUpgrade("premium")}
+                disabled={loadingTier === "premium"}
+              >
+                {loadingTier === "premium" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  "Get Premium for $59/year →"
+                )}
               </Button>
             </div>
 
