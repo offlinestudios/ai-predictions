@@ -1,6 +1,6 @@
 import { getDb } from "./db";
 import { psycheProfiles, onboardingResponses, users } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 // Psyche type definitions with parameters - using new archetype names
 export const PSYCHE_TYPES = {
@@ -230,10 +230,10 @@ export function calculatePsycheType(responses: Record<string, string>): string {
 // Get psyche profile for a user
 export async function getPsycheProfile(userId: number) {
   const db = await getDb();
+  if (!db) return null;
   
-  const profile = await db.query.psycheProfiles.findFirst({
-    where: eq(psycheProfiles.userId, userId)
-  });
+  const results = await db.select().from(psycheProfiles).where(eq(psycheProfiles.userId, userId)).limit(1);
+  const profile = results[0];
 
   if (!profile) {
     return null;
@@ -263,14 +263,14 @@ export async function upsertPsycheProfile(
   parameters?: Record<string, number>
 ) {
   const db = await getDb();
+  if (!db) throw new Error("Database not available");
   
   // Normalize the type key
   const normalizedType = normalizeTypeKey(psycheType);
   const typeData = PSYCHE_TYPES[normalizedType as keyof typeof PSYCHE_TYPES] || PSYCHE_TYPES.adapter;
   
-  const existingProfile = await db.query.psycheProfiles.findFirst({
-    where: eq(psycheProfiles.userId, userId)
-  });
+  const existingResults = await db.select().from(psycheProfiles).where(eq(psycheProfiles.userId, userId)).limit(1);
+  const existingProfile = existingResults[0];
 
   const profileData = {
     psycheType: normalizedType,
@@ -308,6 +308,7 @@ export async function saveOnboardingResponses(
   category: string
 ) {
   const db = await getDb();
+  if (!db) throw new Error("Database not available");
   
   await db.insert(onboardingResponses).values({
     userId,
@@ -320,9 +321,13 @@ export async function saveOnboardingResponses(
 // Get user's onboarding responses
 export async function getOnboardingResponses(userId: number) {
   const db = await getDb();
+  if (!db) return null;
   
-  return await db.query.onboardingResponses.findFirst({
-    where: eq(onboardingResponses.userId, userId),
-    orderBy: (responses, { desc }) => [desc(responses.createdAt)]
-  });
+  const results = await db.select()
+    .from(onboardingResponses)
+    .where(eq(onboardingResponses.userId, userId))
+    .orderBy(desc(onboardingResponses.createdAt))
+    .limit(1);
+  
+  return results[0] || null;
 }
