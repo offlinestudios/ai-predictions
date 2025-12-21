@@ -52,7 +52,7 @@ export default function PostPredictionPaywall({
             <div className="mx-auto w-14 h-14 flex items-center justify-center mb-4">
               <img src="/logo.svg" alt="Predicsure AI" className="w-14 h-14" />
             </div>
-            <DialogTitle className="text-2xl font-semibold">
+            <DialogTitle className="text-2xl font-semibold text-center">
               This thread isn't finished.
             </DialogTitle>
             <DialogDescription className="text-base mt-2 leading-relaxed">
@@ -71,7 +71,7 @@ export default function PostPredictionPaywall({
             {/* Single Clear CTA - Plus Only */}
             <div className="space-y-3">
               <Button asChild className="w-full h-12 text-base" size="lg">
-                <Link href="/dashboard?upgrade=plus">
+                <Link href="/pricing?plan=plus">
                   Continue with Plus
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
@@ -87,7 +87,7 @@ export default function PostPredictionPaywall({
                 Prefer not to carry this uncertainty forward?
               </p>
               <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                <Link href="/dashboard?upgrade=premium">
+                <Link href="/pricing?plan=premium">
                   Get Premium for $59/year →
                 </Link>
               </Button>
