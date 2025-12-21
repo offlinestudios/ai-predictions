@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { 
-  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles, Calendar, Lock, Zap
+  Loader2, Paperclip, ArrowUp, X, Plus, Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -24,19 +24,7 @@ interface ChatComposerProps {
     totalUsed: number;
   } | null;
   onUpgradeClick?: () => void;
-
 }
-
-type TrajectoryType = "instant" | "30day" | "90day" | "yearly";
-
-const TRAJECTORY_OPTIONS: { id: TrajectoryType; label: string; description: string; minTier: string }[] = [
-  { id: "instant", label: "Instant", description: "Immediate insight", minTier: "free" },
-  { id: "30day", label: "30-Day Forecast", description: "Monthly trajectory", minTier: "plus" },
-  { id: "90day", label: "90-Day Forecast", description: "Quarterly outlook", minTier: "pro" },
-  { id: "yearly", label: "Yearly Forecast", description: "Annual vision", minTier: "premium" },
-];
-
-const TIER_HIERARCHY = ["free", "plus", "pro", "premium"];
 
 export default function ChatComposer({ 
   onSubmit, 
@@ -45,26 +33,12 @@ export default function ChatComposer({
   sidebarCollapsed = false,
   subscription,
   onUpgradeClick,
-
 }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [deepMode, setDeepMode] = useState(false);
-  const [trajectoryType, setTrajectoryType] = useState<TrajectoryType>("instant");
   const [showOptions, setShowOptions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const currentTier = subscription?.tier || "free";
-  const currentTierIndex = TIER_HIERARCHY.indexOf(currentTier);
-
-  const isFeatureAvailable = (minTier: string) => {
-    const minTierIndex = TIER_HIERARCHY.indexOf(minTier);
-    return currentTierIndex >= minTierIndex;
-  };
-
-  const canUseDeepMode = isFeatureAvailable("plus");
-  const hasActiveFeatures = (deepMode && canUseDeepMode) || trajectoryType !== "instant";
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -81,7 +55,8 @@ export default function ChatComposer({
       return;
     }
     
-    onSubmit(question, files, deepMode && canUseDeepMode, trajectoryType);
+    // Always pass false for deepMode and "instant" for trajectoryType (features hidden)
+    onSubmit(question, files, false, "instant");
     setQuestion("");
     setFiles([]);
     if (textareaRef.current) {
@@ -107,32 +82,6 @@ export default function ChatComposer({
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleDeepModeToggle = () => {
-    if (!canUseDeepMode) {
-      toast.info("Deep Mode requires Plus subscription", {
-        action: onUpgradeClick ? { label: "Upgrade", onClick: onUpgradeClick } : undefined
-      });
-      return;
-    }
-    setDeepMode(!deepMode);
-  };
-
-  const handleTrajectorySelect = (trajectory: TrajectoryType) => {
-    const option = TRAJECTORY_OPTIONS.find(t => t.id === trajectory);
-    if (!option) return;
-
-    if (!isFeatureAvailable(option.minTier)) {
-      const tierName = option.minTier.charAt(0).toUpperCase() + option.minTier.slice(1);
-      toast.info(`${option.label} requires ${tierName} subscription`, {
-        action: onUpgradeClick ? { label: "Upgrade", onClick: onUpgradeClick } : undefined
-      });
-      return;
-    }
-    setTrajectoryType(trajectory);
-  };
-
-  const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
-  
   // Check if free tier limit reached - use totalUsed from subscription
   const totalUsed = subscription?.totalUsed ?? 0;
   const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3;
@@ -143,8 +92,11 @@ export default function ChatComposer({
         {/* Free Limit Reached Message */}
         {hasReachedFreeLimit && (
           <div className="mb-3 p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
-            <p className="text-sm text-muted-foreground mb-2">
-              You've used all 3 free predictions
+            <p className="text-sm text-foreground mb-1 font-medium">
+              This thread isn't finished.
+            </p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Continue when clarity matters.
             </p>
             <Button
               onClick={onUpgradeClick}
@@ -152,10 +104,11 @@ export default function ChatComposer({
               className="bg-primary hover:bg-primary/90"
             >
               <Zap className="w-4 h-4 mr-2" />
-              Unlock Unlimited Predictions
+              Continue with Plus
             </Button>
           </div>
         )}
+        
         {/* File Previews */}
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
@@ -171,33 +124,7 @@ export default function ChatComposer({
           </div>
         )}
 
-        {/* Active Features Pills */}
-        {hasActiveFeatures && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {deepMode && canUseDeepMode && (
-              <button
-                onClick={() => setDeepMode(false)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/15 text-primary rounded-full text-xs font-medium hover:bg-primary/25 transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Deep Mode
-                <X className="w-3 h-3 ml-1 opacity-60" />
-              </button>
-            )}
-            {trajectoryType !== "instant" && (
-              <button
-                onClick={() => setTrajectoryType("instant")}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/15 text-primary rounded-full text-xs font-medium hover:bg-primary/25 transition-colors"
-              >
-                <Calendar className="w-3.5 h-3.5" />
-                {currentTrajectory?.label}
-                <X className="w-3 h-3 ml-1 opacity-60" />
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Main Composer - Manus Style */}
+        {/* Main Composer - Clean, Simple */}
         <div className="relative w-full">
           <input
             ref={fileInputRef}
@@ -208,9 +135,9 @@ export default function ChatComposer({
             className="hidden"
           />
           
-          {/* Composer Container - Single rounded border like Manus */}
+          {/* Composer Container */}
           <div className="flex items-end gap-0 rounded-[20px] border border-border bg-card/80 backdrop-blur-sm p-1.5 shadow-md ring-1 ring-border/20">
-            {/* Plus Button - Manus style: circle with border */}
+            {/* Plus Button for file attachments only */}
             <Popover open={showOptions} onOpenChange={setShowOptions}>
               <PopoverTrigger asChild>
                 <button
@@ -228,93 +155,9 @@ export default function ChatComposer({
                 align="start" 
                 side="top" 
                 sideOffset={8}
-                className="w-64 p-0 rounded-2xl border border-border/60 bg-card shadow-lg"
+                className="w-56 p-0 rounded-2xl border border-border/60 bg-card shadow-lg"
               >
-                {/* Deep Mode */}
-                <div className="p-3">
-                  <button
-                    onClick={() => {
-                      handleDeepModeToggle();
-                      if (canUseDeepMode) setShowOptions(false);
-                    }}
-                    className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-accent transition-colors"
-                  >
-                    <div className={cn(
-                      "h-8 w-8 rounded-lg flex items-center justify-center",
-                      deepMode && canUseDeepMode ? "bg-primary text-primary-foreground" : "bg-muted"
-                    )}>
-                      {canUseDeepMode ? (
-                        <Sparkles className="w-4 h-4" />
-                      ) : (
-                        <Lock className="w-4 h-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="font-medium text-sm">Deep Mode</div>
-                      <div className="text-xs text-muted-foreground">Detailed analysis</div>
-                    </div>
-                    {!canUseDeepMode && (
-                      <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">Plus</span>
-                    )}
-                    {deepMode && canUseDeepMode && (
-                      <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-primary-foreground text-xs">✓</span>
-                      </div>
-                    )}
-                  </button>
-                </div>
-
-                <div className="h-px bg-border/60 mx-3" />
-
-                {/* Forecast Timeframe */}
-                <div className="p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-2 px-2">Forecast</div>
-                  {TRAJECTORY_OPTIONS.map((option) => {
-                    const isAvailable = isFeatureAvailable(option.minTier);
-                    const isSelected = trajectoryType === option.id;
-                    
-                    return (
-                      <button
-                        key={option.id}
-                        onClick={() => {
-                          handleTrajectorySelect(option.id);
-                          if (isAvailable) setShowOptions(false);
-                        }}
-                        className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-accent transition-colors"
-                      >
-                        <div className={cn(
-                          "h-8 w-8 rounded-lg flex items-center justify-center",
-                          isSelected && isAvailable ? "bg-primary text-primary-foreground" : "bg-muted"
-                        )}>
-                          {isAvailable ? (
-                            option.id === "instant" ? <Zap className="w-4 h-4" /> : <Calendar className="w-4 h-4" />
-                          ) : (
-                            <Lock className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className={cn("font-medium text-sm", !isAvailable && "text-muted-foreground")}>
-                            {option.label}
-                          </div>
-                        </div>
-                        {!isAvailable && (
-                          <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium capitalize">
-                            {option.minTier}
-                          </span>
-                        )}
-                        {isSelected && isAvailable && (
-                          <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                            <span className="text-primary-foreground text-xs">✓</span>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="h-px bg-border/60 mx-3" />
-
-                {/* Attach Files */}
+                {/* Attach Files - Only option now */}
                 <div className="p-3">
                   <button
                     onClick={() => {
@@ -339,14 +182,14 @@ export default function ChatComposer({
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Predict anything"
+                placeholder="Ask about what's unfolding..."
                 disabled={isLoading || disabled}
                 className="min-h-[36px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-2 px-3 text-sm placeholder:text-muted-foreground bg-transparent"
                 rows={1}
               />
             </div>
             
-            {/* Send Button - Manus style: solid purple circle */}
+            {/* Send Button */}
             <Button
               onClick={handleSubmit}
               disabled={!question.trim() || isLoading || disabled}

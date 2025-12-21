@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Sparkles, ArrowRight, Lock } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 interface PostPredictionPaywallProps {
@@ -20,69 +19,62 @@ export default function PostPredictionPaywall({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-md">
         <DialogHeader className="text-center pb-2">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Sparkles className="w-8 h-8 text-primary" />
+          <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Sparkles className="w-7 h-7 text-primary" />
           </div>
           <DialogTitle className="text-2xl font-semibold">
-            There are two possible patterns here
+            This thread isn't finished.
           </DialogTitle>
-          <DialogDescription className="text-base mt-2">
-            I need to determine which one applies to you. Your responses suggest a fork in the path — but I can't see which direction you're actually facing.
+          <DialogDescription className="text-base mt-2 leading-relaxed">
+            There's more to see here — patterns that are still forming, clarity that's waiting to emerge.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
-          {/* The Diagnostic Frame */}
-          <Card className="p-5 border border-primary/20 bg-primary/5">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              The pattern I'm seeing could unfold in two very different ways. One leads toward what you're hoping for. The other reveals something you might not be ready to see yet.
+          {/* Simple Value Proposition */}
+          <div className="text-center space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Plus lets you continue when clarity matters.
             </p>
-            <p className="text-sm text-foreground mt-3 font-medium">
-              To differentiate between them, I need to go deeper.
+            <p className="text-sm text-muted-foreground">
+              Stay oriented when things are unclear. No interruptions.
             </p>
-          </Card>
-
-          {/* What Clarity Provides */}
-          <div className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">With deeper clarity, I can show you:</p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                <span className="text-sm">Which pattern is actually operating in your situation</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                <span className="text-sm">The internal shift that determines which path unfolds</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                <span className="text-sm">Conditional forecasts based on your specific position</span>
-              </div>
-            </div>
           </div>
 
-          {/* Single Clear CTA */}
-          <div className="pt-2">
+          {/* Single Clear CTA - Plus Only */}
+          <div className="space-y-3">
             <Button asChild className="w-full h-12 text-base" size="lg">
               <Link href="/dashboard?upgrade=plus">
-                Continue to Clarity
+                Continue with Plus
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <p className="text-center text-xs text-muted-foreground mt-3">
-              Unlimited predictions · Starting at $9.99/month
+            <p className="text-center text-xs text-muted-foreground">
+              $9.99/month · Unlimited clarity · Cancel anytime
             </p>
           </div>
 
-          {/* Dismiss Option - Subtle */}
+          {/* Annual Option - Subtle */}
+          <div className="text-center pt-2 border-t border-border/50">
+            <p className="text-xs text-muted-foreground mb-2">
+              Want to stop thinking about this altogether?
+            </p>
+            <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
+              <Link href="/dashboard?upgrade=premium">
+                Get Premium for $59/year →
+              </Link>
+            </Button>
+          </div>
+
+          {/* Dismiss Option - Very Subtle */}
           <div className="text-center">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => onOpenChange(false)}
-              className="text-muted-foreground/60 hover:text-muted-foreground text-xs"
+              className="text-muted-foreground/50 hover:text-muted-foreground text-xs"
             >
               Not right now
             </Button>

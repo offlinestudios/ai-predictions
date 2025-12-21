@@ -24,9 +24,8 @@ export default function Pricing() {
     },
   });
 
-  const handleUpgrade = (tier: "plus" | "pro" | "premium") => {
+  const handleUpgrade = (tier: "plus" | "premium") => {
     if (!isAuthenticated) {
-      // Redirect to login if not authenticated
       window.location.href = getLoginUrl();
       return;
     }
@@ -34,7 +33,9 @@ export default function Pricing() {
     setLoadingTier(tier);
     
     // Map tier to the correct format for the API
-    const apiTier = tier === "plus" ? "pro" : tier; // API only has "pro" and "premium"
+    // Plus uses "pro" tier in API with monthly billing
+    // Premium uses "premium" tier in API with yearly billing
+    const apiTier = tier === "plus" ? "pro" : "premium";
     const interval = tier === "premium" ? "year" : "month";
     
     createCheckoutMutation.mutate({
@@ -64,88 +65,87 @@ export default function Pricing() {
       </header>
 
       {/* Content */}
-      <div className="container max-w-7xl py-16 space-y-12">
+      <div className="container max-w-5xl py-16 space-y-12">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">Choose Your Plan</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Stay Oriented</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get personalized AI predictions to understand what's shifting in your life. Start free, upgrade anytime.
+            Continue when clarity matters. No interruptions when you need guidance most.
           </p>
         </div>
 
-        {/* Pricing Tiers */}
-        <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {/* Pricing Tiers - 3 columns */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {/* Free Tier */}
-          <div className="border border-border rounded-lg p-6 flex flex-col">
+          <div className="border border-border rounded-2xl p-6 flex flex-col">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">Free</h3>
-              <div className="flex items-baseline gap-1 mb-4">
+              <h3 className="text-xl font-semibold mb-1 text-muted-foreground">Free</h3>
+              <div className="flex items-baseline gap-1 mb-3">
                 <span className="text-4xl font-bold">$0</span>
-                <span className="text-muted-foreground">/month</span>
               </div>
-              <p className="text-sm text-muted-foreground">Perfect for trying out predictions</p>
+              <p className="text-sm text-muted-foreground">A first look into what's shifting</p>
             </div>
 
             <ul className="space-y-3 mb-8 flex-grow">
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">3 predictions per week</span>
+                <span className="text-sm">3 predictions</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Instant predictions</span>
+                <span className="text-sm">Short, focused insights</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">All 7 categories</span>
+                <span className="text-sm">All life categories</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Basic insights</span>
+                <span className="text-sm">No commitment</span>
               </li>
             </ul>
 
             <Button asChild variant="outline" size="lg" className="w-full">
-              <Link href="/psyche-onboarding">Get Started Free</Link>
+              <Link href="/psyche-onboarding">Get Started</Link>
             </Button>
           </div>
 
-          {/* Plus Tier */}
-          <div className="border border-primary/50 rounded-lg p-6 flex flex-col relative">
+          {/* Plus Tier - Main */}
+          <div className="border-2 border-primary rounded-2xl p-6 flex flex-col relative bg-primary/5">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                POPULAR
+              <span className="bg-primary text-primary-foreground text-xs font-semibold px-4 py-1.5 rounded-full">
+                MOST POPULAR
               </span>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">Plus</h3>
-              <div className="flex items-baseline gap-1 mb-4">
+              <h3 className="text-xl font-semibold mb-1">Plus</h3>
+              <div className="flex items-baseline gap-1 mb-3">
                 <span className="text-4xl font-bold">$9.99</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
-              <p className="text-sm text-muted-foreground">For regular insight seekers</p>
+              <p className="text-sm text-muted-foreground">Stay oriented when things are unclear</p>
             </div>
 
             <ul className="space-y-3 mb-8 flex-grow">
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Unlimited predictions</span>
+                <span className="text-sm"><strong>Unlimited predictions</strong></span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm"><strong>30-day trajectory forecasts</strong></span>
+                <span className="text-sm">Ongoing guidance as situations unfold</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Deep Mode analysis</span>
+                <span className="text-sm">See patterns before they repeat</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Prediction history</span>
+                <span className="text-sm">Deeper readings when it matters</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Priority support</span>
+                <span className="text-sm">Cancel anytime</span>
               </li>
             </ul>
 
@@ -161,20 +161,20 @@ export default function Pricing() {
                   Loading...
                 </>
               ) : (
-                "Upgrade to Plus"
+                "Continue with Plus"
               )}
             </Button>
           </div>
 
-          {/* Pro Tier */}
-          <div className="border border-border rounded-lg p-6 flex flex-col">
+          {/* Premium Tier */}
+          <div className="border border-border rounded-2xl p-6 flex flex-col">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">Pro</h3>
-              <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-bold">$19.99</span>
-                <span className="text-muted-foreground">/month</span>
+              <h3 className="text-xl font-semibold mb-1">Premium</h3>
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-4xl font-bold">$59</span>
+                <span className="text-muted-foreground">/year</span>
               </div>
-              <p className="text-sm text-muted-foreground">For serious forecasters</p>
+              <p className="text-sm text-primary font-medium">Clarity without interruption</p>
             </div>
 
             <ul className="space-y-3 mb-8 flex-grow">
@@ -184,76 +184,24 @@ export default function Pricing() {
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm"><strong>90-day trajectory forecasts</strong></span>
+                <span className="text-sm"><strong>No weekly limits — ever</strong></span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm"><strong>Yearly overview predictions</strong></span>
+                <span className="text-sm">Long-range perspective</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Alternate scenario analysis</span>
+                <span className="text-sm">Priority access to new features</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Advanced analytics dashboard</span>
+                <span className="text-sm">One simple plan for the year</span>
               </li>
             </ul>
 
             <Button 
               variant="outline" 
-              size="lg" 
-              className="w-full"
-              onClick={() => handleUpgrade("pro")}
-              disabled={loadingTier === "pro"}
-            >
-              {loadingTier === "pro" ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Upgrade to Pro"
-              )}
-            </Button>
-          </div>
-
-          {/* Premium Tier */}
-          <div className="border border-secondary/50 rounded-lg p-6 flex flex-col bg-card/30">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">Premium</h3>
-              <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-bold">$59</span>
-                <span className="text-muted-foreground">/year</span>
-              </div>
-              <p className="text-sm text-secondary">Save 75% - Best value!</p>
-            </div>
-
-            <ul className="space-y-3 mb-8 flex-grow">
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Everything in Pro</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm"><strong>Annual billing (save $180/year)</strong></span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Premium badge & status</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">Early access to new features</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm">VIP support</span>
-              </li>
-            </ul>
-
-            <Button 
-              variant="secondary" 
               size="lg" 
               className="w-full"
               onClick={() => handleUpgrade("premium")}
@@ -265,64 +213,39 @@ export default function Pricing() {
                   Loading...
                 </>
               ) : (
-                "Upgrade to Premium"
+                "Get Premium"
               )}
             </Button>
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="max-w-3xl mx-auto pt-12">
-          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-          
-          <div className="space-y-6">
+        {/* Simple FAQ */}
+        <div className="max-w-2xl mx-auto pt-8">
+          <div className="space-y-6 text-center">
             <div>
               <h3 className="text-lg font-semibold mb-2">Can I cancel anytime?</h3>
               <p className="text-muted-foreground">
-                Yes! All subscriptions can be canceled at any time. You'll retain access until the end of your billing period.
+                Yes. Cancel with one click. You'll keep access until your billing period ends.
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">What's your refund policy?</h3>
+              <h3 className="text-lg font-semibold mb-2">What if it's not for me?</h3>
               <p className="text-muted-foreground">
-                We offer a 7-day money-back guarantee. If you're not satisfied within the first week, contact us for a full refund.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Can I upgrade or downgrade my plan?</h3>
-              <p className="text-muted-foreground">
-                Absolutely! You can change your plan at any time from your Account settings. Upgrades take effect immediately, and downgrades apply at the next billing cycle.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">What payment methods do you accept?</h3>
-              <p className="text-muted-foreground">
-                We accept all major credit cards (Visa, Mastercard, American Express) through our secure payment processor, Stripe.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Is my data secure?</h3>
-              <p className="text-muted-foreground">
-                Yes. All data is encrypted in transit and at rest. We never sell your information. Learn more on our{" "}
-                <Link href="/data-security" className="text-primary hover:underline">Data Security page</Link>.
+                7-day money-back guarantee. No questions asked.
               </p>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="text-center pt-12">
-          <h2 className="text-3xl font-bold mb-4">Ready to see what's shifting?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Start with a free prediction today. No credit card required.
+        <div className="text-center pt-8">
+          <p className="text-muted-foreground mb-6">
+            Not sure yet? Start free and see how it feels.
           </p>
-          <Button asChild size="lg" className="text-lg px-12">
+          <Button asChild variant="ghost" size="lg">
             <Link href="/psyche-onboarding">
-              Get Your First Prediction Free
+              Try 3 Free Predictions
             </Link>
           </Button>
         </div>

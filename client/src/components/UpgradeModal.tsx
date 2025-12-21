@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Zap, Crown, Sparkles } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -13,74 +13,8 @@ interface UpgradeModalProps {
   remainingPredictions?: number;
 }
 
-const FEATURES = [
-  {
-    name: "Daily Predictions",
-    free: "3 total",
-    plus: "10 per day",
-    pro: "20 per day",
-    premium: "100 per day",
-  },
-  {
-    name: "30-Day Trajectory",
-    free: false,
-    plus: true,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "90-Day & Yearly Trajectory",
-    free: false,
-    plus: false,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "Deep Prediction Mode",
-    free: false,
-    plus: false,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "Prediction History",
-    free: false,
-    plus: true,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "AI Personalization",
-    free: false,
-    plus: true,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "File Attachments",
-    free: false,
-    plus: true,
-    pro: true,
-    premium: true,
-  },
-  {
-    name: "Analytics Dashboard",
-    free: false,
-    plus: false,
-    pro: false,
-    premium: true,
-  },
-  {
-    name: "Priority Support",
-    free: false,
-    plus: false,
-    pro: false,
-    premium: true,
-  },
-];
-
 export default function UpgradeModal({ open, onOpenChange, reason = "limit_reached", remainingPredictions = 0 }: UpgradeModalProps) {
-  const [isUpgradingPro, setIsUpgradingPro] = useState(false);
+  const [isUpgradingPlus, setIsUpgradingPlus] = useState(false);
   const [isUpgradingPremium, setIsUpgradingPremium] = useState(false);
 
   const createCheckoutMutation = trpc.subscription.createCheckoutSession.useMutation({
@@ -91,246 +25,120 @@ export default function UpgradeModal({ open, onOpenChange, reason = "limit_reach
     },
     onError: (error) => {
       toast.error("Failed to start checkout: " + error.message);
-      setIsUpgradingPro(false);
+      setIsUpgradingPlus(false);
       setIsUpgradingPremium(false);
     },
   });
 
-  const handleUpgrade = (tier: "pro" | "premium") => {
-    if (tier === "pro") {
-      setIsUpgradingPro(true);
+  const handleUpgrade = (tier: "plus" | "premium") => {
+    if (tier === "plus") {
+      setIsUpgradingPlus(true);
+      // Plus maps to "pro" tier in API with monthly billing
+      createCheckoutMutation.mutate({ tier: "pro", interval: "month" });
     } else {
       setIsUpgradingPremium(true);
-    }
-    createCheckoutMutation.mutate({ tier });
-  };
-
-  const getTitle = () => {
-    switch (reason) {
-      case "limit_reached":
-        return "You've Used All Your Free Predictions!";
-      case "approaching_limit":
-        return `Only ${remainingPredictions} Prediction${remainingPredictions === 1 ? "" : "s"} Left! ⚡`;
-      case "feature_locked":
-        return "Unlock Premium Features 🌟";
-      default:
-        return "Upgrade Your Plan";
-    }
-  };
-
-  const getDescription = () => {
-    switch (reason) {
-      case "limit_reached":
-        return "Upgrade now to continue receiving personalized AI predictions and unlock your full potential.";
-      case "approaching_limit":
-        return "You're almost out of free predictions! Upgrade now to keep the insights flowing without interruption.";
-      case "feature_locked":
-        return "This feature is available for Pro and Premium members. Upgrade to unlock unlimited predictions and advanced features.";
-      default:
-        return "Choose a plan that fits your needs and unlock unlimited predictions.";
+      // Premium uses yearly billing
+      createCheckoutMutation.mutate({ tier: "premium", interval: "year" });
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
-            {getTitle()}
+      <DialogContent className="max-w-lg">
+        <DialogHeader className="text-center">
+          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+            <Sparkles className="w-6 h-6 text-primary" />
+          </div>
+          <DialogTitle className="text-2xl font-semibold">
+            This thread isn't finished.
           </DialogTitle>
-          <DialogDescription className="text-center text-base">
-            {getDescription()}
+          <DialogDescription className="text-base mt-2">
+            There's more to see here. Continue when clarity matters.
           </DialogDescription>
         </DialogHeader>
 
-        {reason === "limit_reached" && (
-          <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-center">
-            <p className="text-sm font-medium">
-              <Sparkles className="w-4 h-4 inline mr-2" />
-              Join thousands of users who've unlocked their future with unlimited predictions!
-            </p>
-          </div>
-        )}
-
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          {/* Pro Plan */}
-          <div className="border border-border rounded-lg p-6 hover:border-primary/50 transition-colors relative">
-            <Badge className="absolute top-4 right-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
-              <Zap className="w-3 h-3 mr-1" />
-              Popular
+        <div className="space-y-4 mt-6">
+          {/* Plus Plan - Primary */}
+          <div className="border-2 border-primary rounded-xl p-5 relative bg-primary/5">
+            <Badge className="absolute -top-3 left-4 bg-primary text-primary-foreground">
+              Most Popular
             </Badge>
-            <div className="mb-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Zap className="w-5 h-5 text-blue-400" />
-                Pro Plan
-              </h3>
-              <div className="mt-2">
-                <span className="text-3xl font-bold">$9.99</span>
-                <span className="text-muted-foreground">/month</span>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Plus</h3>
+                <p className="text-sm text-muted-foreground">Stay oriented when things are unclear</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold">$9.99</span>
+                <span className="text-muted-foreground text-sm">/mo</span>
               </div>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">20 predictions per day</span>
+            <ul className="space-y-2 mb-4">
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Unlimited predictions</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">Full prediction history</span>
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Ongoing guidance as situations unfold</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">AI personalization</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">File attachments</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">Deep Prediction Mode</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">90-Day & Yearly Trajectories</span>
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Cancel anytime</span>
               </li>
             </ul>
             <Button 
               className="w-full" 
               size="lg"
-              onClick={() => handleUpgrade("pro")}
-              disabled={isUpgradingPro || isUpgradingPremium}
+              onClick={() => handleUpgrade("plus")}
+              disabled={isUpgradingPlus || isUpgradingPremium}
             >
-              {isUpgradingPro ? "Processing..." : "Upgrade to Pro"}
+              {isUpgradingPlus ? "Processing..." : "Continue with Plus"}
             </Button>
           </div>
 
-          {/* Premium Plan */}
-          <div className="border-2 border-primary rounded-lg p-6 relative bg-primary/5">
-            <Badge className="absolute top-4 right-4 bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
-              <Crown className="w-3 h-3 mr-1" />
-              Best Value
-            </Badge>
-            <div className="mb-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Crown className="w-5 h-5 text-yellow-400" />
-                Premium Plan
-              </h3>
-              <div className="mt-2">
-                <span className="text-3xl font-bold">$19.99</span>
-                <span className="text-muted-foreground">/month</span>
+          {/* Premium Plan - Secondary */}
+          <div className="border border-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Premium</h3>
+                <p className="text-sm text-muted-foreground">Clarity without interruption</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold">$59</span>
+                <span className="text-muted-foreground text-sm">/year</span>
               </div>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">100 predictions per day</span>
+            <ul className="space-y-2 mb-4">
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Everything in Plus</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">Everything in Pro</span>
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>One simple plan for the year</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">Priority support</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">Early access to new features</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">Analytics Dashboard</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm font-medium">Premium AI models</span>
+              <li className="flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Priority access to new features</span>
               </li>
             </ul>
             <Button 
-              className="w-full bg-primary hover:bg-primary/90" 
+              variant="outline"
+              className="w-full" 
               size="lg"
               onClick={() => handleUpgrade("premium")}
-              disabled={isUpgradingPro || isUpgradingPremium}
+              disabled={isUpgradingPlus || isUpgradingPremium}
             >
-              {isUpgradingPremium ? "Processing..." : "Upgrade to Premium"}
+              {isUpgradingPremium ? "Processing..." : "Get Premium"}
             </Button>
           </div>
         </div>
 
-        {/* Feature Comparison Table */}
-        <div className="mt-8">
-          <h4 className="font-semibold mb-4 text-center">Detailed Comparison</h4>
-          <div className="border border-border rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left p-3 font-medium">Feature</th>
-                  <th className="text-center p-3 font-medium">Free</th>
-                  <th className="text-center p-3 font-medium">Plus</th>
-                  <th className="text-center p-3 font-medium">Pro</th>
-                  <th className="text-center p-3 font-medium">Premium</th>
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURES.map((feature, idx) => (
-                  <tr key={idx} className="border-t border-border">
-                    <td className="p-3 text-sm">{feature.name}</td>
-                    <td className="p-3 text-center text-sm">
-                      {typeof feature.free === "boolean" ? (
-                        feature.free ? (
-                          <Check className="w-4 h-4 text-green-400 mx-auto" />
-                        ) : (
-                          <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                        )
-                      ) : (
-                        feature.free
-                      )}
-                    </td>
-                    <td className="p-3 text-center text-sm">
-                      {typeof feature.plus === "boolean" ? (
-                        feature.plus ? (
-                          <Check className="w-4 h-4 text-green-400 mx-auto" />
-                        ) : (
-                          <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                        )
-                      ) : (
-                        feature.plus
-                      )}
-                    </td>
-                    <td className="p-3 text-center text-sm">
-                      {typeof feature.pro === "boolean" ? (
-                        feature.pro ? (
-                          <Check className="w-4 h-4 text-green-400 mx-auto" />
-                        ) : (
-                          <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                        )
-                      ) : (
-                        feature.pro
-                      )}
-                    </td>
-                    <td className="p-3 text-center text-sm">
-                      {typeof feature.premium === "boolean" ? (
-                        feature.premium ? (
-                          <Check className="w-4 h-4 text-green-400 mx-auto" />
-                        ) : (
-                          <X className="w-4 h-4 text-muted-foreground mx-auto" />
-                        )
-                      ) : (
-                        feature.premium
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          <p>✓ Cancel anytime • ✓ Secure payment • ✓ 30-day money-back guarantee</p>
+        {/* Trust */}
+        <div className="mt-4 text-center text-xs text-muted-foreground">
+          <p>Cancel anytime · 7-day money-back guarantee</p>
         </div>
       </DialogContent>
     </Dialog>
