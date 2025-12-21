@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ShareModal } from "@/components/ShareModal";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Settings, LogOut, ChevronRight, ChevronLeft, BarChart3, SquarePen, Search, MoreHorizontal, Upload, Trash2, Check, X } from "lucide-react";
+import { Settings, LogOut, ChevronRight, ChevronLeft, SquarePen, Search, MoreHorizontal, Upload, Trash2, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useClerk } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
@@ -407,12 +407,7 @@ export default function UnifiedSidebar({
 
       {/* Bottom Section */}
       <div className="border-t border-border/50 p-4 space-y-2">
-        <Link href="/analytics">
-          <Button variant="ghost" className="w-full justify-start" size="sm">
-            <BarChart3 className="w-4 h-4 mr-3" />
-            Analytics
-          </Button>
-        </Link>
+
         <Link href="/account">
           <Button variant="ghost" className="w-full justify-start" size="sm">
             <Settings className="w-4 h-4 mr-3" />

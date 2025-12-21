@@ -9,7 +9,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/DashboardChat";
 import History from "./pages/History";
 import Account from "./pages/Account";
-import Analytics from "./pages/Analytics";
+
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import SharedPrediction from "./pages/SharedPrediction";
@@ -51,7 +51,7 @@ function Router() {
       {/* <Route path={"/dashboard-old"} component={DashboardOld} /> */}
       <Route path={"/history"} component={History} />
       <Route path={"/account"} component={Account} />
-      <Route path={"/analytics"} component={Analytics} />
+
       <Route path={"/share/:token"} component={SharedPrediction} />
       <Route path={"/pricing"} component={Pricing} />
       <Route path={"/privacy"} component={PrivacyPolicy} />
