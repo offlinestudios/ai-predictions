@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 interface PostPredictionPaywallProps {
@@ -19,27 +19,24 @@ export default function PostPredictionPaywall({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md mx-auto">
         <DialogHeader className="text-center pb-2">
-          <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Sparkles className="w-7 h-7 text-primary" />
+          <div className="mx-auto w-14 h-14 flex items-center justify-center mb-4">
+            <img src="/logo.svg" alt="Predicsure AI" className="w-14 h-14" />
           </div>
           <DialogTitle className="text-2xl font-semibold">
             This thread isn't finished.
           </DialogTitle>
           <DialogDescription className="text-base mt-2 leading-relaxed">
-            There's more to see here — patterns that are still forming, clarity that's waiting to emerge.
+            There's more unfolding here — something hasn't settled yet, and that's why this still feels open.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
           {/* Simple Value Proposition */}
-          <div className="text-center space-y-3">
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Plus lets you continue when clarity matters.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Stay oriented when things are unclear. No interruptions.
+              Plus lets you continue when things feel unclear — without interruptions.
             </p>
           </div>
 
@@ -59,7 +56,7 @@ export default function PostPredictionPaywall({
           {/* Annual Option - Subtle */}
           <div className="text-center pt-2 border-t border-border/50">
             <p className="text-xs text-muted-foreground mb-2">
-              Want to stop thinking about this altogether?
+              Prefer not to carry this uncertainty forward?
             </p>
             <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
               <Link href="/dashboard?upgrade=premium">

@@ -125,14 +125,6 @@ export default function DashboardChat() {
 
       // Refetch subscription to update totalUsed count
       refetchSubscription();
-      
-      // Show paywall after 3rd prediction (when totalUsed was 2 before this one)
-      // This is their last free prediction - next one will be blocked
-      if (subscription?.tier === "free" && (subscription?.totalUsed ?? 0) >= 2) {
-        setTimeout(() => {
-          setShowPostPredictionPaywall(true);
-        }, 2000);
-      }
     },
     onError: (error) => {
       setIsGenerating(false);
