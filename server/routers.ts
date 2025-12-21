@@ -2073,20 +2073,49 @@ What would change if you already knew the answer?`;
     // Get user's psyche profile
     getProfile: protectedProcedure
       .query(async ({ ctx }) => {
-        const profile = await getPsycheProfile(ctx.user.id);
-        if (!profile) {
-          return null;
+        try {
+          const profile = await getPsycheProfile(ctx.user.id);
+          console.log('[getProfile] User ID:', ctx.user.id, 'Profile found:', !!profile);
+          
+          if (!profile) {
+            return null;
+          }
+          
+          // Safely parse JSON fields with fallbacks
+          let coreTraits: string[] = [];
+          let parameters: Record<string, number> = {};
+          
+          try {
+            coreTraits = typeof profile.coreTraits === 'string' 
+              ? JSON.parse(profile.coreTraits) 
+              : profile.coreTraits;
+          } catch (e) {
+            console.error('[getProfile] Failed to parse coreTraits:', profile.coreTraits);
+            coreTraits = [];
+          }
+          
+          try {
+            parameters = typeof profile.psycheParameters === 'string'
+              ? JSON.parse(profile.psycheParameters)
+              : profile.psycheParameters;
+          } catch (e) {
+            console.error('[getProfile] Failed to parse psycheParameters:', profile.psycheParameters);
+            parameters = {};
+          }
+          
+          return {
+            psycheType: profile.psycheType,
+            displayName: profile.displayName,
+            description: profile.description,
+            coreTraits,
+            decisionMakingStyle: profile.decisionMakingStyle,
+            growthEdge: profile.growthEdge,
+            parameters,
+          };
+        } catch (error) {
+          console.error('[getProfile] Error:', error);
+          throw error;
         }
-        
-        return {
-          psycheType: profile.psycheType,
-          displayName: profile.displayName,
-          description: profile.description,
-          coreTraits: JSON.parse(profile.coreTraits),
-          decisionMakingStyle: profile.decisionMakingStyle,
-          growthEdge: profile.growthEdge,
-          parameters: JSON.parse(profile.psycheParameters),
-        };
       }),
   }),
 });
