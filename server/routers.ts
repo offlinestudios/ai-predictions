@@ -17,11 +17,12 @@ import {
 } from "./db";
 import {
   calculatePsycheType,
-  savePsycheProfile,
-  getUserPsycheProfile,
-  saveOnboardingResponse,
+  upsertPsycheProfile,
+  getPsycheProfile,
+  saveOnboardingResponses,
   PSYCHE_TYPES,
-  QUESTION_MAPPINGS,
+  CATEGORY_QUESTIONS,
+  normalizeTypeKey,
 } from "./psyche";
 import { predictions, users } from "../drizzle/schema";
 import { eq, desc, like, or, isNull, sql, and, gte } from "drizzle-orm";
@@ -793,7 +794,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           .limit(1);
         
         // Get user's psyche profile for personality-aware predictions
-        const psycheProfile = await getUserPsycheProfile(ctx.user.id);
+        const psycheProfile = await getPsycheProfile(ctx.user.id);
         
         // Build personalized system prompt based on trajectory type and mode
         let systemPrompt = "";
@@ -1978,7 +1979,7 @@ What would change if you already knew the answer?`;
 
           // Save psyche profile using existing function
           // Use dbType for database compatibility, fallback to type if not present
-          await savePsycheProfile(ctx.user.id, psycheType.dbType || psycheType.type);
+          await upsertPsycheProfile(ctx.user.id, psycheType.dbType || psycheType.type);
 
           return {
             success: true,
@@ -2027,26 +2028,24 @@ What would change if you already knew the answer?`;
             })
             .where(eq(users.id, ctx.user.id));
 
-          // Save each psyche response
+          // Convert psyche responses to a simple record for storage
+          const responsesRecord: Record<string, string> = {};
           for (const response of input.psycheResponses) {
-            const mapping = QUESTION_MAPPINGS[response.questionId as keyof typeof QUESTION_MAPPINGS];
-            const mappedTypes = mapping?.[response.selectedOption as keyof typeof mapping] || [];
-            
-            await saveOnboardingResponse(
-              ctx.user.id,
-              response.questionId,
-              response.questionText,
-              response.selectedOption,
-              response.answerText,
-              mappedTypes
-            );
+            responsesRecord[response.questionId.toString()] = response.selectedOption;
           }
           
+          // Save onboarding responses
+          await saveOnboardingResponses(
+            ctx.user.id,
+            responsesRecord,
+            input.interests[0] || 'general'
+          );
+          
           // Calculate psyche type
-          const psycheType = calculatePsycheType(input.psycheResponses);
+          const psycheType = calculatePsycheType(responsesRecord);
           
           // Save psyche profile
-          const profile = await savePsycheProfile(ctx.user.id, psycheType);
+          const profile = await upsertPsycheProfile(ctx.user.id, psycheType);
           
           return {
             success: true,
@@ -2074,7 +2073,7 @@ What would change if you already knew the answer?`;
     // Get user's psyche profile
     getProfile: protectedProcedure
       .query(async ({ ctx }) => {
-        const profile = await getUserPsycheProfile(ctx.user.id);
+        const profile = await getPsycheProfile(ctx.user.id);
         if (!profile) {
           return null;
         }
