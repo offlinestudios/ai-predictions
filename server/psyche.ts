@@ -158,7 +158,7 @@ export const PSYCHE_TYPES = {
   }
 };
 
-// Legacy type mapping for database compatibility
+// Legacy type mapping for database compatibility (legacy enum -> new type)
 export const LEGACY_TYPE_MAPPING: Record<string, string> = {
   quiet_strategist: "strategist",
   risk_addict: "maverick",
@@ -174,6 +174,24 @@ export const LEGACY_TYPE_MAPPING: Record<string, string> = {
   revenge_bettor: "maverick",
   fear_based_seller: "guardian"
 };
+
+// Reverse mapping: new type -> legacy enum value (for database storage)
+export const NEW_TO_LEGACY_MAPPING: Record<string, string> = {
+  strategist: "quiet_strategist",
+  maverick: "risk_addict",
+  visionary: "ambitious_builder",
+  guardian: "stabilizer",
+  pioneer: "long_term_builder",
+  pragmatist: "pattern_analyst",
+  catalyst: "momentum_chaser",
+  adapter: "intuitive_empath"
+};
+
+// Convert new type to legacy enum value for database storage
+export function toLegacyEnumValue(typeKey: string): string {
+  const normalized = typeKey.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+  return NEW_TO_LEGACY_MAPPING[normalized] || normalized;
+}
 
 // Get the new type key from any legacy or new type
 export function normalizeTypeKey(typeKey: string): string {
@@ -265,14 +283,45 @@ export async function upsertPsycheProfile(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  // Normalize the type key
+  // Normalize the type key to get the new type name
   const normalizedType = normalizeTypeKey(psycheType);
   const typeData = PSYCHE_TYPES[normalizedType as keyof typeof PSYCHE_TYPES] || PSYCHE_TYPES.adapter;
+  
+  // Convert to legacy enum value for database storage
+  const legacyEnumValue = toLegacyEnumValue(normalizedType);
   
   const existingResults = await db.select().from(psycheProfiles).where(eq(psycheProfiles.userId, userId)).limit(1);
   const existingProfile = existingResults[0];
 
-  const profileData = {
+  // Data for database storage - uses legacy enum value
+  const dbData = {
+    psycheType: legacyEnumValue as any, // Cast to any to satisfy enum type
+    displayName: typeData.displayName,
+    description: typeData.description,
+    coreTraits: JSON.stringify(typeData.coreTraits),
+    decisionMakingStyle: typeData.decisionMakingStyle,
+    growthEdge: typeData.growthEdge,
+    psycheParameters: JSON.stringify(parameters || typeData.parameters)
+  };
+
+  if (existingProfile) {
+    await db.update(psycheProfiles)
+      .set({
+        ...dbData,
+        updatedAt: new Date()
+      })
+      .where(eq(psycheProfiles.userId, userId));
+  } else {
+    await db.insert(psycheProfiles).values({
+      userId,
+      ...dbData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+  }
+
+  // Return data with new type name for frontend
+  return {
     psycheType: normalizedType,
     displayName: typeData.displayName,
     description: typeData.description,
@@ -281,24 +330,6 @@ export async function upsertPsycheProfile(
     growthEdge: typeData.growthEdge,
     parameters: parameters || typeData.parameters
   };
-
-  if (existingProfile) {
-    await db.update(psycheProfiles)
-      .set({
-        ...profileData,
-        updatedAt: new Date()
-      })
-      .where(eq(psycheProfiles.userId, userId));
-  } else {
-    await db.insert(psycheProfiles).values({
-      userId,
-      ...profileData,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
-  }
-
-  return profileData;
 }
 
 // Save onboarding responses
