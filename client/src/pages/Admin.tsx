@@ -368,7 +368,7 @@ export default function Admin() {
               <h4 className="font-semibold text-sm mb-2">How to Use:</h4>
               <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li><strong>Reset Prediction Count:</strong> Test free tier → Switch to Free tier above → Reset count → Make 3 predictions → See paywall</li>
-                <li><strong>Reset Onboarding:</strong> Test onboarding flow → Reset → Go to /onboarding → Complete the flow again</li>
+                <li><strong>Reset Onboarding:</strong> Test onboarding flow → Reset → Go to /psyche-onboarding → Complete the flow again</li>
               </ul>
             </div>
           </CardContent>
