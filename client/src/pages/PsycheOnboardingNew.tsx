@@ -47,13 +47,14 @@ export default function PsycheOnboardingNew() {
   // State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profile, setProfile] = useState<any>(null);
+  const [showingProfileReveal, setShowingProfileReveal] = useState(false);
 
-  // Check if user already completed onboarding
+  // Check if user already completed onboarding (but don't redirect if we're showing the profile reveal)
   useEffect(() => {
-    if (!authLoading && isAuthenticated && user?.onboardingCompleted) {
+    if (!authLoading && isAuthenticated && user?.onboardingCompleted && !showingProfileReveal && currentStep !== "profile-reveal") {
       navigate("/dashboard");
     }
-  }, [authLoading, isAuthenticated, user, navigate]);
+  }, [authLoading, isAuthenticated, user, navigate, showingProfileReveal, currentStep]);
 
   // Check if user just signed up and has stored responses
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function PsycheOnboardingNew() {
   const submitOnboardingMutation = trpc.psyche.submitHybridOnboarding.useMutation({
     onSuccess: (data) => {
       setProfile(data);
+      setShowingProfileReveal(true);
       setCurrentStep("profile-reveal");
       setIsSubmitting(false);
       toast.success("Your profile has been created!");
