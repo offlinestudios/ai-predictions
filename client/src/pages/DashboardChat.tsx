@@ -371,6 +371,7 @@ export default function DashboardChat() {
             open={showPostPredictionPaywall}
             onOpenChange={setShowPostPredictionPaywall}
             userTier={subscription.tier}
+            sidebarCollapsed={sidebarCollapsed}
           />
         )}
 
