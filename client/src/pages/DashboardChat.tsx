@@ -19,7 +19,6 @@ import { ArrowLeft, Settings, LogOut, History } from "lucide-react";
 import { TierBadge } from "@/components/Badge";
 import PostPredictionPaywall from "@/components/PostPredictionPaywall";
 import PremiumUnlockModal from "@/components/PremiumUnlockModal";
-import DepthPaywall from "@/components/DepthPaywall";
 import { getLoginUrl } from "@/const";
 
 interface Message {
@@ -63,11 +62,6 @@ export default function DashboardChat() {
   // Track the original root question for follow-ups (prevents nested context strings)
   const [rootQuestion, setRootQuestion] = useState<string | null>(null);
   
-  // Depth Ladder: Track conversation depth (1=Surface, 2=Pattern, 3=Differentiation, 4=Forecast)
-  const [conversationDepth, setConversationDepth] = useState<1 | 2 | 3 | 4>(1);
-  const [showDepthPaywall, setShowDepthPaywall] = useState(false);
-  const [pendingFollowUp, setPendingFollowUp] = useState<string | null>(null); // Store follow-up for after payment
-  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -83,17 +77,8 @@ export default function DashboardChat() {
     enabled: isAuthenticated,
   });
 
-  // Fetch prediction history to get accurate count of root predictions (not follow-ups)
-  const { data: historyData, isLoading: isHistoryLoading } = trpc.prediction.getHistory.useQuery(
-    { limit: 1 }, // We only need the total count, not the actual predictions
-    { enabled: isAuthenticated }
-  );
-  
-  // Use actual root prediction count for limit checking
-  // Only consider limit reached when data has loaded AND count >= 3
-  // This prevents blocking users while data is still loading
-  const actualPredictionCount = historyData?.total ?? 0;
-  const isDataLoaded = !isHistoryLoading && historyData !== undefined;
+  // Use subscription.totalUsed for limit checking (all predictions count, including follow-ups)
+  // Free users get 3 predictions, then hard block at 4th
 
   // Question analysis removed - AI handles ambiguity naturally in its response
 
@@ -138,19 +123,13 @@ export default function DashboardChat() {
         });
       }
 
-      // Depth Ladder: Update depth level after successful prediction
-      // Depth is tracked per conversation thread and increases with follow-ups
-      // Note: Depth paywall is handled in handleFollowUpSelect before submission
+      // Refetch subscription to update totalUsed count
+      refetchSubscription();
       
-      // Invalidate history query to update the count for limit checking
-      utils.prediction.getHistory.invalidate();
-      
-      // Show post-prediction paywall only when user has used all 3 free predictions
-      // (not for depth ladder - that's handled separately)
-      // Check if this was their 3rd prediction (count was 2 before this one)
-      if (subscription?.tier === "free" && actualPredictionCount >= 2 && !data.isFollowUp) {
+      // Show paywall after 3rd prediction (when totalUsed was 2 before this one)
+      // This is their last free prediction - next one will be blocked
+      if (subscription?.tier === "free" && (subscription?.totalUsed ?? 0) >= 2) {
         setTimeout(() => {
-          refetchSubscription();
           setShowPostPredictionPaywall(true);
         }, 2000);
       }
@@ -175,7 +154,7 @@ export default function DashboardChat() {
         toast.error("You've reached the free trial limit. Sign up to continue!");
         return;
       }
-    } else if (subscription?.tier === "free" && isDataLoaded && actualPredictionCount >= 3) {
+    } else if (subscription?.tier === "free" && (subscription?.totalUsed ?? 0) >= 3) {
       toast.error("You've used all 3 free predictions. Upgrade to continue!");
       setShowPostPredictionPaywall(true);
       return;
@@ -215,35 +194,10 @@ export default function DashboardChat() {
       deepMode: deepMode,
       trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
       parentPredictionId: currentPredictionId || undefined,
-      depthLevel: conversationDepth, // Pass current depth level
     });
   };
 
-  // Handle prediction submission with explicit depth level (for follow-ups)
-  const handleSubmitWithDepth = async (question: string, files: File[], deepMode: boolean, trajectoryType: string, depth: 1 | 2 | 3 | 4) => {
-    if (!question.trim()) return;
 
-    // Add loading message
-    const loadingMessage: Message = {
-      id: `msg-${Date.now()}-system`,
-      type: "system",
-      content: "Going deeper...",
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, loadingMessage]);
-
-    setIsGenerating(true);
-
-    // Generate prediction with specified depth level
-    generateMutation.mutate({
-      userInput: question,
-      category: "general",
-      deepMode: deepMode,
-      trajectoryType: trajectoryType as "instant" | "30day" | "90day" | "yearly",
-      parentPredictionId: currentPredictionId || undefined,
-      depthLevel: depth,
-    });
-  };
 
   // Handle selecting a prediction from history
   const handleSelectPrediction = (prediction: any) => {
@@ -286,8 +240,6 @@ export default function DashboardChat() {
     setCurrentPredictionId(null);
     setCurrentPrediction(null);
     setRootQuestion(null); // Reset root question for new thread
-    setConversationDepth(1); // Reset depth ladder for new thread
-    setPendingFollowUp(null);
     toast.success("Starting a new prediction");
   };
 
@@ -310,24 +262,18 @@ export default function DashboardChat() {
     // Optionally show a toast or update UI to indicate profile was updated
   };
 
-  // Handle follow-up question selection - implements Depth Ladder
+  // Handle follow-up question selection - counts toward 3 free predictions
   const handleFollowUpSelect = (option: string, _originalQuestion: string) => {
     // Use the root question (first question in thread) to avoid nested context strings
     const questionContext = rootQuestion || _originalQuestion;
     
-    // Calculate next depth level
-    const nextDepth = Math.min(conversationDepth + 1, 4) as 1 | 2 | 3 | 4;
-    
-    // DEPTH LADDER: Free users hit paywall at Level 3
-    if (nextDepth >= 3 && subscription?.tier === "free") {
-      // Store the pending follow-up for after payment
-      setPendingFollowUp(option);
-      setShowDepthPaywall(true);
+    // Check if user has reached free limit (follow-ups count as predictions)
+    const totalUsed = subscription?.totalUsed ?? 0;
+    if (subscription?.tier === "free" && totalUsed >= 3) {
+      setShowPostPredictionPaywall(true);
+      toast.error("You've used all 3 free predictions. Upgrade to continue!");
       return;
     }
-    
-    // Update depth level
-    setConversationDepth(nextDepth);
     
     // Create a follow-up message that includes the user's answer
     const followUpMessage = `Regarding my question "${questionContext}": ${option}`;
@@ -341,8 +287,8 @@ export default function DashboardChat() {
     };
     setMessages(prev => [...prev, userMessage]);
     
-    // Submit as a follow-up prediction with depth level
-    handleSubmitWithDepth(followUpMessage, [], false, "instant", nextDepth);
+    // Submit as a follow-up prediction (counts toward limit)
+    handleSubmit(followUpMessage, [], false, "instant");
   };
 
   // Clarification handling removed - AI handles ambiguity naturally
@@ -354,8 +300,8 @@ export default function DashboardChat() {
 
   // Check if composer should be disabled
   // Disable for: unauthenticated users after 3 messages, OR free users who hit their 3 prediction limit
-  // Only block when data is loaded AND count >= 3 (prevents false blocking while loading)
-  const hasReachedFreeLimit = subscription?.tier === "free" && isDataLoaded && actualPredictionCount >= 3;
+  const totalUsed = subscription?.totalUsed ?? 0;
+  const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3;
   const isComposerDisabled = (!isAuthenticated && messages.length >= 3) || hasReachedFreeLimit;
 
   return (
@@ -425,8 +371,6 @@ export default function DashboardChat() {
           sidebarCollapsed={sidebarCollapsed}
           subscription={subscription}
           onUpgradeClick={() => setShowPostPredictionPaywall(true)}
-          actualPredictionCount={actualPredictionCount}
-          isDataLoaded={isDataLoaded}
         />
 
         {/* Modals */}
@@ -446,32 +390,7 @@ export default function DashboardChat() {
           />
         )}
 
-        {/* Depth Ladder Paywall - Shows at Level 3 for free users */}
-        <DepthPaywall
-          open={showDepthPaywall}
-          onOpenChange={setShowDepthPaywall}
-          onContinueFree={() => {
-            // User chose to continue with free tier - process at surface level (Level 2)
-            if (pendingFollowUp && rootQuestion) {
-              // Keep at Level 2 (surface level) instead of advancing to Level 3
-              const followUpMessage = `Regarding my question "${rootQuestion}": ${pendingFollowUp}`;
-              
-              // Add user message for the follow-up
-              const userMessage: Message = {
-                id: `msg-${Date.now()}-user`,
-                type: "user",
-                content: pendingFollowUp,
-                timestamp: new Date()
-              };
-              setMessages(prev => [...prev, userMessage]);
-              
-              // Submit at Level 2 (surface level) - don't advance depth
-              handleSubmitWithDepth(followUpMessage, [], false, "instant", 2);
-            }
-            setPendingFollowUp(null);
-          }}
-          rootQuestion={rootQuestion}
-        />
+
       </div>
     </div>
   );

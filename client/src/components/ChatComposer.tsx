@@ -24,8 +24,7 @@ interface ChatComposerProps {
     totalUsed: number;
   } | null;
   onUpgradeClick?: () => void;
-  actualPredictionCount?: number; // Accurate count of root predictions (not follow-ups)
-  isDataLoaded?: boolean; // Whether prediction history has loaded
+
 }
 
 type TrajectoryType = "instant" | "30day" | "90day" | "yearly";
@@ -46,8 +45,7 @@ export default function ChatComposer({
   sidebarCollapsed = false,
   subscription,
   onUpgradeClick,
-  actualPredictionCount = 0,
-  isDataLoaded = false
+
 }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -135,8 +133,9 @@ export default function ChatComposer({
 
   const currentTrajectory = TRAJECTORY_OPTIONS.find(t => t.id === trajectoryType);
   
-  // Check if free tier limit reached - only when data is loaded AND count >= 3
-  const hasReachedFreeLimit = subscription?.tier === "free" && isDataLoaded && actualPredictionCount >= 3;
+  // Check if free tier limit reached - use totalUsed from subscription
+  const totalUsed = subscription?.totalUsed ?? 0;
+  const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3;
 
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
