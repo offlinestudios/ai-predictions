@@ -46,6 +46,7 @@ export default function DashboardChat() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
+  const utils = trpc.useUtils(); // For invalidating queries
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
@@ -83,23 +84,16 @@ export default function DashboardChat() {
   });
 
   // Fetch prediction history to get accurate count of root predictions (not follow-ups)
-  const { data: historyData } = trpc.prediction.getHistory.useQuery(
+  const { data: historyData, isLoading: isHistoryLoading } = trpc.prediction.getHistory.useQuery(
     { limit: 1 }, // We only need the total count, not the actual predictions
     { enabled: isAuthenticated }
   );
   
-  // Use actual root prediction count for limit checking (more accurate than totalUsed which may include follow-ups)
+  // Use actual root prediction count for limit checking
+  // Only consider limit reached when data has loaded AND count >= 3
+  // This prevents blocking users while data is still loading
   const actualPredictionCount = historyData?.total ?? 0;
-  
-  // Debug logging - remove after fixing
-  console.log('DashboardChat Debug:', {
-    isAuthenticated,
-    subscriptionTier: subscription?.tier,
-    totalUsed: subscription?.totalUsed,
-    historyDataTotal: historyData?.total,
-    actualPredictionCount,
-    hasReachedFreeLimit: subscription?.tier === "free" && actualPredictionCount >= 3
-  });
+  const isDataLoaded = !isHistoryLoading && historyData !== undefined;
 
   // Question analysis removed - AI handles ambiguity naturally in its response
 
@@ -148,11 +142,17 @@ export default function DashboardChat() {
       // Depth is tracked per conversation thread and increases with follow-ups
       // Note: Depth paywall is handled in handleFollowUpSelect before submission
       
+      // Invalidate history query to update the count for limit checking
+      utils.prediction.getHistory.invalidate();
+      
       // Show post-prediction paywall only when user has used all 3 free predictions
       // (not for depth ladder - that's handled separately)
-      // Use actualPredictionCount which counts root predictions only (not follow-ups)
-      if (subscription?.tier === "free" && actualPredictionCount >= 3) {
-        setTimeout(() => setShowPostPredictionPaywall(true), 2000);
+      // Check if this was their 3rd prediction (count was 2 before this one)
+      if (subscription?.tier === "free" && actualPredictionCount >= 2 && !data.isFollowUp) {
+        setTimeout(() => {
+          refetchSubscription();
+          setShowPostPredictionPaywall(true);
+        }, 2000);
       }
     },
     onError: (error) => {
@@ -175,7 +175,7 @@ export default function DashboardChat() {
         toast.error("You've reached the free trial limit. Sign up to continue!");
         return;
       }
-    } else if (subscription?.tier === "free" && actualPredictionCount >= 3) {
+    } else if (subscription?.tier === "free" && isDataLoaded && actualPredictionCount >= 3) {
       toast.error("You've used all 3 free predictions. Upgrade to continue!");
       setShowPostPredictionPaywall(true);
       return;
@@ -354,8 +354,8 @@ export default function DashboardChat() {
 
   // Check if composer should be disabled
   // Disable for: unauthenticated users after 3 messages, OR free users who hit their 3 prediction limit
-  // Use actualPredictionCount which counts root predictions only (not follow-ups)
-  const hasReachedFreeLimit = subscription?.tier === "free" && actualPredictionCount >= 3;
+  // Only block when data is loaded AND count >= 3 (prevents false blocking while loading)
+  const hasReachedFreeLimit = subscription?.tier === "free" && isDataLoaded && actualPredictionCount >= 3;
   const isComposerDisabled = (!isAuthenticated && messages.length >= 3) || hasReachedFreeLimit;
 
   return (
@@ -426,6 +426,7 @@ export default function DashboardChat() {
           subscription={subscription}
           onUpgradeClick={() => setShowPostPredictionPaywall(true)}
           actualPredictionCount={actualPredictionCount}
+          isDataLoaded={isDataLoaded}
         />
 
         {/* Modals */}
