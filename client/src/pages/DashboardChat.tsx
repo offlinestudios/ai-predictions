@@ -90,6 +90,16 @@ export default function DashboardChat() {
   
   // Use actual root prediction count for limit checking (more accurate than totalUsed which may include follow-ups)
   const actualPredictionCount = historyData?.total ?? 0;
+  
+  // Debug logging - remove after fixing
+  console.log('DashboardChat Debug:', {
+    isAuthenticated,
+    subscriptionTier: subscription?.tier,
+    totalUsed: subscription?.totalUsed,
+    historyDataTotal: historyData?.total,
+    actualPredictionCount,
+    hasReachedFreeLimit: subscription?.tier === "free" && actualPredictionCount >= 3
+  });
 
   // Question analysis removed - AI handles ambiguity naturally in its response
 
