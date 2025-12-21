@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Users, Target, Brain, ChevronRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { coreQuestions, type CoreQuestion } from "@/data/coreQuestions";
 import { motion, AnimatePresence } from "framer-motion";
+import { getPsycheMetadata, getDisplayName } from "@/lib/psycheMetadata";
 
 type OnboardingStep = 
   | "welcome"
@@ -233,6 +234,11 @@ export default function PsycheOnboardingNew() {
       ? JSON.parse(profile.parameters) 
       : (profile.parameters || {});
     
+    // Get the personality type from profile
+    const psycheType = profile.psycheType || profile.type || 'strategist';
+    const displayName = getDisplayName(psycheType);
+    const metadata = getPsycheMetadata(psycheType);
+    
     const traits = [
       { label: "Risk Appetite", value: (params.risk_appetite || 0.5) * 100 },
       { label: "Emotional Intensity", value: (params.emotional_reactivity || 0.5) * 100 },
@@ -250,17 +256,40 @@ export default function PsycheOnboardingNew() {
         >
           <Card className="border-primary/20 shadow-2xl">
             <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-primary" />
+              {/* Predicsure Logo */}
+              <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                <img src="/logo.svg" alt="Predicsure AI" className="w-20 h-20" />
               </div>
+              
+              {/* Personality Type Name */}
               <CardTitle className="text-2xl font-bold">
-                {profile.displayName || "Your Profile"}
+                {displayName}
               </CardTitle>
               <CardDescription className="text-base">
                 {profile.description || "Your profile has been created. You're ready to start."}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Famous People Section */}
+              {metadata?.famousExamples && metadata.famousExamples.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
+                    <Users className="w-4 h-4" />
+                    <span>Famous {displayName.replace('The ', '')}s</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {metadata.famousExamples.map((name, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 rounded-full bg-muted text-sm font-medium"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Progress Bars */}
               <div className="space-y-4">
                 {traits.map((trait) => (
@@ -279,11 +308,32 @@ export default function PsycheOnboardingNew() {
                 ))}
               </div>
 
+              {/* Core Traits */}
+              {metadata?.strengths && metadata.strengths.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
+                    <Target className="w-4 h-4" />
+                    <span>Core Traits</span>
+                  </div>
+                  <div className="space-y-1">
+                    {metadata.strengths.map((strength, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm">
+                        <ChevronRight className="w-4 h-4 text-primary" />
+                        <span>{strength}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Decision Making Style */}
-              {profile.decisionMakingStyle && (
+              {(profile.decisionMakingStyle || metadata?.predictionInsight) && (
                 <div className="p-4 rounded-lg bg-muted/30 space-y-2">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Decision-Making Style</h4>
-                  <p className="text-sm">{profile.decisionMakingStyle}</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground uppercase tracking-wide">
+                    <Brain className="w-4 h-4" />
+                    <span>Decision-Making Style</span>
+                  </div>
+                  <p className="text-sm">{profile.decisionMakingStyle || metadata?.predictionInsight}</p>
                 </div>
               )}
 
