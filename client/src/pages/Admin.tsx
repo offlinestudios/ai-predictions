@@ -7,10 +7,9 @@ import { Loader2, Users, Trash2, CheckCircle, AlertCircle, UserCog, Sparkles, Cr
 import { useLocation } from "wouter";
 
 const SUBSCRIPTION_TIERS = [
-  { id: "free", name: "Free", description: "3 predictions/week, basic features", icon: Star, color: "bg-gray-500/10 border-gray-500/30 hover:bg-gray-500/20" },
-  { id: "plus", name: "Plus", description: "Unlimited + 30-day forecasts", icon: Zap, color: "bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20" },
-  { id: "pro", name: "Pro", description: "90-day forecasts + scenarios", icon: Crown, color: "bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20" },
-  { id: "premium", name: "Premium", description: "Everything + yearly forecasts", icon: Crown, color: "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20" },
+  { id: "free", name: "Free", description: "3 predictions total", icon: Star, color: "bg-gray-500/10 border-gray-500/30 hover:bg-gray-500/20" },
+  { id: "plus", name: "Plus", description: "Unlimited ($9.99/mo)", icon: Zap, color: "bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20" },
+  { id: "premium", name: "Premium", description: "Unlimited ($59/year)", icon: Crown, color: "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20" },
 ] as const;
 
 const PERSONALITY_TYPES = [
@@ -87,6 +86,29 @@ export default function Admin() {
     onSuccess: (data) => {
       setMessage({ type: "success", text: data.message });
       refetchSubscription();
+    },
+    onError: (error) => {
+      setMessage({ type: "error", text: error.message });
+    },
+  });
+
+  // Reset prediction count mutation
+  const resetPredictionMutation = trpc.admin.resetPredictionCount.useMutation({
+    onSuccess: (data) => {
+      setMessage({ type: "success", text: data.message });
+      refetchSubscription();
+    },
+    onError: (error) => {
+      setMessage({ type: "error", text: error.message });
+    },
+  });
+
+  // Reset onboarding mutation
+  const resetOnboardingMutation = trpc.admin.resetOnboarding.useMutation({
+    onSuccess: (data) => {
+      setMessage({ type: "success", text: data.message });
+      refetchProfile();
+      refetchUser();
     },
     onError: (error) => {
       setMessage({ type: "error", text: error.message });
@@ -275,11 +297,79 @@ export default function Admin() {
             <div className="bg-muted/50 p-4 rounded-lg">
               <h4 className="font-semibold text-sm mb-2">Tier Features:</h4>
               <div className="text-sm text-muted-foreground space-y-1">
-                <p><strong>Free:</strong> 3 predictions/week, instant forecasts only</p>
-                <p><strong>Plus:</strong> Unlimited + Deep Mode + 30-day forecasts</p>
-                <p><strong>Pro:</strong> + 90-day forecasts + Alternate scenarios + Analytics</p>
-                <p><strong>Premium:</strong> + Yearly forecasts + All future features</p>
+                <p><strong>Free:</strong> 3 predictions total (lifetime)</p>
+                <p><strong>Plus:</strong> Unlimited predictions ($9.99/mo)</p>
+                <p><strong>Premium:</strong> Unlimited predictions ($59/year)</p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Testing Tools */}
+        <Card className="border-2 border-green-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              Testing Tools
+              <span className="text-xs bg-green-500/20 text-green-600 px-2 py-1 rounded-full">Reset</span>
+            </CardTitle>
+            <CardDescription>
+              Reset your account state to test different scenarios without creating new accounts.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Reset Prediction Count */}
+              <div className="p-4 rounded-lg border border-border bg-muted/30">
+                <h4 className="font-semibold mb-2">Reset Prediction Count</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Sets your prediction count back to 0 so you can test the free tier limit (3 predictions).
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => resetPredictionMutation.mutate()}
+                  disabled={resetPredictionMutation.isPending}
+                  className="w-full"
+                >
+                  {resetPredictionMutation.isPending ? (
+                    <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Resetting...</>
+                  ) : (
+                    "Reset Prediction Count"
+                  )}
+                </Button>
+              </div>
+
+              {/* Reset Onboarding */}
+              <div className="p-4 rounded-lg border border-border bg-muted/30">
+                <h4 className="font-semibold mb-2">Reset Onboarding</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Clears your onboarding status and personality profile so you can go through onboarding again.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (window.confirm("This will delete your personality profile. Continue?")) {
+                      resetOnboardingMutation.mutate();
+                    }
+                  }}
+                  disabled={resetOnboardingMutation.isPending}
+                  className="w-full"
+                >
+                  {resetOnboardingMutation.isPending ? (
+                    <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Resetting...</>
+                  ) : (
+                    "Reset Onboarding"
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-sm mb-2">How to Use:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                <li><strong>Reset Prediction Count:</strong> Test free tier → Switch to Free tier above → Reset count → Make 3 predictions → See paywall</li>
+                <li><strong>Reset Onboarding:</strong> Test onboarding flow → Reset → Go to /onboarding → Complete the flow again</li>
+              </ul>
             </div>
           </CardContent>
         </Card>

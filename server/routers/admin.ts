@@ -758,4 +758,96 @@ export const adminRouter = router({
         });
       }
     }),
+
+  /**
+   * Reset prediction count for testing free tier limits
+   * Resets both usedToday and totalUsed to 0
+   */
+  resetPredictionCount: protectedProcedure.mutation(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Admin access required",
+      });
+    }
+
+    const db = await getDb();
+    if (!db) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Database unavailable",
+      });
+    }
+
+    try {
+      await db
+        .update(subscriptions)
+        .set({
+          usedToday: 0,
+          totalUsed: 0,
+          lastResetDate: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(subscriptions.userId, ctx.user.id));
+
+      return {
+        success: true,
+        message: "Prediction count reset to 0. You can now test the free tier limits.",
+      };
+    } catch (error) {
+      console.error("[Admin] Error resetting prediction count:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to reset prediction count",
+      });
+    }
+  }),
+
+  /**
+   * Reset onboarding status for testing the onboarding flow
+   * Sets onboardingCompleted to false and removes psyche profile
+   */
+  resetOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Admin access required",
+      });
+    }
+
+    const db = await getDb();
+    if (!db) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Database unavailable",
+      });
+    }
+
+    try {
+      // Reset onboarding status on user
+      await db
+        .update(users)
+        .set({
+          onboardingCompleted: false,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, ctx.user.id));
+
+      // Delete psyche profile
+      await db
+        .delete(psycheProfiles)
+        .where(eq(psycheProfiles.userId, ctx.user.id));
+
+      return {
+        success: true,
+        message: "Onboarding reset. You can now go through the onboarding flow again.",
+      };
+    } catch (error) {
+      console.error("[Admin] Error resetting onboarding:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to reset onboarding",
+      });
+    }
+  }),
 });
