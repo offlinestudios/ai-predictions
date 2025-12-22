@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { 
-  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles
+  Loader2, Paperclip, ArrowUp, X, Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -96,7 +96,7 @@ export default function ChatComposer({
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-center sm:text-left">
                 <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5 text-primary" />
+                  <img src="/logo.svg" alt="Predicsure" className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">You've used all 3 free predictions</p>
