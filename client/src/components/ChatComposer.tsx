@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { 
-  Loader2, Paperclip, ArrowUp, X, Plus
+  Loader2, Paperclip, ArrowUp, X, Plus, Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,9 @@ export default function ChatComposer({
   const [showOptions, setShowOptions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Check if user has reached free limit
+  const hasReachedFreeLimit = subscription?.tier === "free" && (subscription?.totalUsed ?? 0) >= 3;
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -86,6 +89,31 @@ export default function ChatComposer({
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       <div className="container max-w-4xl py-3 md:py-4">
+        {/* Upgrade Banner - Shows when free limit is reached */}
+        {hasReachedFreeLimit && (
+          <div className="mb-3 p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">You've used all 3 free predictions</p>
+                  <p className="text-xs text-muted-foreground">Upgrade to Plus for unlimited predictions and deeper insights</p>
+                </div>
+              </div>
+              <Button 
+                onClick={onUpgradeClick}
+                size="sm"
+                className="shrink-0 px-6"
+              >
+                Upgrade to Plus
+                <ArrowUp className="w-4 h-4 ml-1.5 rotate-45" />
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* File Previews */}
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
@@ -113,7 +141,10 @@ export default function ChatComposer({
           />
           
           {/* Composer Container */}
-          <div className="flex items-end gap-0 rounded-[20px] border border-border bg-card/80 backdrop-blur-sm p-1.5 shadow-md ring-1 ring-border/20">
+          <div className={cn(
+            "flex items-end gap-0 rounded-[20px] border border-border bg-card/80 backdrop-blur-sm p-1.5 shadow-md ring-1 ring-border/20",
+            hasReachedFreeLimit && "opacity-60"
+          )}>
             {/* Plus Button for file attachments only */}
             <Popover open={showOptions} onOpenChange={setShowOptions}>
               <PopoverTrigger asChild>
@@ -159,7 +190,7 @@ export default function ChatComposer({
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about what's unfolding..."
+                placeholder={hasReachedFreeLimit ? "Upgrade to continue asking..." : "Ask about what's unfolding..."}
                 disabled={isLoading || disabled}
                 className="min-h-[36px] max-h-[120px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 py-2 px-3 text-sm placeholder:text-muted-foreground bg-transparent"
                 rows={1}
