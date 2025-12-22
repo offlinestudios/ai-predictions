@@ -49,6 +49,7 @@ export default function DashboardChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
+  const [hasDeclinedPaywall, setHasDeclinedPaywall] = useState(false);
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -363,13 +364,20 @@ export default function DashboardChat() {
           sidebarCollapsed={sidebarCollapsed}
           subscription={subscription}
           onUpgradeClick={() => setShowPostPredictionPaywall(true)}
+          showUpgradeBanner={hasDeclinedPaywall}
         />
 
         {/* Modals */}
         {isAuthenticated && subscription && (
           <PostPredictionPaywall 
             open={showPostPredictionPaywall}
-            onOpenChange={setShowPostPredictionPaywall}
+            onOpenChange={(open) => {
+              setShowPostPredictionPaywall(open);
+              // If modal is being closed (not opened), user declined
+              if (!open && showPostPredictionPaywall) {
+                setHasDeclinedPaywall(true);
+              }
+            }}
             userTier={subscription.tier}
             sidebarCollapsed={sidebarCollapsed}
           />

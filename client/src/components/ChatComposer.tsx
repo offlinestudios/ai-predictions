@@ -24,7 +24,7 @@ interface ChatComposerProps {
     totalUsed: number;
   } | null;
   onUpgradeClick?: () => void;
-
+  showUpgradeBanner?: boolean;
 }
 
 export default function ChatComposer({ 
@@ -34,6 +34,7 @@ export default function ChatComposer({
   sidebarCollapsed = false,
   subscription,
   onUpgradeClick,
+  showUpgradeBanner = false,
 }: ChatComposerProps) {
   const [question, setQuestion] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -41,7 +42,7 @@ export default function ChatComposer({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if user has reached free limit
+  // Check if user has reached free limit (for visual dimming)
   const hasReachedFreeLimit = subscription?.tier === "free" && (subscription?.totalUsed ?? 0) >= 3;
 
   useEffect(() => {
@@ -89,8 +90,8 @@ export default function ChatComposer({
   return (
     <div className={`fixed left-0 right-0 z-40 bg-background/95 backdrop-blur-sm pb-safe bottom-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:left-16' : 'lg:left-80'}`}>
       <div className="container max-w-4xl py-3 md:py-4">
-        {/* Upgrade Banner - Shows when free limit is reached */}
-        {hasReachedFreeLimit && (
+        {/* Upgrade Banner - Shows only after user has declined the paywall */}
+        {showUpgradeBanner && hasReachedFreeLimit && (
           <div className="mb-3 p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-center sm:text-left">
