@@ -1128,6 +1128,9 @@ This is NOT closure. It's incompleteness that invites reflection and return.
 
 **CRITICAL CONSTRAINTS:**
 - MAXIMUM 150 words. Shorter is better.
+- NEVER include "Block A", "Block B", "Block C", "Block D" labels in your response — these are internal structure guides only
+- NEVER include section headers like "RECOGNITION", "PRESENT-STATE PATTERN", "CONDITIONAL FORK", "OPEN LOOP"
+- Write in flowing paragraphs with NO visible structure markers
 - NEVER give specific dates ("March 15th") — use windows ("within the next few weeks")
 - NEVER give specific names of people they'll meet
 - NEVER give exact outcomes ("you will get the job") — use conditions ("if you approach with X, the door opens")
