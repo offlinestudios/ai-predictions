@@ -49,7 +49,13 @@ export default function DashboardChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPostPredictionPaywall, setShowPostPredictionPaywall] = useState(false);
-  const [hasDeclinedPaywall, setHasDeclinedPaywall] = useState(false);
+  // Persist paywall declined state in localStorage so banner shows for returning users
+  const [hasDeclinedPaywall, setHasDeclinedPaywall] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('hasDeclinedPaywall') === 'true';
+    }
+    return false;
+  });
   const [showPremiumUnlock, setShowPremiumUnlock] = useState(false);
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -376,6 +382,7 @@ export default function DashboardChat() {
               // If modal is being closed (not opened), user declined
               if (!open && showPostPredictionPaywall) {
                 setHasDeclinedPaywall(true);
+                localStorage.setItem('hasDeclinedPaywall', 'true');
               }
             }}
             userTier={subscription.tier}
