@@ -611,7 +611,18 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         const origin = ctx.req.headers.origin || "http://localhost:3000";
         const product = STRIPE_PRODUCTS[input.tier];
         
-        // Create Stripe checkout session
+        // Determine which Stripe Price ID to use
+        // For "pro" tier (which is Plus in UI): use monthly price
+        // For "premium" tier: use yearly price
+        let priceId: string;
+        if (input.tier === "premium") {
+          priceId = "price_1SYvZIDyQ0U6Y0NytlYnfgsE"; // Premium $59/year
+        } else {
+          // pro tier = Plus in UI
+          priceId = "price_1SYvYnDyQ0U6Y0NyShV7eXio"; // Plus $9.99/month
+        }
+        
+        // Create Stripe checkout session with Price ID
         const session = await stripe.checkout.sessions.create({
           mode: "subscription",
           customer_email: ctx.user.email || undefined,
@@ -624,17 +635,7 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           },
           line_items: [
             {
-              price_data: {
-                currency: "usd",
-                product_data: {
-                  name: product.name,
-                  description: product.description,
-                },
-                unit_amount: input.interval === "month" ? product.priceMonthly : product.priceYearly,
-                recurring: {
-                  interval: input.interval,
-                },
-              },
+              price: priceId,
               quantity: 1,
             },
           ],

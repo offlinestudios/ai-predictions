@@ -17,6 +17,7 @@ export const STRIPE_PRODUCTS = {
     description: "Unlimited predictions with 30-day trajectory insights",
     priceMonthly: 999, // $9.99 in cents
     priceYearly: 9588, // $7.99/month billed yearly (20% off) in cents
+    stripePriceIdMonthly: "price_1SYvYnDyQ0U6Y0NyShV7eXio", // Plus $9.99/month
     features: [
       "Unlimited predictions",
       "30-day trajectory forecasts",
@@ -39,6 +40,7 @@ export const STRIPE_PRODUCTS = {
     description: "90-day forecasts with alternate scenario analysis",
     priceMonthly: 1999, // $19.99 in cents
     priceYearly: 19188, // $15.99/month billed yearly (20% off) in cents
+    stripePriceIdMonthly: "price_1SYvYnDyQ0U6Y0NyShV7eXio", // Using Plus price for Pro tier
     features: [
       "Everything in Plus",
       "90-day trajectory forecasts",
@@ -66,6 +68,7 @@ export const STRIPE_PRODUCTS = {
     description: "Complete forecasting system with lifetime updates",
     priceMonthly: undefined, // Not available monthly
     priceYearly: 5900, // $59/year in cents
+    stripePriceIdYearly: "price_1SYvZIDyQ0U6Y0NytlYnfgsE", // Premium $59/year
     features: [
       "EVERYTHING in Pro",
       "Yearly macro-reading & forecasts",
