@@ -95,9 +95,7 @@ export default function ChatComposer({
           <div className="mb-3 p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-center sm:text-left">
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                  <img src="/logo.svg" alt="Predicsure" className="w-6 h-6" />
-                </div>
+                <img src="/logo.svg" alt="Predicsure" className="w-10 h-10 shrink-0" />
                 <div>
                   <p className="font-medium text-sm">You've used all 3 free predictions</p>
                   <p className="text-xs text-muted-foreground">Upgrade to Plus for unlimited predictions and deeper insights</p>
