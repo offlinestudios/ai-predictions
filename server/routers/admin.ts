@@ -850,17 +850,16 @@ export const adminRouter = router({
       });
     }
   }),
-});
 
-// ============================================================================
-// ADMIN ANALYTICS ENDPOINTS
-// ============================================================================
+  // ============================================================================
+  // ADMIN ANALYTICS ENDPOINTS
+  // ============================================================================
 
-/**
- * Get comprehensive dashboard analytics
- * Returns user stats, revenue metrics, prediction analytics, and insights
- */
-getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+  /**
+   * Get comprehensive dashboard analytics
+   * Returns user stats, revenue metrics, prediction analytics, and insights
+   */
+  getAnalytics: protectedProcedure.query(async ({ ctx }) => {
   if (ctx.user.role !== "admin") {
     throw new TRPCError({
       code: "FORBIDDEN",
@@ -1236,3 +1235,4 @@ getInsights: protectedProcedure.query(async ({ ctx }) => {
     });
   }
 }),
+});
