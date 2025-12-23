@@ -616,10 +616,10 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
         // For "premium" tier: use yearly price
         let priceId: string;
         if (input.tier === "premium") {
-          priceId = "price_1SYvZIDyQ0U6Y0NytlYnfgsE"; // Premium $59/year
+          priceId = "price_1ShZydCgLXc5yu5kORd0ZJD7"; // Premium $59/year
         } else {
           // pro tier = Plus in UI
-          priceId = "price_1SYvYnDyQ0U6Y0NyShV7eXio"; // Plus $9.99/month
+          priceId = "price_1ShZx3CgLXc5yu5k5YGqPoZu"; // Plus $9.99/month
         }
         
         // Create Stripe checkout session with Price ID
