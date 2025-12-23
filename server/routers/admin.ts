@@ -851,3 +851,388 @@ export const adminRouter = router({
     }
   }),
 });
+
+// ============================================================================
+// ADMIN ANALYTICS ENDPOINTS
+// ============================================================================
+
+/**
+ * Get comprehensive dashboard analytics
+ * Returns user stats, revenue metrics, prediction analytics, and insights
+ */
+getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+
+  const db = await getDb();
+  if (!db) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Database unavailable",
+    });
+  }
+
+  try {
+    const { users: usersTable, subscriptions: subscriptionsTable, predictions: predictionsTable, psycheProfiles: psycheProfilesTable } = await import("../../drizzle/schema");
+    const { sql, count, sum, avg } = await import("drizzle-orm");
+
+    // Get all users
+    const allUsers = await db.select().from(usersTable);
+    const totalUsers = allUsers.length;
+
+    // Get users created in last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const newUsersLast7Days = allUsers.filter(u => new Date(u.createdAt) >= sevenDaysAgo).length;
+
+    // Get users created in last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const newUsersLast30Days = allUsers.filter(u => new Date(u.createdAt) >= thirtyDaysAgo).length;
+
+    // Get active users (logged in last 7 days)
+    const activeUsers = allUsers.filter(u => new Date(u.lastSignedIn) >= sevenDaysAgo).length;
+
+    // Get all subscriptions
+    const allSubscriptions = await db.select().from(subscriptionsTable);
+    
+    // Count by tier
+    const freeTier = allSubscriptions.filter(s => s.tier === "free").length;
+    const plusTier = allSubscriptions.filter(s => s.tier === "plus" && s.isActive).length;
+    const premiumTier = allSubscriptions.filter(s => s.tier === "premium" && s.isActive).length;
+    const paidUsers = plusTier + premiumTier;
+
+    // Calculate conversion rate
+    const conversionRate = totalUsers > 0 ? (paidUsers / totalUsers) * 100 : 0;
+
+    // Calculate MRR (Monthly Recurring Revenue)
+    // Plus: $9.99/month, Premium: $59/year = $4.92/month
+    const plusMRR = plusTier * 9.99;
+    const premiumMRR = premiumTier * 4.92; // $59/year ÷ 12 months
+    const totalMRR = plusMRR + premiumMRR;
+
+    // Calculate total revenue (approximate - Plus monthly + Premium yearly)
+    const totalRevenue = (plusTier * 9.99) + (premiumTier * 59);
+
+    // Get all predictions
+    const allPredictions = await db.select().from(predictionsTable);
+    const totalPredictions = allPredictions.length;
+    const avgPredictionsPerUser = totalUsers > 0 ? totalPredictions / totalUsers : 0;
+
+    // Predictions by category
+    const predictionsByCategory = allPredictions.reduce((acc, p) => {
+      const category = p.category || "general";
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Get all psyche profiles
+    const allProfiles = await db.select().from(psycheProfilesTable);
+    
+    // Count by personality type
+    const personalityDistribution = allProfiles.reduce((acc, p) => {
+      acc[p.psycheType] = (acc[p.psycheType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Calculate predictions by personality type
+    const predictionsByPersonality: Record<string, number> = {};
+    for (const prediction of allPredictions) {
+      const userProfile = allProfiles.find(p => p.userId === prediction.userId);
+      if (userProfile) {
+        const type = userProfile.psycheType;
+        predictionsByPersonality[type] = (predictionsByPersonality[type] || 0) + 1;
+      }
+    }
+
+    // Calculate average predictions per personality type
+    const avgPredictionsByPersonality: Record<string, number> = {};
+    for (const [type, count] of Object.entries(personalityDistribution)) {
+      const totalPreds = predictionsByPersonality[type] || 0;
+      avgPredictionsByPersonality[type] = count > 0 ? totalPreds / count : 0;
+    }
+
+    return {
+      // User metrics
+      users: {
+        total: totalUsers,
+        newLast7Days: newUsersLast7Days,
+        newLast30Days: newUsersLast30Days,
+        active: activeUsers,
+      },
+      // Revenue metrics
+      revenue: {
+        mrr: Math.round(totalMRR * 100) / 100,
+        totalRevenue: Math.round(totalRevenue * 100) / 100,
+        conversionRate: Math.round(conversionRate * 100) / 100,
+      },
+      // Subscription metrics
+      subscriptions: {
+        free: freeTier,
+        plus: plusTier,
+        premium: premiumTier,
+        paid: paidUsers,
+      },
+      // Prediction metrics
+      predictions: {
+        total: totalPredictions,
+        avgPerUser: Math.round(avgPredictionsPerUser * 100) / 100,
+        byCategory: predictionsByCategory,
+      },
+      // Personality insights
+      personality: {
+        distribution: personalityDistribution,
+        avgPredictions: avgPredictionsByPersonality,
+      },
+    };
+  } catch (error) {
+    console.error("[Admin] Error getting analytics:", error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to get analytics",
+    });
+  }
+}),
+
+/**
+ * Get detailed user list with search and filtering
+ */
+getUserList: protectedProcedure
+  .input(
+    z.object({
+      search: z.string().optional(),
+      tier: z.enum(["all", "free", "plus", "premium"]).optional().default("all"),
+      limit: z.number().min(1).max(100).optional().default(50),
+      offset: z.number().min(0).optional().default(0),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Admin access required",
+      });
+    }
+
+    const db = await getDb();
+    if (!db) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Database unavailable",
+      });
+    }
+
+    try {
+      const { users: usersTable, subscriptions: subscriptionsTable, psycheProfiles: psycheProfilesTable, predictions: predictionsTable } = await import("../../drizzle/schema");
+      const { sql, like, or } = await import("drizzle-orm");
+
+      // Get all users with their subscriptions and profiles
+      const allUsers = await db.select().from(usersTable);
+      const allSubscriptions = await db.select().from(subscriptionsTable);
+      const allProfiles = await db.select().from(psycheProfilesTable);
+      const allPredictions = await db.select().from(predictionsTable);
+
+      // Filter by search
+      let filteredUsers = allUsers;
+      if (input.search) {
+        const searchLower = input.search.toLowerCase();
+        filteredUsers = filteredUsers.filter(u => 
+          u.email?.toLowerCase().includes(searchLower) ||
+          u.name?.toLowerCase().includes(searchLower) ||
+          u.nickname?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Join with subscriptions and profiles
+      const usersWithDetails = filteredUsers.map(user => {
+        const subscription = allSubscriptions.find(s => s.userId === user.id);
+        const profile = allProfiles.find(p => p.userId === user.id);
+        const userPredictions = allPredictions.filter(p => p.userId === user.id);
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt,
+          lastSignedIn: user.lastSignedIn,
+          onboardingCompleted: user.onboardingCompleted,
+          tier: subscription?.tier || "free",
+          isActive: subscription?.isActive ?? false,
+          personalityType: profile?.displayName || null,
+          predictionCount: userPredictions.length,
+        };
+      });
+
+      // Filter by tier
+      let finalUsers = usersWithDetails;
+      if (input.tier !== "all") {
+        finalUsers = finalUsers.filter(u => u.tier === input.tier);
+      }
+
+      // Sort by creation date (newest first)
+      finalUsers.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      // Apply pagination
+      const total = finalUsers.length;
+      const paginatedUsers = finalUsers.slice(input.offset, input.offset + input.limit);
+
+      return {
+        users: paginatedUsers,
+        total,
+        hasMore: input.offset + input.limit < total,
+      };
+    } catch (error) {
+      console.error("[Admin] Error getting user list:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get user list",
+      });
+    }
+  }),
+
+/**
+ * Get detailed insights and recommendations
+ */
+getInsights: protectedProcedure.query(async ({ ctx }) => {
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+
+  const db = await getDb();
+  if (!db) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Database unavailable",
+    });
+  }
+
+  try {
+    const { users: usersTable, subscriptions: subscriptionsTable, psycheProfiles: psycheProfilesTable, predictions: predictionsTable } = await import("../../drizzle/schema");
+
+    const allUsers = await db.select().from(usersTable);
+    const allSubscriptions = await db.select().from(subscriptionsTable);
+    const allProfiles = await db.select().from(psycheProfilesTable);
+    const allPredictions = await db.select().from(predictionsTable);
+
+    // Calculate personality type conversion rates
+    const personalityConversion: Record<string, { total: number; paid: number; rate: number }> = {};
+    
+    for (const profile of allProfiles) {
+      const type = profile.psycheType;
+      const subscription = allSubscriptions.find(s => s.userId === profile.userId);
+      const isPaid = subscription && (subscription.tier === "plus" || subscription.tier === "premium") && subscription.isActive;
+
+      if (!personalityConversion[type]) {
+        personalityConversion[type] = { total: 0, paid: 0, rate: 0 };
+      }
+
+      personalityConversion[type].total++;
+      if (isPaid) {
+        personalityConversion[type].paid++;
+      }
+    }
+
+    // Calculate conversion rates
+    for (const type in personalityConversion) {
+      const data = personalityConversion[type];
+      data.rate = data.total > 0 ? (data.paid / data.total) * 100 : 0;
+    }
+
+    // Find most engaged personality types (by predictions)
+    const personalityEngagement: Record<string, { predictions: number; avgPerUser: number }> = {};
+    
+    for (const profile of allProfiles) {
+      const type = profile.psycheType;
+      const userPredictions = allPredictions.filter(p => p.userId === profile.userId);
+
+      if (!personalityEngagement[type]) {
+        personalityEngagement[type] = { predictions: 0, avgPerUser: 0 };
+      }
+
+      personalityEngagement[type].predictions += userPredictions.length;
+    }
+
+    // Calculate averages
+    for (const type in personalityEngagement) {
+      const count = personalityConversion[type]?.total || 0;
+      personalityEngagement[type].avgPerUser = count > 0 ? personalityEngagement[type].predictions / count : 0;
+    }
+
+    // Generate recommendations
+    const recommendations = [];
+
+    // Recommendation 1: Target high-conversion personality types
+    const sortedByConversion = Object.entries(personalityConversion)
+      .sort(([, a], [, b]) => b.rate - a.rate)
+      .slice(0, 3);
+
+    if (sortedByConversion.length > 0) {
+      recommendations.push({
+        title: "Target High-Converting Personality Types",
+        description: `${sortedByConversion.map(([type, data]) => `${type} (${data.rate.toFixed(1)}% conversion)`).join(", ")} show the highest conversion rates. Consider creating targeted marketing campaigns for these personality types.`,
+        priority: "high",
+      });
+    }
+
+    // Recommendation 2: Engage high-activity users
+    const sortedByEngagement = Object.entries(personalityEngagement)
+      .sort(([, a], [, b]) => b.avgPerUser - a.avgPerUser)
+      .slice(0, 3);
+
+    if (sortedByEngagement.length > 0) {
+      recommendations.push({
+        title: "Focus on Highly Engaged Users",
+        description: `${sortedByEngagement.map(([type, data]) => `${type} (${data.avgPerUser.toFixed(1)} predictions/user)`).join(", ")} are the most engaged. These users are likely to benefit from premium features.`,
+        priority: "medium",
+      });
+    }
+
+    // Recommendation 3: Improve onboarding completion
+    const completedOnboarding = allUsers.filter(u => u.onboardingCompleted).length;
+    const onboardingRate = allUsers.length > 0 ? (completedOnboarding / allUsers.length) * 100 : 0;
+
+    if (onboardingRate < 80) {
+      recommendations.push({
+        title: "Improve Onboarding Completion Rate",
+        description: `Only ${onboardingRate.toFixed(1)}% of users complete onboarding. Consider simplifying the process or adding incentives to improve completion rates.`,
+        priority: "high",
+      });
+    }
+
+    // Recommendation 4: Conversion rate optimization
+    const paidUsers = allSubscriptions.filter(s => (s.tier === "plus" || s.tier === "premium") && s.isActive).length;
+    const conversionRate = allUsers.length > 0 ? (paidUsers / allUsers.length) * 100 : 0;
+
+    if (conversionRate < 5) {
+      recommendations.push({
+        title: "Optimize Free-to-Paid Conversion",
+        description: `Current conversion rate is ${conversionRate.toFixed(1)}%. Industry average is 2-5%. Consider A/B testing different paywall placements and messaging.`,
+        priority: "high",
+      });
+    }
+
+    return {
+      personalityConversion,
+      personalityEngagement,
+      recommendations,
+      metrics: {
+        onboardingCompletionRate: Math.round(onboardingRate * 100) / 100,
+        overallConversionRate: Math.round(conversionRate * 100) / 100,
+      },
+    };
+  } catch (error) {
+    console.error("[Admin] Error getting insights:", error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to get insights",
+    });
+  }
+}),

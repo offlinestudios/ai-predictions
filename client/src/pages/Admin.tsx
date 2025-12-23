@@ -173,9 +173,14 @@ export default function Admin() {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-1">Manage test users and system settings</p>
           </div>
-          <Button variant="outline" onClick={() => setLocation("/dashboard")}>
-            Back to Dashboard
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="default" onClick={() => setLocation("/admin/analytics")}>
+              View Analytics
+            </Button>
+            <Button variant="outline" onClick={() => setLocation("/dashboard")}>
+              Back to Dashboard
+            </Button>
+          </div>
         </div>
 
         {/* Message Alert */}
