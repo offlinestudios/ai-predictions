@@ -108,7 +108,7 @@ export default function PrivacyPolicy() {
               <li><strong>Data Portability:</strong> Export your prediction history</li>
             </ul>
             <p className="text-muted-foreground mt-4">
-              To exercise these rights, contact us at <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a>
+              To exercise these rights, contact us at <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a>
             </p>
           </section>
 
@@ -146,7 +146,7 @@ export default function PrivacyPolicy() {
               If you have questions about this Privacy Policy or our data practices, please contact us:
             </p>
             <ul className="list-none space-y-2 text-muted-foreground ml-4">
-              <li>Email: <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a></li>
+              <li>Email: <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a></li>
               <li>Website: <a href="/" className="text-primary hover:underline">predicsure.ai</a></li>
             </ul>
           </section>

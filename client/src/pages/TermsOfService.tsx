@@ -84,7 +84,7 @@ export default function TermsOfService() {
 
             <h3 className="text-xl font-medium mt-4">4.3 Refund Policy</h3>
             <p className="text-muted-foreground">
-              We offer a 7-day money-back guarantee on all paid subscriptions. To request a refund within the first 7 days, contact <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a>.
+              We offer a 7-day money-back guarantee on all paid subscriptions. To request a refund within the first 7 days, contact <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a>.
             </p>
           </section>
 
@@ -173,7 +173,7 @@ export default function TermsOfService() {
               For questions about these Terms, please contact us:
             </p>
             <ul className="list-none space-y-2 text-muted-foreground ml-4">
-              <li>Email: <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a></li>
+              <li>Email: <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a></li>
               <li>Website: <a href="/" className="text-primary hover:underline">predicsure.ai</a></li>
             </ul>
           </section>

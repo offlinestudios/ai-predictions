@@ -197,7 +197,7 @@ export default function AIMethodology() {
               If you have technical questions about our methodology or want to learn more, contact us:
             </p>
             <ul className="list-none space-y-2 text-muted-foreground ml-4">
-              <li>Email: <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a></li>
+              <li>Email: <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a></li>
               <li>Website: <a href="/" className="text-primary hover:underline">predicsure.ai</a></li>
             </ul>
           </section>

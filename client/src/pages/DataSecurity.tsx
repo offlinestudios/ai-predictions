@@ -162,7 +162,7 @@ export default function DataSecurity() {
               If you have questions about our security practices or want to report a vulnerability, please contact us:
             </p>
             <ul className="list-none space-y-2 text-muted-foreground ml-4">
-              <li>Email: <a href="mailto:support@predicsure.ai" className="text-primary hover:underline">support@predicsure.ai</a></li>
+              <li>Email: <a href="mailto:support@predicsure.com" className="text-primary hover:underline">support@predicsure.com</a></li>
               <li>Security Issues: <a href="mailto:security@predicsure.ai" className="text-primary hover:underline">security@predicsure.ai</a></li>
             </ul>
           </section>
