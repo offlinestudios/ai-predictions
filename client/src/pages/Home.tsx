@@ -403,6 +403,17 @@ export default function Home() {
                 <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Sign In</Link></li>
               </ul>
             </div>
+            {/* Predictions */}
+            <div>
+              <h3 className="font-semibold mb-4">Predictions</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/will-i-find-my-soulmate" className="hover:text-foreground transition-colors">Will I Find My Soulmate?</Link></li>
+                <li><Link href="/love-future-prediction" className="hover:text-foreground transition-colors">Love Future</Link></li>
+                <li><Link href="/career-path-prediction" className="hover:text-foreground transition-colors">Career Path</Link></li>
+                <li><Link href="/financial-future-prediction" className="hover:text-foreground transition-colors">Financial Future</Link></li>
+                <li><Link href="/life-purpose-prediction" className="hover:text-foreground transition-colors">Life Purpose</Link></li>
+              </ul>
+            </div>
             {/* Legal & Safety */}
             <div>
               <h3 className="font-semibold mb-4">Legal & Safety</h3>

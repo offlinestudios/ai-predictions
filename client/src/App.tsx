@@ -25,6 +25,11 @@ import Disclaimer from "./pages/Disclaimer";
 import About from "./pages/About";
 import Admin from "./pages/Admin";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import WillIFindMySoulmate from "./pages/WillIFindMySoulmate";
+import LoveFuturePrediction from "./pages/LoveFuturePrediction";
+import CareerPathPrediction from "./pages/CareerPathPrediction";
+import FinancialFuturePrediction from "./pages/FinancialFuturePrediction";
+import LifePurposePrediction from "./pages/LifePurposePrediction";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -63,6 +68,13 @@ function Router() {
       <Route path={"/about"} component={About} />
       <Route path={"/admin"} component={Admin} />
       <Route path={"/admin/analytics"} component={AdminAnalytics} />
+      
+      {/* SEO Landing Pages */}
+      <Route path={"/will-i-find-my-soulmate"} component={WillIFindMySoulmate} />
+      <Route path={"/love-future-prediction"} component={LoveFuturePrediction} />
+      <Route path={"/career-path-prediction"} component={CareerPathPrediction} />
+      <Route path={"/financial-future-prediction"} component={FinancialFuturePrediction} />
+      <Route path={"/life-purpose-prediction"} component={LifePurposePrediction} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
       </Switch>
