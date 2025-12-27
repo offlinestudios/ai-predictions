@@ -49,7 +49,13 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/sign-in"} component={SignIn} />
       <Route path={"/sign-up"} component={SignUp} />
-      <Route path={"/onboarding"} component={Onboarding} />
+      {/* Redirect old onboarding to new psyche-onboarding */}
+      <Route path={"/onboarding"}>
+        {() => {
+          window.location.href = "/psyche-onboarding";
+          return null;
+        }}
+      </Route>
       <Route path={"/psyche-onboarding"} component={PsycheOnboarding} />
       <Route path={"/psyche-onboarding-old"} component={PsycheOnboardingOld} />
       <Route path={"/dashboard"} component={Dashboard} />

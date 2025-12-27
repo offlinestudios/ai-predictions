@@ -48,7 +48,7 @@ export default function LifePurposePrediction() {
               It's something you recognize in your patterns.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Discover your life direction
               </Link>
             </Button>
@@ -154,7 +154,7 @@ export default function LifePurposePrediction() {
               No credit card required. Takes 3 minutes.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Start your personal reading
               </Link>
             </Button>
@@ -211,7 +211,7 @@ export default function LifePurposePrediction() {
         <section className="container max-w-4xl py-16">
           <div className="text-center space-y-6">
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Find your life direction →
               </Link>
             </Button>

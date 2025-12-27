@@ -48,7 +48,7 @@ export default function WillIFindMySoulmate() {
               The ones that last follow patterns.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Get clarity about your love path
               </Link>
             </Button>
@@ -154,7 +154,7 @@ export default function WillIFindMySoulmate() {
               No credit card required. Takes 3 minutes.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Reveal your personal pattern
               </Link>
             </Button>
@@ -211,7 +211,7 @@ export default function WillIFindMySoulmate() {
         <section className="container max-w-4xl py-16">
           <div className="text-center space-y-6">
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Start Your Personal Reading →
               </Link>
             </Button>

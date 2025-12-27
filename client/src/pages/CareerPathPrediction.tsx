@@ -48,7 +48,7 @@ export default function CareerPathPrediction() {
               It's about aligning your work with who you are.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Discover your career trajectory
               </Link>
             </Button>
@@ -154,7 +154,7 @@ export default function CareerPathPrediction() {
               No credit card required. Takes 3 minutes.
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Start your personal reading
               </Link>
             </Button>
@@ -211,7 +211,7 @@ export default function CareerPathPrediction() {
         <section className="container max-w-4xl py-16">
           <div className="text-center space-y-6">
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/onboarding">
+              <Link href="/psyche-onboarding">
                 Find your career path →
               </Link>
             </Button>
