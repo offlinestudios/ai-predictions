@@ -303,6 +303,12 @@ export default function DashboardChat() {
   const hasReachedFreeLimit = subscription?.tier === "free" && totalUsed >= 3;
   const isComposerDisabled = (!isAuthenticated && messages.length >= 3) || hasReachedFreeLimit;
 
+  // Redirect admin users to the employer HR dashboard
+  if (!authLoading && user?.role === "admin") {
+    navigate("/employer-dashboard");
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Desktop: Fixed Left Sidebar */}

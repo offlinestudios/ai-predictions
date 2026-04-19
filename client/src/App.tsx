@@ -31,6 +31,7 @@ import CareerPathPrediction from "./pages/CareerPathPrediction";
 import FinancialFuturePrediction from "./pages/FinancialFuturePrediction";
 import LifePurposePrediction from "./pages/LifePurposePrediction";
 import DemoDashboard from "./pages/DemoDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -78,6 +79,8 @@ function Router() {
       
       {/* Demo Dashboard */}
       <Route path={"/demo-dashboard"} component={DemoDashboard} />
+      {/* Employer HR Dashboard */}
+      <Route path={"/employer-dashboard"} component={EmployerDashboard} />
 
       {/* SEO Landing Pages */}
       <Route path={"/will-i-find-my-soulmate"} component={WillIFindMySoulmate} />
