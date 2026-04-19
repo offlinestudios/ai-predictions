@@ -59,6 +59,12 @@ export const users = pgTable("users", {
   majorTransition: boolean("majorTransition").default(false), // Undergoing major life change
   transitionType: varchar("transitionType", { length: 100 }), // Type of transition if applicable
   premiumDataCompleted: boolean("premiumDataCompleted").default(false).notNull(),
+  /** Resume upload fields */
+  resumeUrl: text("resumeUrl"),
+  resumeFileName: varchar("resumeFileName", { length: 255 }),
+  resumeUploadedAt: timestamp("resumeUploadedAt"),
+  resumeReviewResult: text("resumeReviewResult"),
+  resumeReviewedAt: timestamp("resumeReviewedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

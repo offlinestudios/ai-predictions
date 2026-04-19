@@ -549,10 +549,304 @@ Format these as: "\n\n**Deepen Your Insight:**\n1. [Question 1]\n2. [Question 2]
           .set(updateData)
           .where(eq(users.id, ctx.user.id));
 
-        return { success: true, field: input.field, value: input.value };
+         return { success: true, field: input.field, value: input.value };
+      }),
+
+    // Get user's survey/onboarding answers for display in profile
+    getSurveyAnswers: protectedProcedure
+      .query(async ({ ctx }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        const [userData] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, ctx.user.id))
+          .limit(1);
+
+        if (!userData) return null;
+
+        // Parse category profiles
+        let careerProfile: Record<string, string> | null = null;
+        let moneyProfile: Record<string, string> | null = null;
+        let loveProfile: Record<string, string> | null = null;
+        let healthProfile: Record<string, string> | null = null;
+        let interests: string[] = [];
+
+        try { careerProfile = userData.careerProfile ? JSON.parse(userData.careerProfile) : null; } catch {}
+        try { moneyProfile = userData.moneyProfile ? JSON.parse(userData.moneyProfile) : null; } catch {}
+        try { loveProfile = userData.loveProfile ? JSON.parse(userData.loveProfile) : null; } catch {}
+        try { healthProfile = userData.healthProfile ? JSON.parse(userData.healthProfile) : null; } catch {}
+        try { interests = userData.interests ? JSON.parse(userData.interests) : []; } catch {}
+
+        return {
+          nickname: userData.nickname,
+          gender: userData.gender,
+          relationshipStatus: userData.relationshipStatus,
+          interests,
+          onboardingCompleted: userData.onboardingCompleted,
+          careerProfile,
+          moneyProfile,
+          loveProfile,
+          healthProfile,
+          ageRange: userData.ageRange,
+          location: userData.location,
+          incomeRange: userData.incomeRange,
+          industry: userData.industry,
+          majorTransition: userData.majorTransition,
+          transitionType: userData.transitionType,
+          premiumDataCompleted: userData.premiumDataCompleted,
+        };
+      }),
+
+    // Upload a resume file (base64 encoded)
+    uploadResume: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64 encoded
+        mimeType: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        // Validate file type
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+        ];
+        if (!allowedTypes.includes(input.mimeType)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid file type. Please upload a PDF, Word document, or text file.",
+          });
+        }
+
+        // Convert base64 to buffer
+        const buffer = Buffer.from(input.fileData, 'base64');
+
+        // Check file size (5MB limit)
+        const sizeMB = buffer.length / (1024 * 1024);
+        if (sizeMB > 5) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `File size (${sizeMB.toFixed(1)}MB) exceeds the 5MB limit.`,
+          });
+        }
+
+        // Generate unique file key
+        const fileExtension = input.fileName.split('.').pop() || 'pdf';
+        const fileKey = `resumes/${ctx.user.id}/${nanoid()}.${fileExtension}`;
+
+        // Upload to R2
+        const { url } = await storagePut(fileKey, buffer, input.mimeType);
+
+        // Save resume info to user record
+        await db.update(users)
+          .set({
+            resumeUrl: url,
+            resumeFileName: input.fileName,
+            resumeUploadedAt: new Date(),
+            resumeReviewResult: null, // Clear previous review when new resume is uploaded
+            resumeReviewedAt: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id));
+
+        return { url, fileName: input.fileName };
+      }),
+
+    // Get user's resume info
+    getResumeInfo: protectedProcedure
+      .query(async ({ ctx }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        const [userData] = await db
+          .select({
+            resumeUrl: users.resumeUrl,
+            resumeFileName: users.resumeFileName,
+            resumeUploadedAt: users.resumeUploadedAt,
+            resumeReviewResult: users.resumeReviewResult,
+            resumeReviewedAt: users.resumeReviewedAt,
+          })
+          .from(users)
+          .where(eq(users.id, ctx.user.id))
+          .limit(1);
+
+        return userData || null;
+      }),
+
+    // AI review of uploaded resume against profile data
+    reviewResume: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        // Fetch user data including resume URL
+        const [userData] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, ctx.user.id))
+          .limit(1);
+
+        if (!userData?.resumeUrl) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No resume uploaded. Please upload a resume first.",
+          });
+        }
+
+        // Fetch the resume file
+        let resumeBuffer: Buffer;
+        try {
+          const response = await fetch(userData.resumeUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch resume: ${response.status} ${response.statusText}`);
+          }
+          const arrayBuffer = await response.arrayBuffer();
+          resumeBuffer = Buffer.from(arrayBuffer);
+        } catch (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch resume file. Please try re-uploading.",
+          });
+        }
+
+        // Convert resume to base64 for vision API
+        const resumeBase64 = resumeBuffer.toString('base64');
+        const fileName = userData.resumeFileName || 'resume.pdf';
+        const isPdf = fileName.toLowerCase().endsWith('.pdf');
+
+        // Build profile context for comparison
+        let profileContext = "";
+        try {
+          if (userData.nickname) profileContext += `Name/Nickname: ${userData.nickname}\n`;
+          if (userData.interests) {
+            const interests = JSON.parse(userData.interests);
+            profileContext += `Primary Interests: ${interests.join(', ')}\n`;
+          }
+          if (userData.relationshipStatus) profileContext += `Relationship Status: ${userData.relationshipStatus}\n`;
+          if (userData.industry) profileContext += `Industry: ${userData.industry}\n`;
+          if (userData.incomeRange) profileContext += `Income Range: ${userData.incomeRange}\n`;
+          if (userData.ageRange) profileContext += `Age Range: ${userData.ageRange}\n`;
+          if (userData.location) profileContext += `Location: ${userData.location}\n`;
+          if (userData.careerProfile) {
+            const career = JSON.parse(userData.careerProfile);
+            profileContext += `\nCareer Profile:\n`;
+            if (career.position) profileContext += `  - Career Stage: ${career.position}\n`;
+            if (career.direction) profileContext += `  - Career Direction: ${career.direction}\n`;
+            if (career.challenge) profileContext += `  - Main Challenge: ${career.challenge}\n`;
+            if (career.timeline) profileContext += `  - Timeline for Change: ${career.timeline}\n`;
+          }
+          if (userData.moneyProfile) {
+            const money = JSON.parse(userData.moneyProfile);
+            profileContext += `\nFinancial Profile:\n`;
+            if (money.stage) profileContext += `  - Financial Stage: ${money.stage}\n`;
+            if (money.goal) profileContext += `  - Financial Goal: ${money.goal}\n`;
+            if (money.incomeSource) profileContext += `  - Income Source: ${money.incomeSource}\n`;
+            if (money.stability) profileContext += `  - Income Stability: ${money.stability}\n`;
+          }
+        } catch {}
+
+        // Use OpenAI vision to extract and analyze resume
+        const systemPrompt = `You are an expert resume analyst and career coach. Your task is to:
+1. Extract and summarize the key information from the resume
+2. Compare it against the user's self-reported profile data
+3. Identify any inconsistencies, gaps, or areas of concern
+4. Provide actionable insights
+
+Be thorough but constructive. Focus on factual inconsistencies (e.g., claimed industry vs actual experience, stated career stage vs resume evidence, income claims vs role history).`;
+
+        const userMessage = `Please analyze this resume and compare it against the user's self-reported profile data.
+
+**User's Self-Reported Profile:**
+${profileContext || "No profile data available yet."}
+
+**Instructions:**
+1. First, extract the key information from the resume (name, current role, experience level, industry, skills, education)
+2. Compare this against the self-reported profile above
+3. Identify any inconsistencies or notable gaps
+4. Provide a brief overall assessment
+
+**Format your response as follows:**
+
+## Resume Summary
+[Brief summary of what the resume shows]
+
+## Profile Match Analysis
+[How well the resume aligns with the self-reported profile]
+
+## Inconsistencies Found
+[List any inconsistencies between the resume and profile, or "None found" if consistent]
+
+## Key Observations
+[Important observations about the resume quality, gaps, or strengths]
+
+## Recommendations
+[Actionable suggestions for improving alignment or addressing gaps]`;
+
+        let reviewResult: string;
+        try {
+          // Use vision API to read the resume if it's a PDF or image
+          const messages: Array<{ role: 'system' | 'user'; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }> = [
+            { role: 'system', content: systemPrompt },
+          ];
+
+          if (isPdf) {
+            // For PDFs, send as base64 image (OpenAI can read PDF content via vision)
+            messages.push({
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: userMessage,
+                },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:application/pdf;base64,${resumeBase64}`,
+                  },
+                },
+              ] as any,
+            });
+          } else {
+            // For text/doc files, just send the URL reference
+            messages.push({
+              role: 'user',
+              content: `${userMessage}\n\nResume URL: ${userData.resumeUrl}`,
+            });
+          }
+
+          const response = await invokeLLM({
+            messages: messages as any,
+            maxTokens: 2000,
+          });
+
+          const content = response.choices[0]?.message?.content;
+          reviewResult = typeof content === 'string' ? content : 'Unable to analyze resume at this time.';
+        } catch (error) {
+          console.error('[reviewResume] LLM error:', error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to analyze resume. Please try again.",
+          });
+        }
+
+        // Save review result to database
+        await db.update(users)
+          .set({
+            resumeReviewResult: reviewResult,
+            resumeReviewedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id));
+
+        return { reviewResult, reviewedAt: new Date() };
       }),
   }),
-
   stats: router({
     getGlobal: publicProcedure.query(async () => {
       const db = await getDb();
